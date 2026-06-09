@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scratch Proto — Design Language</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="scratch-proto.css?v=56" />
+<script src="scratch-ring.js?v=58" defer></script>
+<script src="scratch-button.js?v=52" defer></script>
+<script src="scratch-preview.js?v=20" defer></script>
+<script src="scratch-led.js?v=20" defer></script>
+<script src="scratch-field.js?v=52" defer></script>
+<script src="scratch-tabs.js?v=52" defer></script>
+<script src="scratch-nav.js?v=52" defer></script>
+</head>
+<body>
+<button class="sg-railtoggle" id="railtoggle" aria-label="Open navigation"><span class="bars"><i></i><i></i><i></i></span>Nav</button>
+<div class="sg-railscrim" id="railscrim"></div>
+<div class="sg">
+
+  <!-- ============================ STICKY RAIL ============================ -->
+  <aside class="sg-rail">
+    <div>
+      <div class="sg-rail-brand">Scratch Proto</div>
+      <div class="sg-rail-sub">Design Language</div>
+    </div>
+    <scratch-nav id="sgnav" flush>
+      <scratch-nav-item href="#overview" label="Overview" active></scratch-nav-item>
+      <scratch-nav-item href="#color" label="Color"></scratch-nav-item>
+      <scratch-nav-item href="#type" label="Typography"></scratch-nav-item>
+      <scratch-nav-item href="#space" label="Spacing &amp; Radius"></scratch-nav-item>
+      <scratch-nav-item href="#motion" label="Motion"></scratch-nav-item>
+      <scratch-nav-item href="#patterns" label="Signature Patterns"></scratch-nav-item>
+      <scratch-nav-item href="#components" label="Components"></scratch-nav-item>
+      <scratch-nav-item href="#reconcile" label="Reconciliation"></scratch-nav-item>
+    </scratch-nav>
+    <div class="sg-rail-foot">
+      <div class="build-stamp">
+        <div class="row"><scratch-led state="good" live></scratch-led> SW:ACTIVE <span class="sep">·</span> <b>v0.1</b></div>
+        <div>RECONCILED FROM 2 REPOS</div>
+        <div>SRC: scratch · simple-llm-ui</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================ MAIN COLUMN ============================ -->
+  <main class="sg-main">
+
+    <!-- ---------- MASTHEAD ---------- -->
+    <header class="sg-masthead" id="overview">
+      <div class="sg-masthead-row">
+        <h1>Scratch Proto</h1>
+        <span class="badge-proto">Prototype</span>
+      </div>
+      <div class="sg-masthead-tag">Browser-based diagnostic tools · internal dev aesthetic</div>
+      <p class="sg-lede">
+        A dark, monospace design language built around an <strong>exposed-wireframe</strong> feel:
+        a dot-grid substrate, faint scanlines, registration corner-marks, amber caution accents,
+        and build-stamp metadata. It reads like an internal instrument that was never meant to ship —
+        and looks proud of it. This page is the canonical reference, reconciled from the
+        <code>scratch</code> and <code>simple-llm-ui</code> repos. Open <strong>Tweaks</strong> to flip
+        the open decisions live.
+      </p>
+    </header>
+
+    <!-- ---------- COLOR ---------- -->
+    <section class="sg-section" id="color">
+      <div class="sg-section-head">
+        <span class="sg-section-num">01</span>
+        <h2>Color</h2>
+        <span class="sg-section-note">5 surfaces · 4 text · amber primary + green/red status</span>
+      </div>
+
+      <p class="sg-prose">Surfaces step in near-black increments — almost no chroma. The whole system rides on three
+      semantic colors, each with one job: <code>--accent</code> (amber) is <strong>primary action / caution</strong>,
+      <code>--signal</code> (green) is <strong>success / live</strong>, <code>--danger</code> (red) is
+      <strong>error / destructive</strong>. Amber is locked — keeping green and red unambiguous as status. Everything else
+      is neutral so those three carry all the meaning.</p>
+
+      <div class="sg-subhead">Surfaces</div>
+      <div class="preview-grid">
+        <scratch-preview label="--bg-deep" sub="#08090c" grid><div class="fill" style="background:#08090c"></div></scratch-preview>
+        <scratch-preview label="--bg" sub="#0d0f14" grid><div class="fill" style="background:#0d0f14"></div></scratch-preview>
+        <scratch-preview label="--bg-surface" sub="#12151c"><div class="fill" style="background:#12151c"></div></scratch-preview>
+        <scratch-preview label="--bg-elevated" sub="#181c26"><div class="fill" style="background:#181c26"></div></scratch-preview>
+        <scratch-preview label="--bg-hover" sub="#1e2330"><div class="fill" style="background:#1e2330"></div></scratch-preview>
+      </div>
+
+      <div class="sg-subhead">Text</div>
+      <div class="preview-grid">
+        <scratch-preview label="--text-bright" sub="#e8ecf4"><div class="fill" style="background:#e8ecf4"></div></scratch-preview>
+        <scratch-preview label="--text" sub="#c8cdd8"><div class="fill" style="background:#c8cdd8"></div></scratch-preview>
+        <scratch-preview label="--text-muted" sub="#6b7280"><div class="fill" style="background:#6b7280"></div></scratch-preview>
+        <scratch-preview label="--text-disabled" sub="#3b3f4a"><div class="fill" style="background:#3b3f4a"></div></scratch-preview>
+      </div>
+
+      <div class="sg-subhead">Semantic colors</div>
+      <div class="preview-grid">
+        <scratch-preview label="--accent" sub="primary / caution"><div class="fill" style="background:var(--accent)"></div></scratch-preview>
+        <scratch-preview label="--accent-dim" sub="accent borders"><div class="fill" style="background:var(--accent-dim)"></div></scratch-preview>
+        <scratch-preview label="--signal" sub="success / live"><div class="fill" style="background:#00e47a"></div></scratch-preview>
+        <scratch-preview label="--signal-dim" sub="aged success"><div class="fill" style="background:var(--signal-dim)"></div></scratch-preview>
+        <scratch-preview label="--danger" sub="error / destructive"><div class="fill" style="background:var(--danger)"></div></scratch-preview>
+        <scratch-preview label="--danger-dim" sub="old / resolved error"><div class="fill" style="background:var(--danger-dim)"></div></scratch-preview>
+      </div>
+
+      <div class="sg-subhead">Borders</div>
+      <div class="preview-grid">
+        <scratch-preview label="--border" sub="#2a2e3a"><div class="fill" style="background:#2a2e3a"></div></scratch-preview>
+        <scratch-preview label="--border-light" sub="#1e222c"><div class="fill" style="background:#1e222c"></div></scratch-preview>
+        <scratch-preview label="--border-dashed" sub="#333844 · disabled border"><div class="fill" style="background:#333844"></div></scratch-preview>
+      </div>
+    </section>
+
+    <!-- ---------- TYPOGRAPHY ---------- -->
+    <section class="sg-section" id="type">
+      <div class="sg-section-head">
+        <span class="sg-section-num">02</span>
+        <h2>Typography</h2>
+        <span class="sg-section-note">2 families · monospace-first</span>
+      </div>
+
+      <p class="sg-prose"><strong style="color:var(--text-bright)">Space Grotesk</strong> for display (headings, names),
+      <strong style="color:var(--text-bright)">JetBrains Mono</strong> for everything else. The monospace body is core to the
+      identity — it makes every screen feel like console output. Two signature prefixes carry hierarchy without extra weight:
+      <code>&gt;</code> for primary titles, <code>//</code> for captions and comments.</p>
+
+      <div class="plate">
+        <span class="plate-label">Display · Space Grotesk</span>
+        <div class="plate-col">
+          <div class="type-spec">
+            <div class="label">H1 · 1.75rem / 700 · letter-spacing -0.03em</div>
+            <div class="sample" style="font-family:var(--font-display);font-size:1.75rem;font-weight:700;letter-spacing:-0.03em;"><span style="color:var(--accent)">&gt;</span> Scratch Proto</div>
+          </div>
+          <div class="type-spec">
+            <div class="label">H2 · 1.5rem / 700</div>
+            <div class="sample" style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;">Reflection Blur</div>
+          </div>
+          <div class="type-spec">
+            <div class="label">H3 / Card name · 0.95rem / 600</div>
+            <div class="sample" style="font-family:var(--font-display);font-size:1.1rem;font-weight:600;">GPU Benchmark</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="plate">
+        <span class="plate-label">Mono · JetBrains Mono</span>
+        <div class="plate-col">
+          <div class="type-spec">
+            <div class="label">Body · 14px / 1.65</div>
+            <div class="sample" style="font-family:var(--font-mono);font-size:14px;color:var(--text);line-height:1.6;">Real-time GPS position display with interactive Leaflet map.</div>
+          </div>
+          <div class="type-spec">
+            <div class="label">Description · 12px · --text-muted</div>
+            <div class="sample" style="font-family:var(--font-mono);font-size:12px;color:var(--text-muted);">WebGL2 texture-space shading with debug atlas views</div>
+          </div>
+          <div class="type-spec">
+            <div class="label">Label / micro · 10px · uppercase · tracking 0.12em</div>
+            <div class="sample" style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.12em;">ADD UPSTREAM</div>
+          </div>
+          <div class="type-spec">
+            <div class="label">Index prefix · decimal-leading-zero counter</div>
+            <div class="sample" style="font-family:var(--font-mono);font-size:13px;color:var(--text);"><span style="color:var(--text-disabled)">00</span> Location History Map &nbsp;&nbsp; <span style="color:var(--text-disabled)">01</span> Microphone Diagnostics</div>
+          </div>
+          <div class="type-spec" style="border-bottom:none;">
+            <div class="label">Error / failed text (.text-cut-shadow)</div>
+            <div class="sample" style="font-family:var(--font-mono);font-size:18px;font-weight:600;letter-spacing:0.04em;display:flex;gap:var(--sp-5);align-items:baseline;">
+              <span class="text-cut-shadow" data-text="BUILD FAILED">BUILD FAILED</span>
+              <span style="color:var(--text-disabled);font-size:var(--fs-tiny);">soft red glow, 2×2px checkerboard cutout</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- SPACING & RADIUS ---------- -->
+    <section class="sg-section" id="space">
+      <div class="sg-section-head">
+        <span class="sg-section-num">03</span>
+        <h2>Spacing &amp; Radius</h2>
+        <span class="sg-section-note">NEW · neither repo had a formal scale</span>
+      </div>
+
+      <p class="sg-prose">The source repos used ad-hoc values (10/12/14/16px, <code>1.15rem</code>…). This formalizes a
+      <strong>4-based scale</strong> — existing values snap to the nearest step on export. Radius is
+      <strong>0 by default</strong>: the system is hard-edged. The only rounded elements are true pills and status
+      dots (<code>--r-pill</code>).</p>
+
+      <div class="plate">
+        <span class="plate-label">Spacing · 4px base</span>
+        <div style="max-width:520px;">
+          <div class="scale-row"><span class="scale-token">--sp-1</span><span class="scale-px">4px</span><span class="scale-bar" style="width:4px"></span></div>
+          <div class="scale-row"><span class="scale-token">--sp-2</span><span class="scale-px">8px</span><span class="scale-bar" style="width:8px"></span></div>
+          <div class="scale-row"><span class="scale-token">--sp-3</span><span class="scale-px">12px</span><span class="scale-bar" style="width:12px"></span></div>
+          <div class="scale-row"><span class="scale-token">--sp-4</span><span class="scale-px">16px</span><span class="scale-bar" style="width:16px"></span></div>
+          <div class="scale-row"><span class="scale-token">--sp-5</span><span class="scale-px">24px</span><span class="scale-bar" style="width:24px"></span></div>
+          <div class="scale-row"><span class="scale-token">--sp-6</span><span class="scale-px">32px</span><span class="scale-bar" style="width:32px"></span></div>
+          <div class="scale-row"><span class="scale-token">--sp-7</span><span class="scale-px">48px</span><span class="scale-bar" style="width:48px"></span></div>
+          <div class="scale-row"><span class="scale-token">--sp-8</span><span class="scale-px">64px</span><span class="scale-bar" style="width:64px"></span></div>
+        </div>
+      </div>
+
+      <div class="plate">
+        <span class="plate-label">Radius · square by default</span>
+        <div class="plate-row" style="gap:var(--sp-6)">
+          <div class="plate-col" style="align-items:center;gap:var(--sp-2)">
+            <div style="width:88px;height:64px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r-md)"></div>
+            <div class="preview-sub" style="color:var(--accent)">--r-sm/md/lg = 0</div>
+            <div class="preview-sub">everything</div>
+          </div>
+          <div class="plate-col" style="align-items:center;gap:var(--sp-2)">
+            <div style="display:flex;align-items:center;gap:var(--sp-3);height:64px">
+              <scratch-led state="good" live></scratch-led>
+              <div style="width:64px;height:22px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r-pill)"></div>
+            </div>
+            <div class="preview-sub">--r-pill = 999px</div>
+            <div class="preview-sub">dots &amp; pills only</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-subhead">Applied spacing · component padding &amp; gaps</div>
+      <p class="sg-prose">Components reference semantic spacing tokens — not raw px — so padding and gaps are tuned from
+      one place. Drag these in <strong>Tweaks → Density</strong> and every button, field, tab, and card reflows live.</p>
+      <div class="plate">
+        <span class="plate-label">live · governed by --pad-* / --gap-*</span>
+        <div class="plate-col" style="gap:var(--sp-5)">
+          <div class="plate-row" style="align-items:center">
+            <scratch-button>button</scratch-button>
+            <scratch-button variant="accent">primary</scratch-button>
+            <span class="preview-sub">↳ --pad-control-y · --pad-control-x</span>
+          </div>
+          <div class="plate-row" style="align-items:center">
+            <scratch-field placeholder="input field" style="max-width:240px"></scratch-field>
+            <span class="preview-sub">↳ --pad-control-y · --pad-control-x</span>
+          </div>
+          <div class="plate-row" style="align-items:flex-start">
+            <div class="upstream-item" style="min-width:260px">
+              <div>
+                <span class="upstream-name">DeepSeek</span><span class="badge">KEY</span>
+                <div class="upstream-url">https://api.deepseek.com</div>
+              </div>
+            </div>
+            <span class="preview-sub">↳ --pad-card</span>
+          </div>
+          <div class="plate-stack" style="max-width:260px;border:1px solid var(--border-dashed);padding:var(--pad-card)">
+            <scratch-field value="item"></scratch-field>
+            <scratch-field value="item"></scratch-field>
+            <span class="preview-sub">↳ gap = --gap-stack</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="plate">
+        <span class="plate-label">current values</span>
+        <table class="spec">
+          <tbody>
+            <tr><td class="mono">--pad-control-y</td><td class="muted">buttons · inputs · tabs (vertical)</td><td class="accent" data-token="--pad-control-y" style="text-align:right">8px</td></tr>
+            <tr><td class="mono">--pad-control-x</td><td class="muted">buttons · inputs · tabs (horizontal)</td><td class="accent" data-token="--pad-control-x" style="text-align:right">12px</td></tr>
+            <tr><td class="mono">--pad-card</td><td class="muted">cards · list items · modal rows</td><td class="accent" data-token="--pad-card" style="text-align:right">18px</td></tr>
+            <tr><td class="mono">--gap-stack</td><td class="muted">vertical gap inside stacks</td><td class="accent" data-token="--gap-stack" style="text-align:right">8px</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------- MOTION ---------- -->
+    <section class="sg-section" id="motion">
+      <div class="sg-section-head">
+        <span class="sg-section-num">04</span>
+        <h2>Motion</h2>
+        <span class="sg-section-note">click a curve to preview</span>
+      </div>
+      <p class="sg-prose">Motion is restrained and quick. <strong>One curve only</strong> — <code>--ease-out</code> — is
+      used for every transition; nothing eases any other way. UI transitions sit at <code>0.09–0.11s</code>, overlays
+      at <code>0.19s</code>. The only motion that runs unprompted is the looping “live system” pulse (status LED,
+      streaming caret), which signals work in flight.</p>
+      <div class="motion-grid" id="motion-grid">
+        <div class="motion-cell" data-curve="cubic-bezier(0.16,1,0.3,1)"><div class="name">--ease-out</div><div class="curve">cubic-bezier(.16, 1, .3, 1) — the only curve</div><div class="motion-track"><div class="motion-dot"></div></div></div>
+        <div class="motion-cell" data-curve="cubic-bezier(0.16,1,0.3,1)"><div class="name">--dur scale</div><div class="curve">fast .09 · base .11 · slow .19</div><div class="motion-track"><div class="motion-dot"></div></div></div>
+      </div>
+    </section>
+
+    <!-- ---------- SIGNATURE PATTERNS ---------- -->
+    <section class="sg-section" id="patterns">
+      <div class="sg-section-head">
+        <span class="sg-section-num">05</span>
+        <h2>Signature Patterns</h2>
+        <span class="sg-section-note">the load-bearing motifs</span>
+      </div>
+      <p class="sg-prose">These are what make it <em>Scratch Proto</em> and not just another dark theme. Use them
+      deliberately — they carry the "exposed instrument" personality.</p>
+
+      <div class="sg-subhead">Substrate · dot-grid + scanline</div>
+      <div class="plate" style="height:120px;">
+        <span class="plate-label">--grid-dot · --scanline</span>
+      </div>
+      <p class="sg-prose" style="margin-top:calc(-1 * var(--sp-2));font-size:var(--fs-small);color:var(--text-muted)">
+      A 24px radial dot-grid is fixed to the viewport behind everything; a faint 2px scanline rides on top. Both reconciled
+      <em>on</em> (scratch's variant). Toggle either in Tweaks.</p>
+
+      <div class="sg-subhead">Registration corner-marks</div>
+      <div class="plate-row">
+        <a class="card" style="width:280px;" href="#patterns">
+          <span class="card-index">06</span>
+          <div class="card-name">GPU Benchmark</div>
+          <div class="card-desc">WebGPU/WebGL fillrate, ALU, texture, vertex, and draw-call bench</div>
+        </a>
+        <div class="plate-col" style="gap:var(--sp-3)">
+          <div class="plate-row">
+            <scratch-button>test</scratch-button>
+            <scratch-button variant="accent">Add</scratch-button>
+          </div>
+          <div class="plate-stack" style="font-size:var(--fs-small);color:var(--text-muted)">
+            <div>Bracket corners ("cut here" registration marks) are the universal cue for an <em>interactive
+            surface</em> — every clickable card and box-button carries them, so they read apart from static text,
+            code, or badges. 10px on cards, 5px on buttons.</div>
+            <div style="color:var(--text-disabled)">Hover: brackets warm to amber.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sg-subhead">Status · prototype badge · caution stripe</div>
+      <p class="sg-prose"><strong>Motion rule:</strong> a dot pulses <em>only</em> while work is actively happening —
+      <code>running</code> or <code>queued</code>. Every other state is a static dot; the pulse is a signal that
+      something is in flight (e.g. the auto-reload poller checking for a new build), never ambient decoration.</p>
+      <div class="plate">
+        <span class="plate-label">live-state motifs</span>
+        <div class="plate-row" style="gap:var(--sp-5)">
+          <span class="badge-proto">Prototype</span>
+          <div class="plate-row dot-legend" style="gap:var(--sp-4)">
+            <span><scratch-led state="good" live></scratch-led>running <span class="hint">(pulses)</span></span>
+            <span><scratch-led state="accent" live></scratch-led>queued <span class="hint">(pulses)</span></span>
+            <span><scratch-led state="good"></scratch-led>idle</span>
+            <span><scratch-led state="accent"></scratch-led>stale</span>
+            <span><scratch-led state="bad"></scratch-led>error</span>
+          </div>
+        </div>
+        <div class="caution-stripe" style="margin-top:var(--sp-4);padding-top:var(--sp-3);">
+          <span style="font-size:var(--fs-small);color:var(--text-muted)">.caution-stripe — diagonal hazard border for destructive / experimental zones</span>
+        </div>
+      </div>
+
+      <div class="sg-subhead">Build-stamp</div>
+      <div class="plate">
+        <span class="plate-label">footer metadata</span>
+        <div class="build-stamp">
+          <div class="row"><scratch-led state="good" live></scratch-led> SW:ACTIVE <span class="sep">·</span> <b>BUILD:59FC335</b></div>
+          <div>DEPLOYED:4 DAYS AGO</div>
+          <div>SRC</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- COMPONENTS ---------- -->
+    <section class="sg-section" id="components">
+      <div class="sg-section-head">
+        <span class="sg-section-num">06</span>
+        <h2>Components</h2>
+        <span class="sg-section-note">lifted verbatim from the repos</span>
+      </div>
+
+      <div class="sg-subhead">Buttons</div>
+      <p class="sg-prose">The first <strong>true component</strong> — <code>&lt;scratch-button&gt;</code>, a shadow-DOM
+      custom element. Structure and styles are sealed inside; only the design tokens reach in. There's no
+      <code>.btn</code> class to misuse, so a button literally cannot be assembled wrong. Variants are an attribute.</p>
+      <div class="plate">
+        <span class="plate-label">&lt;scratch-button&gt; · default / accent / danger / link</span>
+        <div class="plate-row">
+          <scratch-button>test</scratch-button>
+          <scratch-button variant="accent">Add</scratch-button>
+          <scratch-button variant="danger">Remove</scratch-button>
+          <scratch-button variant="link">test connection</scratch-button>
+          <scratch-button variant="accent" disabled>disabled</scratch-button>
+        </div>
+      </div>
+
+      <div class="sg-subhead">Inputs</div>
+      <div class="plate">
+        <span class="plate-label">&lt;scratch-field&gt; · disabled = dashed</span>
+        <div class="plate-stack">
+          <scratch-field placeholder="name"></scratch-field>
+          <scratch-field placeholder="base url (e.g. https://api.openai.com)"></scratch-field>
+          <scratch-field placeholder="filter ..."></scratch-field>
+          <scratch-field value="locked endpoint" disabled></scratch-field>
+          <scratch-field multiline placeholder="system prompt ..."></scratch-field>
+        </div>
+      </div>
+
+      <div class="sg-subhead">Tabs</div>
+      <p class="sg-prose">Component <code>&lt;scratch-tabs&gt;</code> with <code>&lt;scratch-tab label="…"&gt;</code> children —
+      each tab's label and panel live in one element, so they can't desync. The connected-underline strip is
+      generated and sealed; <code>selected</code> sets the default; switching fires <code>change</code>.</p>
+      <div class="plate">
+        <span class="plate-label">&lt;scratch-tabs&gt; · &lt;scratch-tab&gt;</span>
+        <scratch-tabs style="max-width:360px;">
+          <scratch-tab label="Favorites">No favorites pinned yet.</scratch-tab>
+          <scratch-tab label="Upstreams" selected>Three upstreams configured.</scratch-tab>
+          <scratch-tab label="MCP">No tool servers connected.</scratch-tab>
+        </scratch-tabs>
+      </div>
+
+      <div class="sg-subhead">Cards</div>
+      <div class="plate">
+        <span class="plate-label">.card grid · auto-fill minmax(280px)</span>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
+          <a class="card" href="#components"><span class="card-index">00</span><div class="card-name">Location History Map</div><div class="card-desc">Real-time GPS position display with interactive Leaflet map</div></a>
+          <a class="card" href="#components"><span class="card-index">01</span><div class="card-name">Microphone Diagnostics</div><div class="card-desc">Microphone testing, audio visualization, and recording</div></a>
+          <a class="card" href="#components"><span class="card-index">02</span><div class="card-name">Reflection Blur</div><div class="card-desc">Depth-based planar reflection blur effect</div></a>
+        </div>
+      </div>
+
+      <div class="sg-subhead">Badges</div>
+      <div class="plate">
+        <span class="plate-label">.badge-proto · .badge</span>
+        <div class="plate-row">
+          <span class="badge-proto">Prototype</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:700;color:var(--text-bright)">Anthropic <span class="badge">KEY</span></span>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:700;color:var(--text-bright)">Ollama <span class="badge">KEY</span></span>
+        </div>
+      </div>
+
+      <div class="sg-subhead">Preview + caption</div>
+      <p class="sg-prose">The second sealed component: <code>&lt;scratch-preview&gt;</code> holds a color, sample, or
+      image placeholder in its body (via <code>color</code> or a slot) above a caption (<code>label</code> /
+      <code>sub</code>). The entire Color section is built from instances of it.</p>
+      <div class="plate">
+        <span class="plate-label">&lt;scratch-preview&gt; · .preview-grid</span>
+        <div class="preview-grid">
+          <scratch-preview label="color" sub="--accent"><div class="fill" style="background:var(--accent)"></div></scratch-preview>
+          <scratch-preview label="surface + grid" sub="--bg-deep" grid><div class="fill" style="background:var(--bg-deep)"></div></scratch-preview>
+          <scratch-preview label="sample" sub="radius / shape"><div style="width:44px;height:44px;background:var(--bg-elevated);border:1px solid var(--accent-dim)"></div></scratch-preview>
+          <scratch-preview label="placeholder" sub="drop asset"><div class="fill" style="background:repeating-linear-gradient(45deg,var(--bg-elevated) 0 7px,transparent 7px 14px),var(--bg-deep);display:flex;align-items:center;justify-content:center;color:var(--text-disabled)">image</div></scratch-preview>
+        </div>
+      </div>
+
+      <div class="sg-subhead">Settings modal</div>
+      <div class="plate">
+        <span class="plate-label">.modal</span>
+        <div class="modal">
+          <div class="modal-eyebrow">settings</div>
+          <scratch-tabs>
+            <button slot="trail" class="modal-x" aria-label="Close">×</button>
+            <scratch-tab label="Favorites"><div class="modal-pane">No favorites pinned yet.</div></scratch-tab>
+            <scratch-tab label="Upstreams" selected>
+              <div class="modal-pane" style="display:flex;flex-direction:column;gap:var(--sp-3)">
+                <div class="upstream-item">
+                  <div>
+                    <span class="upstream-name">DeepSeek</span><span class="badge">KEY</span>
+                    <div class="upstream-url">https://api.deepseek.com</div>
+                  </div>
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <scratch-button>test</scratch-button>
+                    <scratch-button variant="danger">Remove</scratch-button>
+                  </div>
+                </div>
+                <div class="upstream-item">
+                  <div>
+                    <span class="upstream-name">Anthropic</span><span class="badge">KEY</span>
+                    <div class="upstream-url">https://api.anthropic.com/v1</div>
+                  </div>
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <scratch-button>test</scratch-button>
+                    <scratch-button variant="danger">Remove</scratch-button>
+                  </div>
+                </div>
+              </div>
+            </scratch-tab>
+            <scratch-tab label="MCP"><div class="modal-pane">No tool servers connected.</div></scratch-tab>
+          </scratch-tabs>
+        </div>
+      </div>
+
+      <div class="sg-subhead">Sidebar navigation</div>
+      <p class="sg-prose">One component — <code>&lt;scratch-nav&gt;</code> with <code>&lt;scratch-nav-item&gt;</code> children —
+      powers both this overlay specimen <em>and</em> this page's own left rail. Items auto-number and carry the
+      connected indicator. <code>desc</code> is optional: omit it and you get the shorter rail-style button (see
+      the rail at left).</p>
+      <div class="plate">
+        <span class="plate-label">&lt;scratch-nav boxed label="…"&gt; · with desc</span>
+        <scratch-nav boxed label="Scratch" style="width:280px;">
+          <scratch-nav-item label="Location History Map" desc="Real-time GPS position display" active></scratch-nav-item>
+          <scratch-nav-item label="Microphone Diagnostics" desc="Audio visualization and recording"></scratch-nav-item>
+          <scratch-nav-item label="Reflection Blur" desc="Depth-based planar reflection blur"></scratch-nav-item>
+        </scratch-nav>
+      </div>
+
+      <div class="sg-subhead">Chat message &amp; composer</div>
+      <div class="plate">
+        <span class="plate-label">role color-coding</span>
+        <div class="plate-col" style="gap:var(--sp-5)">
+          <div class="msg" data-role="user">
+            <div class="msg-head"><span class="msg-role">User</span></div>
+            <div class="msg-body">Benchmark the WebGPU fillrate path and report draw-call overhead.</div>
+          </div>
+          <div class="msg" data-role="assistant">
+            <div class="msg-head"><span class="msg-role">Assistant</span><span class="msg-stats">312 tok · 1.4s</span></div>
+            <div class="msg-body">Running the fillrate sweep now<span class="msg-caret"></span></div>
+          </div>
+          <div class="composer" style="max-width:520px;">
+            <scratch-field multiline rows="2" placeholder="message ..."></scratch-field>
+            <scratch-button variant="accent">Send</scratch-button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- RECONCILIATION ---------- -->
+    <section class="sg-section" id="reconcile">
+      <div class="sg-section-head">
+        <span class="sg-section-num">07</span>
+        <h2>Reconciliation</h2>
+        <span class="sg-section-note">scratch vs simple-llm-ui · resolved</span>
+      </div>
+      <p class="sg-prose">The two repos drifted. Per your call, the canon adopts <strong>scratch's richer variant</strong>,
+      fixes outright bugs, and adds the scale neither had. Open items are wired as Tweaks.</p>
+
+      <table class="spec">
+        <thead>
+          <tr><th>Decision</th><th>scratch</th><th>simple-llm-ui</th><th>Canon</th><th style="text-align:right">Verdict</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">Scanline overlay</td><td>on</td><td class="muted">dropped</td><td class="accent">on (Tweak)</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
+          <tr><td class="mono">Card corner-marks</td><td>brackets</td><td class="muted">plain box</td><td class="accent">brackets (Tweak)</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
+          <tr><td class="mono">Prototype badge</td><td>badge-proto</td><td class="muted">plain .badge</td><td class="accent">both, scoped</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
+          <tr><td class="mono">--signal-glow / --warning</td><td>defined</td><td class="muted">missing</td><td class="accent">restored</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
+          <tr><td class="mono">--ease-out (sole curve)</td><td>defined</td><td class="muted">missing</td><td class="accent">restored; --ease-bounce dropped</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
+          <tr><td class="mono">var(--muted) typo</td><td class="muted">—</td><td>broken ref</td><td class="accent">→ --text-muted</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
+          <tr><td class="mono">grid-dot opacity</td><td>0.08</td><td>0.08 / 0.06*</td><td class="accent">0.08</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
+          <tr><td class="mono">Spacing scale</td><td class="muted">ad-hoc</td><td class="muted">ad-hoc</td><td class="accent">4-based, 8 steps</td><td style="text-align:right"><span class="verdict added">added</span></td></tr>
+          <tr><td class="mono">Radius tokens</td><td class="muted">4 / 6px raw</td><td class="muted">4 / 6px raw</td><td class="accent">0 — square; pill for dots</td><td style="text-align:right"><span class="verdict added">added</span></td></tr>
+          <tr><td class="mono">Type scale</td><td class="muted">implicit</td><td class="muted">implicit</td><td class="accent">8 named steps</td><td style="text-align:right"><span class="verdict added">added</span></td></tr>
+        </tbody>
+      </table>
+      <p class="sg-prose" style="margin-top:var(--sp-3);font-size:var(--fs-tiny);color:var(--text-disabled)">* nav.css fallback drifted to 0.06; canon locks 0.08 everywhere.</p>
+    </section>
+
+  </main>
+</div>
+
+<!-- Tweaks panel mount -->
+<div id="tweaks-root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="tweaks-app.jsx"></script>
+
+<script>
+  // Live token readout in the Applied-spacing panel
+  (function () {
+    const refresh = () => {
+      const cs = getComputedStyle(document.documentElement);
+      document.querySelectorAll('[data-token]').forEach(s => {
+        const v = cs.getPropertyValue(s.dataset.token).trim();
+        if (v) s.textContent = v;
+      });
+    };
+    refresh();
+    window.addEventListener('tweakchange', () => requestAnimationFrame(refresh));
+  })();
+
+  // Off-canvas rail drawer (narrow screens)
+  (function () {
+    const root = document.documentElement;
+    const toggle = document.getElementById('railtoggle');
+    const scrim = document.getElementById('railscrim');
+    const rail = document.querySelector('.sg-rail');
+    const open = () => root.classList.add('rail-open');
+    const close = () => root.classList.remove('rail-open');
+    toggle.addEventListener('click', () => root.classList.toggle('rail-open'));
+    scrim.addEventListener('click', close);
+    // close when a rail nav item is chosen, and on Escape
+    rail.addEventListener('click', (e) => { if (e.target.closest('scratch-nav-item')) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  })();
+
+  // Scroll-spy: highlight active rail item
+  (function () {
+    const nav = document.getElementById('sgnav');
+    const items = [...nav.querySelectorAll('scratch-nav-item')];
+    const map = new Map(items.map(a => [a.getAttribute('href').slice(1), a]));
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          items.forEach(l => l.removeAttribute('active'));
+          const a = map.get(e.target.id);
+          if (a) a.setAttribute('active', '');
+        }
+      });
+    }, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
+    map.forEach((_, id) => { const el = document.getElementById(id); if (el) io.observe(el); });
+  })();
+
+  // Motion preview: animate the dot on click
+  document.getElementById('motion-grid').addEventListener('click', (e) => {
+    const cell = e.target.closest('.motion-cell');
+    if (!cell) return;
+    const dot = cell.querySelector('.motion-dot');
+    const track = cell.querySelector('.motion-track');
+    const dist = track.offsetWidth - dot.offsetWidth;
+    dot.style.transition = 'none';
+    dot.style.transform = 'translateX(0)';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      dot.style.transition = `transform 0.7s ${cell.dataset.curve}`;
+      dot.style.transform = `translateX(${dist}px)`;
+    }));
+  });
+</script>
+
+</body>
+</html>

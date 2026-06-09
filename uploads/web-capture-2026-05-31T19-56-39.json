@@ -1,0 +1,369 @@
+[
+  {
+    "id": "cap_mpu79r0c_r79fk3",
+    "selector": "div#scratch-nav-overlay",
+    "label": "Scratch Location History Map Real-time G…",
+    "tag": "div",
+    "url": "https://pazerop.github.io/scratch/",
+    "title": "Scratch",
+    "timestamp": "2026-05-31T19:56:06.012Z",
+    "innerText": "Scratch\nLocation History Map\nReal-time GPS position display with interactive Leaflet map\nMicrophone Diagnostics\nMicrophone testing, audio visualization, and recording\nReflection Blur\nDepth-based planar reflection blur effect\nTexture-Space Shading\nWebGL2 texture-space shading with debug atlas views\nSH Lightmap\nPer-object L1 spherical-harmonic lightmap for N-light shading at constant cost\nBase64\nEncode and decode base64 with JSON pretty-printing\nGPU Benchmark\nWebGPU/WebGL fillrate, ALU, texture, vertex, and draw-call bench\nLM Studio Manager\nList, load, and unload local LLMs; basic streaming test chat\nOllama Manager\nList, pull, and delete Ollama models; basic streaming test chat\nMesh Subdivision\nAdaptive ground-mesh subdivision: compare triangulation strategies and watch T-junctions appear or vanish\nVolumetric Fog\nRay-marched volumetric fog with FBM density, depth occlusion, and sun scattering\nSW:ACTIVE\n·\nBUILD:59FC335\n·\nDEPLOYED:4 DAYS AGO\nSRC",
+    "outerHTML": "<div id=\"scratch-nav-overlay\" class=\"open\"><nav id=\"scratch-nav-sidebar\"><div class=\"scratch-nav-header\"><a href=\"https://pazerop.github.io/scratch/\" class=\"active\">Scratch</a></div><div class=\"scratch-nav-search\"><input type=\"text\" placeholder=\"filter...\" autocomplete=\"off\" spellcheck=\"false\"></div><div class=\"scratch-nav-links\"><a href=\"https://pazerop.github.io/scratch/scratchpads/location/\"><span class=\"scratch-nav-link-name\">Location History Map</span><span class=\"scratch-nav-link-desc\">Real-time GPS position display with interactive Leaflet map</span></a><a href=\"https://pazerop.github.io/scratch/scratchpads/microphone-diagnostics/\"><span class=\"scratch-nav-link-name\">Microphone Diagnostics</span><span class=\"scratch-nav-link-desc\">Microphone testing, audio visualization, and recording</span></a><a href=\"https://pazerop.github.io/scratch/scratchpads/reflection-blur/\"><span class=\"scratch-nav-link-name\">Reflection Blur</span><span class=\"scratch-nav-link-desc\">Depth-based planar reflection blur effect</span></a><a href=\"https://pazerop.github.io/scratch/scratchpads/texture-space-shading/\"><span class=\"scratch-nav-link-name\">Texture-Space Shading</span><span class=\"scratch-nav-link-desc\">WebGL2 texture-space shading with debug atlas views</span></a><a href=\"https://pazerop.github.io/scratch/scratchpads/sh-lightmap/\"><span class=\"scratch-nav-link-name\">SH Lightmap</span><span class=\"scratch-nav-link-desc\">Per-object L1 spherical-harmonic lightmap for N-light shading at constant cost</span></a><a href=\"https://pazerop.github.io/scratch/scratchpads/base64/\"><span class=\"scratch-nav-link-name\">Base64</span><span class=\"scratch-nav-link-desc\">Encode and decode base64 with JSON pretty-printing</span></a><a href=\"https://pazerop.github.io/scratch/scratchpads/gpu-benchmark/\"><span class=\"scratch-nav-link-name\">GPU Benchmark</span><span class=\"scratch-nav-link-desc\">WebGPU/WebGL fillrate, ALU, texture, vertex, and draw-call bench</span></a><a href=\"https://pazerop.github.io/scratch/scratchpads/lm-studio/\"><span class=\"scratch-nav-link-name\">LM Studio Manager</span><span class=\"scratch-nav-link-desc\">List, load, and unload local LLMs; basic streaming test chat</span></a><a href=\"https://pazerop.github.io/scratch/scratchpads/ollama/\"><span class=\"scratch-nav-link-name\">Ollama Manager</span><span class=\"scratch-nav-link-desc\">List, pull, and delete Ollama models; basic streaming test chat</span></a><a href=\"https://pazerop.github.io/scratch/scratchpads/mesh-subdivision/\"><span class=\"scratch-nav-link-name\">Mesh Subdivision</span><span class=\"scratch-nav-link-desc\">Adaptive ground-mesh subdivision: compare triangulation strategies and watch T-junctions appear or vanish</span></a><a href=\"https://pazerop.github.io/scratch/scratchpads/volumetric-fog/\"><span class=\"scratch-nav-link-name\">Volumetric Fog</span><span class=\"scratch-nav-link-desc\">Ray-marched volumetric fog with FBM density, depth occlusion, and sun scattering</span></a></div><div class=\"scratch-nav-footer\"><div class=\"scratch-nav-status\"><span><span class=\"status-dot\" id=\"sw-dot\" data-state=\"active\"></span><span id=\"sw-label\">sw:active</span></span><span class=\"sep\">·</span><span id=\"build-label\">build:<a href=\"https://github.com/PazerOP/scratch/commit/59fc335ca79083f4868bfab569cfe7cb3c61e174\">59fc335</a></span><span class=\"sep\">·</span><span id=\"age-label\">deployed:4 days ago</span></div><a href=\"https://github.com/PazerOP/scratch\">src</a></div></nav></div>",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 1617,
+      "height": 898
+    },
+    "computedStyles": {
+      "display": "block",
+      "position": "fixed",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
+      "width": "1617px",
+      "height": "898.15px",
+      "border": "0px rgb(200, 205, 216)",
+      "box-sizing": "border-box",
+      "background": "rgba(8, 9, 12, 0.6)",
+      "color": "rgb(200, 205, 216)",
+      "font-family": "\"JetBrains Mono\", \"SF Mono\", \"Cascadia Code\", \"Fira Code\", monospace",
+      "font-size": "14px",
+      "line-height": "23.1px",
+      "text-decoration": "none",
+      "z-index": "10000",
+      "transition": "opacity 0.25s, visibility 0.25s"
+    },
+    "cssRules": [
+      {
+        "selector": "*, ::before, ::after",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px;"
+      },
+      {
+        "selector": "#scratch-nav-overlay",
+        "css": "position: fixed; inset: 0px; z-index: 10000; background: rgba(8, 9, 12, 0.6); backdrop-filter: blur(4px); opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s;"
+      },
+      {
+        "selector": "#scratch-nav-overlay.open",
+        "css": "opacity: 1; visibility: visible;"
+      }
+    ]
+  },
+  {
+    "id": "cap_mpu79z25_yx85dj",
+    "selector": "div.scratch-nav-footer",
+    "label": "SW:ACTIVE · BUILD:59FC335 · DEPLOYED:4 D…",
+    "tag": "div",
+    "url": "https://pazerop.github.io/scratch/",
+    "title": "Scratch",
+    "timestamp": "2026-05-31T19:56:16.445Z",
+    "innerText": "SW:ACTIVE\n·\nBUILD:59FC335\n·\nDEPLOYED:4 DAYS AGO\nSRC",
+    "outerHTML": "<div class=\"scratch-nav-footer\"><div class=\"scratch-nav-status\"><span><span class=\"status-dot\" id=\"sw-dot\" data-state=\"active\"></span><span id=\"sw-label\">sw:active</span></span><span class=\"sep\">·</span><span id=\"build-label\">build:<a href=\"https://github.com/PazerOP/scratch/commit/59fc335ca79083f4868bfab569cfe7cb3c61e174\">59fc335</a></span><span class=\"sep\">·</span><span id=\"age-label\">deployed:4 days ago</span></div><a href=\"https://github.com/PazerOP/scratch\">src</a></div>",
+    "rect": {
+      "x": 0,
+      "y": 810,
+      "width": 299,
+      "height": 88
+    },
+    "computedStyles": {
+      "display": "flex",
+      "width": "299.45px",
+      "height": "88.05px",
+      "padding": "12px 20px",
+      "box-sizing": "border-box",
+      "color": "rgb(59, 63, 74)",
+      "font-family": "\"JetBrains Mono\", \"SF Mono\", \"Cascadia Code\", \"Fira Code\", monospace",
+      "font-size": "10px",
+      "line-height": "16.5px",
+      "letter-spacing": "0.6px",
+      "text-decoration": "none",
+      "text-transform": "uppercase",
+      "flex-direction": "column",
+      "gap": "6px",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*, ::before, ::after",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px;"
+      },
+      {
+        "selector": ".scratch-nav-footer",
+        "css": "padding: 12px 20px; border-top: 1px dashed var(--border-dashed, #333844); display: flex; flex-direction: column; gap: 6px; font-size: 10px; color: var(--text-disabled, #3b3f4a); letter-spacing: 0.06em; text-transform: uppercase;"
+      }
+    ]
+  },
+  {
+    "id": "cap_mpu7a4rp_xa7j2x",
+    "selector": "div.scratch-nav-header",
+    "label": "Scratch",
+    "tag": "div",
+    "url": "https://pazerop.github.io/scratch/",
+    "title": "Scratch",
+    "timestamp": "2026-05-31T19:56:23.845Z",
+    "innerText": "Scratch",
+    "outerHTML": "<div class=\"scratch-nav-header\"><a href=\"https://pazerop.github.io/scratch/\" class=\"active\">Scratch</a></div>",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 299,
+      "height": 63
+    },
+    "computedStyles": {
+      "display": "flex",
+      "width": "299.45px",
+      "height": "62.95px",
+      "padding": "20px 20px 16px",
+      "box-sizing": "border-box",
+      "color": "rgb(200, 205, 216)",
+      "font-family": "\"JetBrains Mono\", \"SF Mono\", \"Cascadia Code\", \"Fira Code\", monospace",
+      "font-size": "14px",
+      "line-height": "23.1px",
+      "text-decoration": "none",
+      "justify-content": "space-between",
+      "align-items": "center",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*, ::before, ::after",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px;"
+      },
+      {
+        "selector": ".scratch-nav-header",
+        "css": "display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 16px; border-bottom: 1px dashed var(--border-dashed, #333844);"
+      }
+    ]
+  },
+  {
+    "id": "cap_mpu7a5ww_7uvc4k",
+    "selector": "div.scratch-nav-search",
+    "label": "div.scratch-nav-search",
+    "tag": "div",
+    "url": "https://pazerop.github.io/scratch/",
+    "title": "Scratch",
+    "timestamp": "2026-05-31T19:56:25.329Z",
+    "innerText": "",
+    "outerHTML": "<div class=\"scratch-nav-search\"><input type=\"text\" placeholder=\"filter...\" autocomplete=\"off\" spellcheck=\"false\"></div>",
+    "rect": {
+      "x": 0,
+      "y": 63,
+      "width": 299,
+      "height": 48
+    },
+    "computedStyles": {
+      "display": "block",
+      "width": "299.45px",
+      "height": "47.95px",
+      "padding": "12px 20px 4px",
+      "border": "0px rgb(200, 205, 216)",
+      "box-sizing": "border-box",
+      "color": "rgb(200, 205, 216)",
+      "font-family": "\"JetBrains Mono\", \"SF Mono\", \"Cascadia Code\", \"Fira Code\", monospace",
+      "font-size": "14px",
+      "line-height": "23.1px",
+      "text-decoration": "none",
+      "transition": "all"
+    },
+    "cssRules": [
+      {
+        "selector": "*, ::before, ::after",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px;"
+      },
+      {
+        "selector": ".scratch-nav-search",
+        "css": "padding: 12px 20px 4px;"
+      }
+    ]
+  },
+  {
+    "id": "cap_mpu7a7qo_o6php7",
+    "selector": "a",
+    "label": "Location History Map Real-time GPS posit…",
+    "tag": "a",
+    "url": "https://pazerop.github.io/scratch/",
+    "title": "Scratch",
+    "timestamp": "2026-05-31T19:56:27.697Z",
+    "innerText": "Location History Map\nReal-time GPS position display with interactive Leaflet map",
+    "outerHTML": "<a href=\"https://pazerop.github.io/scratch/scratchpads/location/\"><span class=\"scratch-nav-link-name\">Location History Map</span><span class=\"scratch-nav-link-desc\">Real-time GPS position display with interactive Leaflet map</span></a>",
+    "rect": {
+      "x": 0,
+      "y": 123,
+      "width": 299,
+      "height": 85
+    },
+    "computedStyles": {
+      "display": "block",
+      "position": "relative",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
+      "width": "299.45px",
+      "height": "84.9px",
+      "padding": "14px 20px",
+      "box-sizing": "border-box",
+      "background": "rgb(18, 21, 28)",
+      "color": "rgb(232, 236, 244)",
+      "font-family": "\"JetBrains Mono\", \"SF Mono\", \"Cascadia Code\", \"Fira Code\", monospace",
+      "font-size": "14px",
+      "line-height": "23.1px",
+      "text-decoration": "none",
+      "transition": "0.12s",
+      "cursor": "pointer"
+    },
+    "cssRules": [
+      {
+        "selector": "*, ::before, ::after",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px;"
+      },
+      {
+        "selector": "a",
+        "css": "color: var(--accent); text-decoration: none; transition: color 0.15s;"
+      },
+      {
+        "selector": "a:hover",
+        "css": "color: var(--accent-hover);"
+      },
+      {
+        "selector": ".scratch-nav-links a",
+        "css": "display: block; padding: 14px 20px; color: var(--text, #c8cdd8); text-decoration: none; transition: 0.12s; position: relative; border-bottom: 1px solid transparent;"
+      },
+      {
+        "selector": ".scratch-nav-links a:hover",
+        "css": "background: var(--bg-surface, #12151c); color: var(--text-bright, #e8ecf4);"
+      },
+      {
+        "selector": ".scratch-nav-links a",
+        "css": "counter-increment: nav-item 1;"
+      }
+    ]
+  },
+  {
+    "id": "cap_mpu7a896_qw64nl",
+    "selector": "a",
+    "label": "Microphone Diagnostics Microphone testin…",
+    "tag": "a",
+    "url": "https://pazerop.github.io/scratch/",
+    "title": "Scratch",
+    "timestamp": "2026-05-31T19:56:28.363Z",
+    "innerText": "Microphone Diagnostics\nMicrophone testing, audio visualization, and recording",
+    "outerHTML": "<a href=\"https://pazerop.github.io/scratch/scratchpads/microphone-diagnostics/\"><span class=\"scratch-nav-link-name\">Microphone Diagnostics</span><span class=\"scratch-nav-link-desc\">Microphone testing, audio visualization, and recording</span></a>",
+    "rect": {
+      "x": 0,
+      "y": 208,
+      "width": 299,
+      "height": 85
+    },
+    "computedStyles": {
+      "display": "block",
+      "position": "relative",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
+      "width": "299.45px",
+      "height": "84.9px",
+      "padding": "14px 20px",
+      "box-sizing": "border-box",
+      "background": "rgb(18, 21, 28)",
+      "color": "rgb(232, 236, 244)",
+      "font-family": "\"JetBrains Mono\", \"SF Mono\", \"Cascadia Code\", \"Fira Code\", monospace",
+      "font-size": "14px",
+      "line-height": "23.1px",
+      "text-decoration": "none",
+      "transition": "0.12s",
+      "cursor": "pointer"
+    },
+    "cssRules": [
+      {
+        "selector": "*, ::before, ::after",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px;"
+      },
+      {
+        "selector": "a",
+        "css": "color: var(--accent); text-decoration: none; transition: color 0.15s;"
+      },
+      {
+        "selector": "a:hover",
+        "css": "color: var(--accent-hover);"
+      },
+      {
+        "selector": ".scratch-nav-links a",
+        "css": "display: block; padding: 14px 20px; color: var(--text, #c8cdd8); text-decoration: none; transition: 0.12s; position: relative; border-bottom: 1px solid transparent;"
+      },
+      {
+        "selector": ".scratch-nav-links a:hover",
+        "css": "background: var(--bg-surface, #12151c); color: var(--text-bright, #e8ecf4);"
+      },
+      {
+        "selector": ".scratch-nav-links a",
+        "css": "counter-increment: nav-item 1;"
+      }
+    ]
+  },
+  {
+    "id": "cap_mpu7a9ku_s73f86",
+    "selector": "a",
+    "label": "Reflection Blur Depth-based planar refle…",
+    "tag": "a",
+    "url": "https://pazerop.github.io/scratch/",
+    "title": "Scratch",
+    "timestamp": "2026-05-31T19:56:30.078Z",
+    "innerText": "Reflection Blur\nDepth-based planar reflection blur effect",
+    "outerHTML": "<a href=\"https://pazerop.github.io/scratch/scratchpads/reflection-blur/\"><span class=\"scratch-nav-link-name\">Reflection Blur</span><span class=\"scratch-nav-link-desc\">Depth-based planar reflection blur effect</span></a>",
+    "rect": {
+      "x": 0,
+      "y": 293,
+      "width": 299,
+      "height": 85
+    },
+    "computedStyles": {
+      "display": "block",
+      "position": "relative",
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px",
+      "width": "299.45px",
+      "height": "84.9px",
+      "padding": "14px 20px",
+      "box-sizing": "border-box",
+      "background": "rgb(18, 21, 28)",
+      "color": "rgb(232, 236, 244)",
+      "font-family": "\"JetBrains Mono\", \"SF Mono\", \"Cascadia Code\", \"Fira Code\", monospace",
+      "font-size": "14px",
+      "line-height": "23.1px",
+      "text-decoration": "none",
+      "transition": "0.12s",
+      "cursor": "pointer"
+    },
+    "cssRules": [
+      {
+        "selector": "*, ::before, ::after",
+        "css": "box-sizing: border-box; margin: 0px; padding: 0px;"
+      },
+      {
+        "selector": "a",
+        "css": "color: var(--accent); text-decoration: none; transition: color 0.15s;"
+      },
+      {
+        "selector": "a:hover",
+        "css": "color: var(--accent-hover);"
+      },
+      {
+        "selector": ".scratch-nav-links a",
+        "css": "display: block; padding: 14px 20px; color: var(--text, #c8cdd8); text-decoration: none; transition: 0.12s; position: relative; border-bottom: 1px solid transparent;"
+      },
+      {
+        "selector": ".scratch-nav-links a:hover",
+        "css": "background: var(--bg-surface, #12151c); color: var(--text-bright, #e8ecf4);"
+      },
+      {
+        "selector": ".scratch-nav-links a",
+        "css": "counter-increment: nav-item 1;"
+      }
+    ]
+  }
+]
