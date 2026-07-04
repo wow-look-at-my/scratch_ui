@@ -13,31 +13,22 @@ jobs:
         with:
           node-version: 22
 
-      - name: Syntax-check JS and JSX
+      - name: Syntax-check JS
         uses: wow-look-at-my/actions@typescript#latest
         with:
           script: |
             // Static checks for a plain-browser prototype: there is no build
             // system or test suite, so CI validates that every source file at
             // least parses.
-            //   *.js  — classic scripts loaded via <script defer>: node --check
-            //   *.jsx — compiled in-browser by Babel standalone: esbuild parse
-            //           (pinned version; parse/transform only, no bundling)
+            //   *.js — classic scripts loaded via <script defer>: node --check
             const names = fs.readdirSync('.').filter((n) => fs.statSync(n).isFile());
             const js = names.filter((n) => n.endsWith('.js')).sort();
-            const jsx = names.filter((n) => n.endsWith('.jsx')).sort();
-            if (js.length === 0 || jsx.length === 0) {
-              core.setFailed(`Repo layout changed: found ${js.length} .js and ${jsx.length} .jsx at the root — update the CI syntax check to cover the new layout.`);
+            if (js.length === 0) {
+              core.setFailed('Repo layout changed: found 0 .js files at the root — update the CI syntax check to cover the new layout.');
               return;
             }
             for (const f of js) {
               core.info(`node --check ${f}`);
               await $`node --check ${f}`;
             }
-            const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jsx-check-'));
-            for (const f of jsx) {
-              core.info(`esbuild parse ${f}`);
-              const outFlag = `--outfile=${path.join(outDir, f.replace(/\.jsx$/, '.js'))}`;
-              await $`npx --yes esbuild@0.28.1 ${f} ${outFlag}`;
-            }
-            core.info(`Syntax OK: ${js.length} .js (node --check), ${jsx.length} .jsx (esbuild)`);
+            core.info(`Syntax OK: ${js.length} .js (node --check)`);

@@ -67,8 +67,7 @@
         a dot-grid substrate, faint scanlines, registration corner-marks, amber caution accents,
         and build-stamp metadata. It reads like an internal instrument that was never meant to ship —
         and looks proud of it. This page is the canonical reference, reconciled from the
-        <code>scratch</code> and <code>simple-llm-ui</code> repos. Open <strong>Tweaks</strong> to flip
-        the open decisions live.
+        <code>scratch</code> and <code>simple-llm-ui</code> repos.
       </p>
     </header>
 
@@ -230,7 +229,7 @@
 
       <div class="sg-subhead">Applied spacing · component padding &amp; gaps</div>
       <p class="sg-prose">Components reference semantic spacing tokens — not raw px — so padding and gaps are tuned from
-      one place. Drag these in <strong>Tweaks → Density</strong> and every button, field, tab, and card reflows live.</p>
+      one place.</p>
       <div class="plate">
         <span class="plate-label">live · governed by --pad-* / --gap-*</span>
         <div class="plate-col" style="gap:var(--sp-5)">
@@ -306,7 +305,7 @@
       </div>
       <p class="sg-prose" style="margin-top:calc(-1 * var(--sp-2));font-size:var(--fs-small);color:var(--text-muted)">
       A 24px radial dot-grid is fixed to the viewport behind everything; a faint 2px scanline rides on top. Both reconciled
-      <em>on</em> (scratch's variant). Toggle either in Tweaks.</p>
+      <em>on</em> (scratch's variant).</p>
 
       <div class="sg-subhead">Registration corner-marks</div>
       <div class="plate-row">
@@ -508,15 +507,15 @@
         <span class="sg-section-note">scratch vs simple-llm-ui · resolved</span>
       </div>
       <p class="sg-prose">The two repos drifted. Per your call, the canon adopts <strong>scratch's richer variant</strong>,
-      fixes outright bugs, and adds the scale neither had. Open items are wired as Tweaks.</p>
+      fixes outright bugs, and adds the scale neither had.</p>
 
       <table class="spec">
         <thead>
           <tr><th>Decision</th><th>scratch</th><th>simple-llm-ui</th><th>Canon</th><th style="text-align:right">Verdict</th></tr>
         </thead>
         <tbody>
-          <tr><td class="mono">Scanline overlay</td><td>on</td><td class="muted">dropped</td><td class="accent">on (Tweak)</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
-          <tr><td class="mono">Card corner-marks</td><td>brackets</td><td class="muted">plain box</td><td class="accent">brackets (Tweak)</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
+          <tr><td class="mono">Scanline overlay</td><td>on</td><td class="muted">dropped</td><td class="accent">on</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
+          <tr><td class="mono">Card corner-marks</td><td>brackets</td><td class="muted">plain box</td><td class="accent">brackets</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
           <tr><td class="mono">Prototype badge</td><td>badge-proto</td><td class="muted">plain .badge</td><td class="accent">both, scoped</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
           <tr><td class="mono">--signal-glow / --warning</td><td>defined</td><td class="muted">missing</td><td class="accent">restored</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
           <tr><td class="mono">--ease-out (sole curve)</td><td>defined</td><td class="muted">missing</td><td class="accent">restored; --ease-bounce dropped</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
@@ -533,15 +532,6 @@
   </main>
 </div>
 
-<!-- Tweaks panel mount -->
-<div id="tweaks-root"></div>
-
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-<script type="text/babel" src="tweaks-panel.jsx"></script>
-<script type="text/babel" src="tweaks-app.jsx"></script>
-
 <script>
   // Live token readout in the Applied-spacing panel
   (function () {
@@ -553,7 +543,6 @@
       });
     };
     refresh();
-    window.addEventListener('tweakchange', () => requestAnimationFrame(refresh));
   })();
 
   // Off-canvas rail drawer (narrow screens)

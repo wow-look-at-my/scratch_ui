@@ -47,10 +47,11 @@ that are also import-safe as modules — each registers itself via a top-level
 
 - `Scratch Proto.html` — the full style guide: every token, component, and rule.
 - `Icon Language.html` — the icon language spec.
-- `tweaks-app.jsx` / `tweaks-panel.jsx` — the in-page tweaks panel the demo
-  pages load (Babel-in-browser; not part of the consumable surface).
 
-Open the pages in a browser, or serve the repo root with any static server.
+Open the pages in a browser, or serve the repo root with any static server. The
+design language is fully dependency-free, spec pages included: no framework, no
+build step, no external scripts (the pages' only external requests are the
+Google Fonts stylesheets).
 
 ## Consuming
 
