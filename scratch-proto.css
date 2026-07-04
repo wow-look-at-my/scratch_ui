@@ -1,0 +1,621 @@
+/* ============================================================
+ * SCRATCH PROTO — Canonical Design Language
+ *
+ * Reconciled from PazerOP/scratch (common/style.css, nav.css,
+ * shell.css) and wow-look-at-my/simple-llm-ui (theme.css).
+ * Where the two drifted, this file adopts scratch's richer
+ * variant (scanline, registration corner-marks, badge-proto)
+ * and adds the formal spacing + radius scale neither repo had.
+ *
+ * Aesthetic: exposed wireframe, dot-grid substrate, monospace
+ * typography, amber caution accents, registration marks,
+ * build-stamp metadata. An internal dev tool that was never
+ * meant to ship — and looks proud of it.
+ * ============================================================ */
+
+:root {
+  /* --- Surfaces ---
+     bg-deep/bg are opaque (the substrate everything composites onto).
+     The raised surfaces are --text-bright at low alpha, so they read as
+     translucent tints and let the dot-grid / layering show through. */
+  --bg-deep:       #08090c;
+  --bg:            #0d0f14;
+  --bg-surface:    color-mix(in srgb, var(--text-bright) 3%, transparent);
+  --bg-elevated:   color-mix(in srgb, var(--text-bright) 6%, transparent);
+  --bg-hover:      color-mix(in srgb, var(--text-bright) 10%, transparent);
+
+  /* --- Text --- */
+  --text:          #c8cdd8;
+  --text-bright:   #e8ecf4;
+  --text-muted:    #6b7280;
+  --text-disabled: #565b69;
+
+  /* --- Accent: Amber / Caution (primary; LOCKED) ---
+     --accent is 100% saturation + 100% value (HSV). Each *-dim is the SAME
+     color at 50% alpha — full saturation preserved, only opacity reduced, so
+     dims are vivid translucent tints. --accent-hover drops saturation for a
+     white-tinted lift. */
+  --accent:        #ffae00;
+  --accent-dim:    color-mix(in srgb, var(--accent) 50%, transparent);
+  --accent-glow:   rgba(255, 174, 0, 0.12);
+  --accent-hover:  #ffc64d;
+
+  /* --- Secondary: Signal green (success / live) --- */
+  --signal:        #00e47a;
+  --signal-dim:    color-mix(in srgb, var(--signal) 50%, transparent);
+  --signal-glow:   rgba(0, 228, 122, 0.08);
+
+  /* --- Borders --- */
+  --border:        #2a2e3a;
+  --border-light:  #1e222c;
+  --border-dashed: rgba(51, 56, 68, 0.67);   /* #333844 @ 0.67 — softened dividers + disabled border */
+
+  /* --- Danger (error / destructive) --- */
+  --danger:        #ff4444;
+  --danger-dim:    color-mix(in srgb, var(--danger) 50%, transparent);
+  --danger-glow:   rgba(255, 68, 68, 0.10);
+  --warning:       var(--accent);
+
+  /* --- Grid substrate --- */
+  --grid-dot:      rgba(200, 205, 216, 0.08);
+  --grid-size:     24px;
+
+  /* --- Scanline overlay (alpha tweakable; 0 = off) --- */
+  --scanline-alpha: 0.03;
+  --scanline: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, var(--scanline-alpha)) 2px,
+    rgba(0, 0, 0, var(--scanline-alpha)) 4px
+  );
+
+  /* --- Typography --- */
+  --font-mono:     'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Fira Code', ui-monospace, monospace;
+  --font-display:  'Space Grotesk', 'JetBrains Mono', monospace;
+
+  /* --- Type scale --- */
+  --fs-micro:  10px;   /* labels, badges, build-stamp */
+  --fs-tiny:   11px;   /* meta, captions */
+  --fs-small:  12px;   /* secondary body, descriptions */
+  --fs-body:   14px;   /* base */
+  --fs-lg:     16px;   /* sidebar title */
+  --fs-h3:     1.1rem;
+  --fs-h2:     1.5rem;
+  --fs-h1:     1.75rem;
+
+  /* --- Spacing scale (NEW — neither repo had one) --- */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  24px;
+  --sp-6:  32px;
+  --sp-7:  48px;
+  --sp-8:  64px;
+
+  /* --- Applied spacing: component padding & gaps (tweakable · Density) ---
+     Components reference THESE, not raw px, so padding/margins are iterable
+     from one place. Defaults sit on the 4-based scale. */
+  --pad-control-y: 8px;    /* buttons, inputs, tabs — vertical */
+  --pad-control-x: 12px;   /* buttons, inputs, tabs — horizontal */
+  --pad-card:      18px;   /* cards, list items, modal rows */
+  --gap-stack:     8px;    /* vertical gap inside stacks */
+
+  /* --- Radius: SQUARE by default. The system is hard-edged; the only
+     rounded elements are true pills / dots (--r-pill). --- */
+  --r-base:  0;
+  --r-sm:    0;
+  --r-md:    0;
+  --r-lg:    0;
+  --r-pill:  999px;
+
+  /* --- Motion --- */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);   /* the ONLY easing curve in the system */
+  --dur-fast:    0.09s;   /* 25% faster than the original 0.12 / 0.15 / 0.25 */
+  --dur:         0.11s;
+  --dur-slow:    0.19s;
+
+  /* --- Elevation --- */
+  --shadow-pop: 0 2px 12px rgba(0, 0, 0, 0.4);
+  --shadow-modal: 0 18px 50px rgba(0, 0, 0, 0.55);
+}
+
+/* ===================================================================
+   Reset & base
+   =================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  color-scheme: dark;
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  min-height: 100vh;
+  background-image:
+    var(--scanline),
+    radial-gradient(circle, var(--grid-dot) 1px, transparent 1px);
+  background-size: auto, var(--grid-size) var(--grid-size);
+  background-position: 0 0, 0 0;
+  background-attachment: fixed, fixed;
+}
+
+/* Scanline kill-switch handled via --scanline-alpha (0 = off) */
+
+::selection { background: var(--accent); color: var(--bg-deep); }
+
+a { color: var(--accent); text-decoration: none; transition: color var(--dur) var(--ease-out); }
+a:hover { color: var(--accent-hover); }
+
+code, pre { font-family: var(--font-mono); font-size: 0.9em; }
+code {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 0.15em 0.4em;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--text-bright);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+/* Form controls don't inherit font or color from the document by default
+   (they use the UA font). Make them inherit so the mono stack applies
+   everywhere; override font-family only where a control needs the display
+   face (rare). This is why no control class repeats --font-mono. */
+button, input, select, textarea { font: inherit; color: inherit; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: var(--r-sm); }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ===================================================================
+   Style-guide shell + sticky nav
+   =================================================================== */
+
+.sg {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sg-rail {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+  padding: var(--sp-6) 0 var(--sp-5);   /* no horizontal padding — nav bleeds to both edges */
+  border-right: 1px solid #333844;   /* rail ↔ content line stays full-strength (NOT --border-dashed) */
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+/* Re-inset everything EXCEPT the nav, which spans the full rail width. */
+.sg-rail-brand, .sg-rail-sub, .sg-rail-foot { padding-left: var(--sp-5); padding-right: var(--sp-4); }
+
+.sg-rail-brand {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.sg-rail-brand::before { content: '>'; color: var(--accent); font-weight: 400; }
+
+/* ── DECORATIVE FLAVOR LABELS ──────────────────────────────────────────
+   The tiny all-caps mono "// …" tags (.sg-rail-sub, .plate-label, and the
+   "// " / build-stamp metadata) are DECORATION, not information. They set
+   the "exposed instrument" tone — and they are deliberately hard to read.
+   Design rule: assume NOBODY ever reads them and nobody should ever HAVE to.
+   - Never put information a user actually needs into this style.
+   - Real section labels (Surfaces, Text, Semantic colors…) use readable type.
+   - Good use of the flavor style: self-evident metadata like a "6 items"
+     count sitting to the right of a real, readable heading.
+   ────────────────────────────────────────────────────────────────────── */
+.sg-rail-sub {
+  font-size: 8px;          /* sub-micro: intentionally barely legible */
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: var(--sp-1);
+  padding-left: calc(var(--sp-5) + 22px);
+}
+.sg-rail-sub::before { content: '// '; color: var(--text-disabled); }
+
+/* Rail nav is now <scratch-nav flush> (scratch-nav.js) — no .sg-nav rules. */
+
+.sg-rail-foot {
+  margin-top: auto;
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--border-dashed);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+/* --- Main column --- */
+.sg-main { padding: var(--sp-7) var(--sp-7) var(--sp-8); min-width: 0; max-width: 1080px; }
+
+.sg-masthead { margin-bottom: var(--sp-7); display: flex; flex-direction: column; }
+.sg-masthead-row { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+.sg-masthead h1 { font-size: clamp(1.9rem, 4.5vw, 2.4rem); font-weight: 700; letter-spacing: -0.03em; }
+.sg-masthead h1::before { content: '> '; color: var(--accent); font-weight: 400; }
+.sg-masthead-tag {
+  margin-top: var(--sp-3);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sg-masthead-tag::before { content: '// '; color: var(--text-disabled); }
+.sg-lede {
+  margin-top: var(--sp-4);
+  max-width: 62ch;
+  color: var(--text);
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+.sg-lede strong { color: var(--text-bright); font-weight: 600; }
+
+/* --- Section scaffolding --- */
+.sg-section { padding-top: var(--sp-7); scroll-margin-top: var(--sp-4); }
+.sg-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border-dashed);
+}
+.sg-section-num {
+  font-size: var(--fs-small);
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.sg-section h2 { font-size: var(--fs-h2); font-weight: 700; }
+.sg-section-note { color: var(--text-muted); font-size: var(--fs-small); margin-left: auto; }
+
+/* Real, readable subsection labels (Surfaces, Text, Semantic colors…).
+   These carry information, so they get legible display type — NOT the small
+   all-caps flavor style. */
+.sg-subhead {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--text-bright);
+  margin: var(--sp-6) 0 var(--sp-4);
+}
+.sg-subhead:first-child { margin-top: 0; }
+.sg-subhead::before { content: '— '; color: var(--accent); font-weight: 400; }
+
+.sg-prose { color: var(--text); max-width: 64ch; line-height: 1.7; margin-bottom: var(--sp-4); text-wrap: pretty; }
+.sg-prose code { color: var(--accent-hover); }
+
+/* ===================================================================
+   Color tokens
+   =================================================================== */
+/* ===================================================================
+   Preview + caption → sealed web component: <scratch-preview>
+   (scratch-preview.js). Body is a slot — put any HTML in it; .fill makes a
+   block stretch edge-to-edge (used for color swatches). .preview-grid is the
+   layout container; .preview-sub doubles as a small caption utility.
+   =================================================================== */
+.preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: var(--sp-3); }
+.fill { flex: 1; align-self: stretch; }
+.preview-sub { font-size: var(--fs-micro); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* ===================================================================
+   Generic demo plate (live component showcase)
+   =================================================================== */
+.plate {
+  border: 1px solid var(--border-dashed);
+  border-radius: var(--r-md);
+  background:
+    var(--scanline),
+    radial-gradient(circle, var(--grid-dot) 1px, transparent 1px),
+    var(--bg-deep);
+  background-size: auto, var(--grid-size) var(--grid-size), auto;
+  background-attachment: fixed, fixed, fixed;
+  padding: var(--sp-5);
+  position: relative;
+  margin-bottom: var(--sp-4);
+}
+.plate-label {
+  position: absolute;
+  top: var(--sp-2); right: var(--sp-3);
+  font-size: var(--fs-micro);
+  color: var(--text-disabled);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.plate-row { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
+.plate-col { display: flex; flex-direction: column; gap: var(--sp-3); }
+.plate-stack { display: flex; flex-direction: column; gap: var(--gap-stack); max-width: 420px; }
+
+/* ===================================================================
+   Component library
+   =================================================================== */
+
+/* Buttons → now a sealed web component: <scratch-button> (scratch-button.js).
+   Variants: default · variant="accent" · variant="danger" · variant="link".
+   No .btn CSS class exists on purpose — the component is the only way to
+   make a button, so it can't be assembled wrong. */
+
+/* Inputs → sealed web component: <scratch-field> (scratch-field.js).
+   Variants: default · dashed · multiline. */
+
+/* Tabs → sealed web component: <scratch-tabs> + <scratch-tab> (scratch-tabs.js).
+   Connected-underline strip generated inside the component. */
+
+/* Badges */
+.badge-proto {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: var(--fs-micro); font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+  background: var(--accent-glow); border: 1px solid var(--accent-dim);
+  border-radius: var(--r-sm); padding: 3px 8px; user-select: none;
+}
+.badge-proto::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+}
+
+.badge {
+  display: inline-block; font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em;
+  background: var(--bg-elevated); color: var(--text-muted);
+  border: 1px solid var(--border); border-radius: var(--r-sm); padding: 1px 5px;
+}
+
+/* Cards (landing) */
+.card {
+  display: block; position: relative;
+  background-color: var(--bg-surface);
+  background-image: var(--scanline);
+  background-attachment: fixed;
+  border: 1px solid var(--border-dashed);
+  border-radius: var(--r-md);
+  padding: var(--pad-card);
+  text-decoration: none; color: inherit;
+  transition: all var(--dur-slow) var(--ease-out); overflow: hidden;
+}
+.card { --corner-size: 10px; --corner-inset: 4px; }
+.card:hover { background-color: var(--bg-elevated); border-color: var(--accent-dim); border-style: solid; box-shadow: 0 0 20px var(--accent-glow); }
+.card-index { position: absolute; top: 6px; right: 10px; font-size: var(--fs-micro); color: var(--text-disabled); font-variant-numeric: tabular-nums; }
+.card:hover .card-index { color: var(--text-muted); }
+.card-name { font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; color: var(--text-bright); margin-bottom: 4px; letter-spacing: 0.01em; }
+.card-desc { font-size: var(--fs-small); color: var(--text-muted); line-height: 1.5; }
+
+/* ===================================================================
+   Registration corner-marks — the "interactive surface" cue.
+   Cards carry them here; buttons render their own inside <scratch-button>.
+   Static text, code, badges, and links never get them.
+   =================================================================== */
+.card { --corner-size: 10px; --corner-inset: 4px; --corner-color: color-mix(in srgb, var(--border-dashed), white 18%); }
+.card::before, .card::after {
+  content: ''; position: absolute;
+  width: var(--corner-size); height: var(--corner-size);
+  border-color: var(--corner-color, var(--text-disabled)); border-style: solid;
+  pointer-events: none; transition: border-color var(--dur) var(--ease-out);
+}
+.card::before {
+  top: var(--corner-inset); left: var(--corner-inset); border-width: 1px 0 0 1px;
+}
+.card::after {
+  bottom: var(--corner-inset); right: var(--corner-inset); border-width: 0 1px 1px 0;
+}
+.card:hover::before, .card:hover::after { border-color: var(--accent-dim); }
+
+/* Status indicator → sealed web component: <scratch-led> (scratch-led.js).
+   States: good / accent / bad. `live` = pulse (running/queued only). */
+.dot-legend { font-size: var(--fs-small); }
+.dot-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dot-legend .hint { color: var(--text-disabled); }
+
+/* Caution stripe */
+.caution-stripe {
+  border-top: 3px solid transparent;
+  border-image: repeating-linear-gradient(45deg, var(--accent) 0 6px, transparent 6px 12px) 3;
+}
+
+/* Registration marks utility */
+.reg-marks { position: relative; }
+.reg-marks::before, .reg-marks::after {
+  content: ''; position: absolute; width: 12px; height: 12px;
+  border-color: var(--border-dashed); border-style: solid; pointer-events: none; opacity: 0.6;
+}
+.reg-marks::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+.reg-marks::after { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+
+/* "FAILED" / error text — readable bright-red glyphs with a red drop-shadow
+   behind them, where the shadow is dithered by a 2×2px checkerboard mask
+   (reads as a CRT/print artifact). The text itself is never masked, so it
+   stays fully legible. Requires data-text matching the visible text. */
+.text-cut-shadow {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;            /* keep ::before's z-index local */
+  color: var(--danger);
+}
+.text-cut-shadow::before {
+  content: attr(data-text);
+  position: absolute;
+  /* pad the box out so the blurred halo isn't clipped by mask-clip:border-box,
+     then offset back by the same amount to stay centered behind the text */
+  left: -0.5em; top: -0.5em;
+  padding: 0.5em;
+  white-space: nowrap;
+  z-index: -1;
+  color: var(--danger);
+  pointer-events: none;
+  /* soft red glow halo */
+  filter: blur(4px) drop-shadow(0 0 3px var(--danger));
+  /* 2×2px checkerboard cut out of the glow (mask applies after the blur,
+     so the holes stay crisp) */
+  -webkit-mask-image: conic-gradient(#000 90deg, #0000 0 180deg, #000 0 270deg, #0000 0);
+          mask-image: conic-gradient(#000 90deg, #0000 0 180deg, #000 0 270deg, #0000 0);
+  -webkit-mask-size: 4px 4px;
+          mask-size: 4px 4px;
+}
+
+/* Build-stamp footer */
+.build-stamp {
+  font-size: var(--fs-micro); letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text-disabled); display: flex; flex-direction: column; gap: var(--sp-1);
+}
+.build-stamp .row { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.build-stamp .sep { opacity: 0.6; }
+.build-stamp b { color: var(--text-muted); font-weight: 400; font-variant-numeric: tabular-nums; }
+
+/* Sidebar nav (both the demo and this page's rail) → sealed web component:
+   <scratch-nav> + <scratch-nav-item> (scratch-nav.js). No .mininav rules. */
+
+/* ===================================================================
+   Chat message + composer demo
+   =================================================================== */
+.msg { display: flex; flex-direction: column; gap: 4px; max-width: 520px; }
+.msg-head { display: flex; align-items: center; gap: 10px; }
+.msg-role { font-size: var(--fs-micro); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
+.msg[data-role="user"] .msg-role { color: var(--accent); }
+.msg[data-role="assistant"] .msg-role { color: var(--signal); }
+.msg-stats { font-size: var(--fs-micro); color: var(--text-disabled); margin-left: auto; }
+.msg-body { font-size: var(--fs-body); line-height: 1.6; color: var(--text); }
+.msg-caret::after { content: '▍'; color: var(--accent); animation: caret 0.9s steps(2,end) infinite; }
+@keyframes caret { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+.composer { display: grid; grid-template-columns: 1fr auto; gap: var(--gap-stack); }
+
+/* ===================================================================
+   Modal demo
+   =================================================================== */
+.modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dashed);
+  border-radius: var(--r-lg);
+  width: 100%; max-width: 460px;
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+}
+.modal-eyebrow { font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-disabled); padding: var(--sp-2) var(--sp-3) 0; }
+.modal-eyebrow::before { content: '// '; }
+.modal scratch-tabs::part(strip) { margin-top: -4px; }
+.modal scratch-tabs::part(panels) { padding-top: var(--sp-2); }
+.modal-x { background: none; border: none; color: var(--text-muted); font-size: 20px; line-height: 1; cursor: pointer; margin: 0 var(--sp-3); padding: 0; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; transform: translateY(-8px); }
+.modal-x:hover { color: var(--text-bright); }
+.modal-pane { padding: 0 var(--sp-4) var(--sp-4); }
+.upstream-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: var(--pad-card); background: var(--bg-deep); border: 1px solid var(--border); border-radius: var(--r-md); }
+.upstream-name { font-weight: 600; color: var(--text-bright); margin-right: 6px; }
+.upstream-url { font-size: 11px; color: var(--text-muted); margin-top: 3px; word-break: break-all; }
+
+/* ===================================================================
+   Spec tables (tokens / scales / reconciliation)
+   =================================================================== */
+.spec { width: 100%; border-collapse: collapse; font-size: var(--fs-small); }
+.spec th {
+  text-align: left; font-weight: 400; color: var(--text-muted);
+  font-size: var(--fs-tiny); text-transform: uppercase; letter-spacing: 0.1em;
+  padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--border-dashed);
+}
+.spec td { padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+.spec tr:hover td { background: var(--bg-surface); }
+.spec .mono { color: var(--text-bright); }
+.spec .muted { color: var(--text-muted); }
+.spec .accent { color: var(--accent); }
+.bar { display: inline-block; height: 12px; background: var(--accent); border-radius: 1px; vertical-align: middle; }
+
+/* Reconciliation table verdict pills */
+.verdict { font-size: var(--fs-micro); text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 7px; border-radius: var(--r-sm); white-space: nowrap; }
+.verdict.kept { color: var(--signal); border: 1px solid var(--signal-dim); background: var(--signal-glow); }
+.verdict.fixed { color: var(--accent); border: 1px solid var(--accent-dim); background: var(--accent-glow); }
+.verdict.added { color: var(--text-bright); border: 1px solid var(--border); background: var(--bg-elevated); }
+
+/* Spacing scale visual */
+.scale-row { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-1) 0; }
+.scale-token { width: 64px; font-size: var(--fs-tiny); color: var(--text-bright); }
+.scale-px { width: 48px; font-size: var(--fs-tiny); color: var(--text-muted); text-align: right; }
+.scale-bar { height: 14px; background: var(--accent-glow); border: 1px solid var(--accent-dim); border-radius: var(--r-sm); }
+
+/* Type specimens */
+.type-spec { padding: var(--sp-3) 0; border-bottom: 1px solid var(--border-light); }
+.type-spec .label { font-size: var(--fs-micro); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: var(--sp-2); }
+.type-spec .sample { color: var(--text-bright); line-height: 1.2; }
+
+/* Motion previewes */
+.motion-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: var(--sp-3); }
+.motion-cell { border: 1px solid var(--border); border-radius: var(--r-md); padding: var(--sp-4); background: var(--bg-surface); cursor: pointer; }
+.motion-cell .name { font-size: var(--fs-small); color: var(--text-bright); margin-bottom: 4px; }
+.motion-cell .curve { font-size: var(--fs-tiny); color: var(--text-muted); }
+.motion-track { height: 8px; background: var(--bg-deep); border-radius: var(--r-pill); margin-top: var(--sp-3); position: relative; overflow: hidden; }
+.motion-dot { position: absolute; top: 50%; left: 0; width: 14px; height: 14px; margin-top: -7px; border-radius: 50%; background: var(--accent); }
+
+/* Menu button — fixed top-left, only shown in drawer mode (≤900px).
+   Base rule comes BEFORE the media query so the query's override wins. */
+.sg-railtoggle {
+  display: none;
+  position: fixed; top: var(--sp-3); left: var(--sp-3); z-index: 65;
+  align-items: center; gap: 7px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-bright);
+  font-family: var(--font-mono); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  padding: 8px 12px; cursor: pointer;
+}
+.sg-railtoggle:hover { border-color: var(--accent-dim); }
+.sg-railtoggle .bars { display: inline-flex; flex-direction: column; gap: 2px; }
+.sg-railtoggle .bars i { width: 14px; height: 1.5px; background: var(--accent); display: block; }
+
+.sg-railscrim {
+  position: fixed; inset: 0; z-index: 55;
+  background: rgba(0,0,0,0.55);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--dur-slow) var(--ease-out);
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sg { grid-template-columns: 1fr; }
+  .sg-main { padding: var(--sp-5) var(--sp-4) var(--sp-7); padding-top: calc(var(--sp-5) + 44px); }
+
+  /* Rail becomes an off-canvas drawer summoned by the menu button. */
+  .sg-rail {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: min(280px, 84vw);
+    height: 100vh;
+    z-index: 60;
+    background: var(--bg-deep);
+    border-right: 1px solid #333844;   /* drawer edge stays full-strength */
+    transform: translateX(-100%);
+    transition: transform var(--dur-slow) var(--ease-out);
+    will-change: transform;
+  }
+  html.rail-open .sg-rail { transform: translateX(0); box-shadow: var(--shadow-modal); }
+
+  .sg-railtoggle { display: inline-flex; }
+  .sg-railscrim { display: block; }
+  html.rail-open .sg-railscrim { opacity: 1; pointer-events: auto; }
+}
