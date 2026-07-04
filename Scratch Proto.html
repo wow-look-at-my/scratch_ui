@@ -6,15 +6,20 @@
 <title>Scratch Proto — Design Language</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="scratch-proto.css?v=56" />
+<link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="scratch-proto.css?v=61" />
 <script src="scratch-ring.js?v=58" defer></script>
 <script src="scratch-button.js?v=52" defer></script>
 <script src="scratch-preview.js?v=20" defer></script>
-<script src="scratch-led.js?v=20" defer></script>
+<script src="scratch-led.js?v=58" defer></script>
 <script src="scratch-field.js?v=52" defer></script>
 <script src="scratch-tabs.js?v=52" defer></script>
 <script src="scratch-nav.js?v=52" defer></script>
+<script src="scratch-badge.js?v=60" defer></script>
+<script src="scratch-card.js?v=57" defer></script>
+<script src="scratch-message.js?v=57" defer></script>
+<script src="scratch-composer.js?v=57" defer></script>
+<script src="scratch-modal.js?v=57" defer></script>
 </head>
 <body>
 <button class="sg-railtoggle" id="railtoggle" aria-label="Open navigation"><span class="bars"><i></i><i></i><i></i></span>Nav</button>
@@ -53,7 +58,7 @@
     <header class="sg-masthead" id="overview">
       <div class="sg-masthead-row">
         <h1>Scratch Proto</h1>
-        <span class="badge-proto">Prototype</span>
+        <scratch-badge>Prototype</scratch-badge>
       </div>
       <div class="sg-masthead-tag">Browser-based diagnostic tools · internal dev aesthetic</div>
       <p class="sg-lede">
@@ -181,7 +186,7 @@
       <div class="sg-section-head">
         <span class="sg-section-num">03</span>
         <h2>Spacing &amp; Radius</h2>
-        <span class="sg-section-note">NEW · neither repo had a formal scale</span>
+        <span class="sg-section-note">neither repo had a formal scale</span>
       </div>
 
       <p class="sg-prose">The source repos used ad-hoc values (10/12/14/16px, <code>1.15rem</code>…). This formalizes a
@@ -240,7 +245,7 @@
           <div class="plate-row" style="align-items:flex-start">
             <div class="upstream-item" style="min-width:260px">
               <div>
-                <span class="upstream-name">DeepSeek</span><span class="badge">KEY</span>
+                <span class="upstream-name">DeepSeek</span><scratch-badge variant="key">KEY</scratch-badge>
                 <div class="upstream-url">https://api.deepseek.com</div>
               </div>
             </div>
@@ -304,11 +309,7 @@
 
       <div class="sg-subhead">Registration corner-marks</div>
       <div class="plate-row">
-        <a class="card" style="width:280px;" href="#patterns">
-          <span class="card-index">06</span>
-          <div class="card-name">GPU Benchmark</div>
-          <div class="card-desc">WebGPU/WebGL fillrate, ALU, texture, vertex, and draw-call bench</div>
-        </a>
+        <scratch-card style="width:280px;" href="#patterns" index="06" name="GPU Benchmark" desc="WebGPU/WebGL fillrate, ALU, texture, vertex, and draw-call bench"></scratch-card>
         <div class="plate-col" style="gap:var(--sp-3)">
           <div class="plate-row">
             <scratch-button>test</scratch-button>
@@ -330,7 +331,7 @@
       <div class="plate">
         <span class="plate-label">live-state motifs</span>
         <div class="plate-row" style="gap:var(--sp-5)">
-          <span class="badge-proto">Prototype</span>
+          <scratch-badge>Prototype</scratch-badge>
           <div class="plate-row dot-legend" style="gap:var(--sp-4)">
             <span><scratch-led state="good" live></scratch-led>running <span class="hint">(pulses)</span></span>
             <span><scratch-led state="accent" live></scratch-led>queued <span class="hint">(pulses)</span></span>
@@ -405,21 +406,21 @@
 
       <div class="sg-subhead">Cards</div>
       <div class="plate">
-        <span class="plate-label">.card grid · auto-fill minmax(280px)</span>
+        <span class="plate-label">&lt;scratch-card&gt; grid · auto-fill minmax(280px)</span>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">
-          <a class="card" href="#components"><span class="card-index">00</span><div class="card-name">Location History Map</div><div class="card-desc">Real-time GPS position display with interactive Leaflet map</div></a>
-          <a class="card" href="#components"><span class="card-index">01</span><div class="card-name">Microphone Diagnostics</div><div class="card-desc">Microphone testing, audio visualization, and recording</div></a>
-          <a class="card" href="#components"><span class="card-index">02</span><div class="card-name">Reflection Blur</div><div class="card-desc">Depth-based planar reflection blur effect</div></a>
+          <scratch-card href="#components" index="00" name="Location History Map" desc="Real-time GPS position display with interactive Leaflet map"></scratch-card>
+          <scratch-card href="#components" index="01" name="Microphone Diagnostics" desc="Microphone testing, audio visualization, and recording"></scratch-card>
+          <scratch-card href="#components" index="02" name="Reflection Blur" desc="Depth-based planar reflection blur effect"></scratch-card>
         </div>
       </div>
 
       <div class="sg-subhead">Badges</div>
       <div class="plate">
-        <span class="plate-label">.badge-proto · .badge</span>
+        <span class="plate-label">&lt;scratch-badge&gt; · default / variant="key"</span>
         <div class="plate-row">
-          <span class="badge-proto">Prototype</span>
-          <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:700;color:var(--text-bright)">Anthropic <span class="badge">KEY</span></span>
-          <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:700;color:var(--text-bright)">Ollama <span class="badge">KEY</span></span>
+          <scratch-badge>Prototype</scratch-badge>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:700;color:var(--text-bright)">Anthropic <scratch-badge variant="key">KEY</scratch-badge></span>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:700;color:var(--text-bright)">Ollama <scratch-badge variant="key">KEY</scratch-badge></span>
         </div>
       </div>
 
@@ -439,9 +440,8 @@
 
       <div class="sg-subhead">Settings modal</div>
       <div class="plate">
-        <span class="plate-label">.modal</span>
-        <div class="modal">
-          <div class="modal-eyebrow">settings</div>
+        <span class="plate-label">&lt;scratch-modal&gt;</span>
+        <scratch-modal eyebrow="settings">
           <scratch-tabs>
             <button slot="trail" class="modal-x" aria-label="Close">×</button>
             <scratch-tab label="Favorites"><div class="modal-pane">No favorites pinned yet.</div></scratch-tab>
@@ -449,7 +449,7 @@
               <div class="modal-pane" style="display:flex;flex-direction:column;gap:var(--sp-3)">
                 <div class="upstream-item">
                   <div>
-                    <span class="upstream-name">DeepSeek</span><span class="badge">KEY</span>
+                    <span class="upstream-name">DeepSeek</span><scratch-badge variant="key">KEY</scratch-badge>
                     <div class="upstream-url">https://api.deepseek.com</div>
                   </div>
                   <div style="display:flex;gap:6px;align-items:center;">
@@ -459,7 +459,7 @@
                 </div>
                 <div class="upstream-item">
                   <div>
-                    <span class="upstream-name">Anthropic</span><span class="badge">KEY</span>
+                    <span class="upstream-name">Anthropic</span><scratch-badge variant="key">KEY</scratch-badge>
                     <div class="upstream-url">https://api.anthropic.com/v1</div>
                   </div>
                   <div style="display:flex;gap:6px;align-items:center;">
@@ -471,7 +471,7 @@
             </scratch-tab>
             <scratch-tab label="MCP"><div class="modal-pane">No tool servers connected.</div></scratch-tab>
           </scratch-tabs>
-        </div>
+        </scratch-modal>
       </div>
 
       <div class="sg-subhead">Sidebar navigation</div>
@@ -490,20 +490,11 @@
 
       <div class="sg-subhead">Chat message &amp; composer</div>
       <div class="plate">
-        <span class="plate-label">role color-coding</span>
+        <span class="plate-label">&lt;scratch-message&gt; · &lt;scratch-composer&gt;</span>
         <div class="plate-col" style="gap:var(--sp-5)">
-          <div class="msg" data-role="user">
-            <div class="msg-head"><span class="msg-role">User</span></div>
-            <div class="msg-body">Benchmark the WebGPU fillrate path and report draw-call overhead.</div>
-          </div>
-          <div class="msg" data-role="assistant">
-            <div class="msg-head"><span class="msg-role">Assistant</span><span class="msg-stats">312 tok · 1.4s</span></div>
-            <div class="msg-body">Running the fillrate sweep now<span class="msg-caret"></span></div>
-          </div>
-          <div class="composer" style="max-width:520px;">
-            <scratch-field multiline rows="2" placeholder="message ..."></scratch-field>
-            <scratch-button variant="accent">Send</scratch-button>
-          </div>
+          <scratch-message role="user">Benchmark the WebGPU fillrate path and report draw-call overhead.</scratch-message>
+          <scratch-message role="assistant" stats="312 tok · 1.4s" streaming>Running the fillrate sweep now</scratch-message>
+          <scratch-composer style="max-width:520px;" placeholder="message ..."></scratch-composer>
         </div>
       </div>
     </section>

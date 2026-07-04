@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scratch Proto — Icon Language</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="scratch-proto.css?v=38" />
+<style>
+  /* ── Specimen-only layout ────────────────────────────── */
+  .icon-main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: var(--sp-8) var(--sp-6) var(--sp-8);
+  }
+
+  /* Icon construction tokens — single source of truth for the glyph spec */
+  :root {
+    --ic-chip: #0d0f14;     /* = --bg */
+    --ic-glyph: #ffae00;    /* = --accent */
+  }
+
+  /* The favicon artwork itself: square chip, accent glyph */
+  .fav { display: block; }
+  .fav .chip { fill: var(--ic-chip); }
+  .fav .glyph { fill: var(--ic-glyph); }
+  .fav .cut { fill: var(--ic-chip); }                 /* knockout detail */
+  .fav .edge { stroke: var(--ic-chip); fill: none; stroke-linecap: butt; stroke-linejoin: miter; }
+
+  /* ── Specimen grid of large chips ──────────────────────── */
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: var(--sp-4);
+    margin-top: var(--sp-5);
+  }
+  .icon-cell {
+    position: relative;
+    border: 1px solid var(--border);
+    background-color: var(--bg-surface);
+    background-image: var(--scanline);
+    background-attachment: fixed;
+    padding: var(--sp-5) var(--sp-4) var(--sp-4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+  .icon-cell .idx {
+    position: absolute; top: 6px; right: 9px;
+    font-size: var(--fs-micro); color: var(--text-disabled);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Registration corner ticks — the signature motif */
+  .icon-cell::before, .icon-cell::after {
+    content: ''; position: absolute; width: 9px; height: 9px;
+    border-color: var(--text-disabled); border-style: solid; pointer-events: none;
+  }
+  .icon-cell::before { top: 4px; left: 4px; border-width: 1px 0 0 1px; }
+  .icon-cell::after  { bottom: 4px; right: 4px; border-width: 0 1px 1px 0; }
+
+  .icon-art {
+    width: 132px; height: 132px;
+    /* faint outline so the dark chip reads against the dark cell */
+    outline: 1px solid var(--border-light, #1e222c);
+  }
+  .icon-meta { text-align: center; }
+  .icon-name {
+    font-family: var(--font-display); font-size: 0.95rem; font-weight: 600;
+    color: var(--text-bright); letter-spacing: 0.01em;
+  }
+  .icon-file {
+    font-size: var(--fs-micro); color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px;
+  }
+  .icon-use { font-size: var(--fs-tiny); color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+
+  /* ── Favicon scale proof row ────────────────────────── */
+  .scale-row {
+    display: flex; align-items: flex-end; gap: var(--sp-5);
+    flex-wrap: wrap; margin-top: var(--sp-4);
+    border: 1px solid var(--border); background-color: var(--bg-surface);
+    background-image: var(--scanline); background-attachment: fixed;
+    padding: var(--sp-5);
+  }
+  .scale-stack { display: flex; flex-direction: column; align-items: center; gap: var(--sp-2); }
+  .scale-stack .lab { font-size: var(--fs-micro); color: var(--text-muted); letter-spacing: 0.06em; }
+
+  /* Tab-strip mock: prove the chip on a real browser-tab surface */
+  .tab-proof {
+    display: flex; gap: 2px; margin-top: var(--sp-4);
+    background: var(--bg-deep); padding: 8px 8px 0; border: 1px solid var(--border);
+  }
+  .tab-proof .tab {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg-elevated); border: 1px solid var(--border); border-bottom: none;
+    padding: 7px 12px 8px; font-size: var(--fs-tiny); color: var(--text);
+    max-width: 190px;
+  }
+  .tab-proof .tab.dim { background: var(--bg-surface); color: var(--text-muted); }
+  .tab-proof .tab svg { width: 16px; height: 16px; flex: none; }
+  .tab-proof .tab span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Spec list */
+  .spec-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--sp-3); margin-top: var(--sp-4);
+  }
+  .spec-item {
+    border: 1px solid var(--border); padding: var(--sp-4);
+    background-color: var(--bg-surface); background-image: var(--scanline); background-attachment: fixed;
+  }
+  .spec-item dt {
+    font-family: var(--font-display); font-size: var(--fs-small); color: var(--text-bright);
+    font-weight: 600; margin-bottom: 4px;
+  }
+  .spec-item dt::before { content: '— '; color: var(--accent); }
+  .spec-item dd { font-size: var(--fs-tiny); color: var(--text-muted); line-height: 1.6; }
+  .spec-item dd code { color: var(--accent-hover); }
+</style>
+</head>
+<body>
+<main class="icon-main">
+
+  <header class="sg-masthead">
+    <div class="sg-masthead-row">
+      <h1>Icon Language</h1>
+      <span class="badge-proto">Favicons</span>
+    </div>
+    <div class="sg-masthead-tag">Per-site marks · squared chip · amber glyph</div>
+    <p class="sg-lede">
+      A small family of <strong>favicons</strong> for the Scratch surfaces. Each is a solid
+      <strong>amber glyph</strong> in <code>--accent</code>, drawn full-bleed on a 960 grid and wrapped in a thin
+      <code>--bg</code> outline so it holds an edge on any tab color. Glyphs are filled, not outlined: at 16&nbsp;px
+      an outline muds out, and white/amber collapse, so the mark must read on shape alone. The lone exception is
+      <strong>Edit</strong>, which keeps a dark square — that square is the <em>paper</em> being edited, not chrome.
+    </p>
+  </header>
+
+  <!-- ─────────────── THE SET ─────────────── -->
+  <section class="sg-section">
+    <div class="sg-section-head">
+      <span class="sg-section-num">01</span>
+      <h2>The Set</h2>
+      <span class="sg-section-note">4 marks · 1 touched-up + 3 new</span>
+    </div>
+
+    <div class="icon-grid" id="iconGrid"><!-- cells injected --></div>
+  </section>
+
+  <!-- ─────────────── FAVICON SCALE PROOF ─────────────── -->
+  <section class="sg-section">
+    <div class="sg-section-head">
+      <span class="sg-section-num">02</span>
+      <h2>At Size</h2>
+      <span class="sg-section-note">does it survive the tab strip?</span>
+    </div>
+    <p class="sg-prose">Every mark shown at its real favicon sizes. The chip edge defines the square against
+    a dark tab; the glyph must stay legible at <code>16px</code>.</p>
+
+    <div class="scale-row" id="scaleRow"><!-- injected --></div>
+
+    <div class="tab-proof" id="tabProof"><!-- injected --></div>
+  </section>
+
+  <!-- ─────────────── SPEC ─────────────── -->
+  <section class="sg-section">
+    <div class="sg-section-head">
+      <span class="sg-section-num">03</span>
+      <h2>Construction Spec</h2>
+      <span class="sg-section-note">rules that keep new marks on-language</span>
+    </div>
+    <dl class="spec-grid">
+      <div class="spec-item"><dt>Canvas</dt><dd>SVG <code>viewBox="0 -960 960 960"</code>. Glyphs fill the canvas edge-to-edge with a small margin.</dd></div>
+      <div class="spec-item"><dt>Glyph fill</dt><dd><code>--accent #ffae00</code>. Solid. Never white — white &amp; amber collapse when shrunk.</dd></div>
+      <div class="spec-item"><dt>Outline</dt><dd>A <code>30px #0d0f14</code> stroke (<code>paint-order:stroke</code>) wraps each full-bleed glyph so the amber holds an edge on any tab color.</dd></div>
+      <div class="spec-item"><dt>Edit is special</dt><dd>It keeps a solid <code>#0d0f14</code> square — that's the <em>paper</em> being edited, not a chrome chip. No other mark gets it.</dd></div>
+      <div class="spec-item"><dt>Detail</dt><dd>Internal lines/dots are <em>knockouts</em> in <code>#0d0f14</code>, not a second hue. Keeps every mark 2-color.</dd></div>
+      <div class="spec-item"><dt>Geometry</dt><dd>Hard corners, miter joins. Diagonals OK (pencil, cube). Avoid fine curves that mud out at 16px.</dd></div>
+    </dl>
+  </section>
+
+</main>
+
+<script>
+  // ── Single source of truth ───────────────────────────────
+  // Each glyph is the FULL inner markup of a standalone favicon SVG.
+  // Glyph = #ffae00 (--accent). Hardcoded hex so exported .svg files are
+  // self-contained (favicons can't use CSS vars).
+  //   · EDIT keeps the dark #0d0f14 square — it's the *paper* being edited.
+  //   · CHAT / BUILD / UPDATE drop the square, fill the canvas, and carry a
+  //     thin #0d0f14 outline (paint-order:stroke) so the amber holds an edge
+  //     on any tab color.
+  const OUT = 'stroke="#0d0f14" stroke-width="30" stroke-linejoin="miter" paint-order="stroke"';
+
+  const GLYPHS = {
+    // EDIT — original uploaded Material pencil on its paper square (squared eraser)
+    edit: `
+      <rect x="120" y="-840" width="720" height="720" fill="#0d0f14"/>
+      <path d="M360-360v-170l367-367L897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" fill="#ffae00"/>`,
+    // CHAT — full-bleed speech bubble, dark outline + dark dots
+    chat: `
+      <path d="M100,-860 H860 V-320 H380 L200,-120 L300,-320 H100 Z" fill="#ffae00" ${OUT}/>
+      <circle cx="290" cy="-590" r="78" fill="#0d0f14"/>
+      <circle cx="480" cy="-590" r="78" fill="#0d0f14"/>
+      <circle cx="670" cy="-590" r="78" fill="#0d0f14"/>`,
+    // BUILD — full-bleed iso cube (artifact / package), dark outline + knockout Y
+    build: `
+      <path d="M480,-810 L766,-645 L766,-315 L480,-150 L194,-315 L194,-645 Z" fill="#ffae00" ${OUT}/>
+      <path d="M480,-480 L480,-810 M480,-480 L194,-315 M480,-480 L766,-315" fill="none" stroke="#0d0f14" stroke-width="52"/>`,
+    // UPDATE — full-bleed refresh / sync arrows; dark underlay = outline
+    update: `
+      <g fill="#0d0f14" stroke="#0d0f14" stroke-linejoin="round">
+        <path d="M243,-540 A250,250 0 0 1 680,-610" fill="none" stroke-width="156"/>
+        <path d="M677,-490 L807,-593 L623,-690 Z" stroke-width="60"/>
+        <path d="M717,-420 A250,250 0 0 1 280,-420" fill="none" stroke-width="156"/>
+        <path d="M283,-470 L153,-367 L337,-270 Z" stroke-width="60"/>
+      </g>
+      <g fill="#ffae00">
+        <path d="M243,-540 A250,250 0 0 1 680,-610" fill="none" stroke="#ffae00" stroke-width="96"/>
+        <path d="M677,-490 L807,-593 L623,-690 Z"/>
+        <path d="M717,-420 A250,250 0 0 1 280,-420" fill="none" stroke="#ffae00" stroke-width="96"/>
+        <path d="M283,-470 L153,-367 L337,-270 Z"/>
+      </g>`,
+  };
+
+  // Full standalone SVG string for a given glyph key
+  const svgFor = (key, attrs = '') =>
+    `<svg ${attrs} viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">${GLYPHS[key]}</svg>`;
+
+  const ICONS = [
+    { key: 'edit',   name: 'Edit',   file: 'edit.svg',   use: 'Scratchpad site (the editor itself)' },
+    { key: 'chat',   name: 'Chat',   file: 'chat.svg',   use: 'LLM chat site' },
+    { key: 'build',  name: 'Build',  file: 'build.svg',  use: 'Build-artifacts host · "compiling"' },
+    { key: 'update', name: 'Update', file: 'update.svg', use: 'Container update monitor' },
+  ];
+  const TABS = [
+    { key: 'edit',   title: 'scratchpad — untitled' },
+    { key: 'chat',   title: 'scratch.chat' },
+    { key: 'build',  title: 'artifacts — build #1842' },
+    { key: 'update', title: 'fleet · 12 containers' },
+  ];
+
+  // Large specimen grid
+  document.getElementById('iconGrid').innerHTML = ICONS.map((ic, i) => `
+    <div class="icon-cell">
+      <span class="idx">${String(i + 1).padStart(2, '0')}</span>
+      ${svgFor(ic.key, 'class="fav icon-art"')}
+      <div class="icon-meta">
+        <div class="icon-name">${ic.name}</div>
+        <div class="icon-file">${ic.file}</div>
+        <div class="icon-use">${ic.use}</div>
+      </div>
+    </div>`).join('');
+
+  // Scale proof
+  const SIZES = [64, 48, 32, 16];
+  document.getElementById('scaleRow').innerHTML = ICONS.map(ic => `
+    <div class="scale-stack">
+      ${SIZES.map(s => `<div style="width:${s}px;height:${s}px;line-height:0">${svgFor(ic.key, `class="fav" width="${s}" height="${s}"`)}</div>`).join('')}
+      <div class="lab">${ic.name} · ${SIZES.join('/')}</div>
+    </div>`).join('');
+
+  // Tab strip mock
+  document.getElementById('tabProof').innerHTML = TABS.map((t, i) => `
+    <div class="tab ${i === 0 ? '' : 'dim'}">
+      ${svgFor(t.key, 'class="fav" width="16" height="16"')}<span>${t.title}</span>
+    </div>`).join('');
+</script>
+</body>
+</html>

@@ -221,7 +221,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .sg-rail-brand::before { content: '>'; color: var(--accent); font-weight: 400; }
 
-/* ── DECORATIVE FLAVOR LABELS ──────────────────────────────────────────
+/* ── DECORATIVE FLAVOR LABELS ─────────────────────────────────────
    The tiny all-caps mono "// …" tags (.sg-rail-sub, .plate-label, and the
    "// " / build-stamp metadata) are DECORATION, not information. They set
    the "exposed instrument" tone — and they are deliberately hard to read.
@@ -230,7 +230,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
    - Real section labels (Surfaces, Text, Semantic colors…) use readable type.
    - Good use of the flavor style: self-evident metadata like a "6 items"
      count sitting to the right of a real, readable heading.
-   ────────────────────────────────────────────────────────────────────── */
+   ────────────────────────────────────────────────────── */
 .sg-rail-sub {
   font-size: 8px;          /* sub-micro: intentionally barely legible */
   letter-spacing: 0.12em;
