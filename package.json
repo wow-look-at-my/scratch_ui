@@ -1,0 +1,10 @@
+{
+  "name": "scratch-ui",
+  "version": "0.1.0",
+  "description": "Scratch Proto design language — design tokens + native web components",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wow-look-at-my/scratch_ui.git"
+  }
+}
