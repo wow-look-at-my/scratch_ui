@@ -73,6 +73,7 @@
   /* --- Typography --- */
   --font-mono:     'JetBrains Mono', 'SF Mono', 'Cascadia Code', 'Fira Code', ui-monospace, monospace;
   --font-display:  'Space Grotesk', 'JetBrains Mono', monospace;
+  --font-body:     'Quantico', 'Segoe UI', system-ui, sans-serif;  /* reading text */
 
   /* --- Type scale --- */
   --fs-micro:  10px;   /* labels, badges, build-stamp */
@@ -220,7 +221,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .sg-rail-brand::before { content: '>'; color: var(--accent); font-weight: 400; }
 
-/* ── DECORATIVE FLAVOR LABELS ──────────────────────────────────────────
+/* ── DECORATIVE FLAVOR LABELS ─────────────────────────────────────
    The tiny all-caps mono "// …" tags (.sg-rail-sub, .plate-label, and the
    "// " / build-stamp metadata) are DECORATION, not information. They set
    the "exposed instrument" tone — and they are deliberately hard to read.
@@ -229,7 +230,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
    - Real section labels (Surfaces, Text, Semantic colors…) use readable type.
    - Good use of the flavor style: self-evident metadata like a "6 items"
      count sitting to the right of a real, readable heading.
-   ────────────────────────────────────────────────────────────────────── */
+   ────────────────────────────────────────────────────── */
 .sg-rail-sub {
   font-size: 8px;          /* sub-micro: intentionally barely legible */
   letter-spacing: 0.12em;
@@ -271,6 +272,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .sg-masthead-tag::before { content: '// '; color: var(--text-disabled); }
 .sg-lede {
+  font-family: var(--font-body);
   margin-top: var(--sp-4);
   max-width: 62ch;
   color: var(--text);
@@ -312,7 +314,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .sg-subhead:first-child { margin-top: 0; }
 .sg-subhead::before { content: '— '; color: var(--accent); font-weight: 400; }
 
-.sg-prose { color: var(--text); max-width: 64ch; line-height: 1.7; margin-bottom: var(--sp-4); text-wrap: pretty; }
+.sg-prose { color: var(--text); font-family: var(--font-body); max-width: 64ch; line-height: 1.7; margin-bottom: var(--sp-4); text-wrap: pretty; }
 .sg-prose code { color: var(--accent-hover); }
 
 /* ===================================================================
@@ -371,63 +373,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* Tabs → sealed web component: <scratch-tabs> + <scratch-tab> (scratch-tabs.js).
    Connected-underline strip generated inside the component. */
 
-/* Badges */
-.badge-proto {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-family: var(--font-mono); font-size: var(--fs-micro); font-weight: 600;
-  letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
-  background: var(--accent-glow); border: 1px solid var(--accent-dim);
-  border-radius: var(--r-sm); padding: 3px 8px; user-select: none;
-}
-.badge-proto::before {
-  content: ''; width: 6px; height: 6px; border-radius: 50%;
-  background: var(--accent);
-}
-
-.badge {
-  display: inline-block; font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em;
-  background: var(--bg-elevated); color: var(--text-muted);
-  border: 1px solid var(--border); border-radius: var(--r-sm); padding: 1px 5px;
-}
-
-/* Cards (landing) */
-.card {
-  display: block; position: relative;
-  background-color: var(--bg-surface);
-  background-image: var(--scanline);
-  background-attachment: fixed;
-  border: 1px solid var(--border-dashed);
-  border-radius: var(--r-md);
-  padding: var(--pad-card);
-  text-decoration: none; color: inherit;
-  transition: all var(--dur-slow) var(--ease-out); overflow: hidden;
-}
-.card { --corner-size: 10px; --corner-inset: 4px; }
-.card:hover { background-color: var(--bg-elevated); border-color: var(--accent-dim); border-style: solid; box-shadow: 0 0 20px var(--accent-glow); }
-.card-index { position: absolute; top: 6px; right: 10px; font-size: var(--fs-micro); color: var(--text-disabled); font-variant-numeric: tabular-nums; }
-.card:hover .card-index { color: var(--text-muted); }
-.card-name { font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; color: var(--text-bright); margin-bottom: 4px; letter-spacing: 0.01em; }
-.card-desc { font-size: var(--fs-small); color: var(--text-muted); line-height: 1.5; }
-
-/* ===================================================================
-   Registration corner-marks — the "interactive surface" cue.
-   Cards carry them here; buttons render their own inside <scratch-button>.
-   Static text, code, badges, and links never get them.
-   =================================================================== */
-.card { --corner-size: 10px; --corner-inset: 4px; --corner-color: color-mix(in srgb, var(--border-dashed), white 18%); }
-.card::before, .card::after {
-  content: ''; position: absolute;
-  width: var(--corner-size); height: var(--corner-size);
-  border-color: var(--corner-color, var(--text-disabled)); border-style: solid;
-  pointer-events: none; transition: border-color var(--dur) var(--ease-out);
-}
-.card::before {
-  top: var(--corner-inset); left: var(--corner-inset); border-width: 1px 0 0 1px;
-}
-.card::after {
-  bottom: var(--corner-inset); right: var(--corner-inset); border-width: 0 1px 1px 0;
-}
-.card:hover::before, .card:hover::after { border-color: var(--accent-dim); }
+/* Badges → <scratch-badge>; Cards → <scratch-card> (corner-marks sealed inside). */
 
 /* Status indicator → sealed web component: <scratch-led> (scratch-led.js).
    States: good / accent / bad. `live` = pulse (running/queued only). */
@@ -496,33 +442,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* ===================================================================
    Chat message + composer demo
    =================================================================== */
-.msg { display: flex; flex-direction: column; gap: 4px; max-width: 520px; }
-.msg-head { display: flex; align-items: center; gap: 10px; }
-.msg-role { font-size: var(--fs-micro); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
-.msg[data-role="user"] .msg-role { color: var(--accent); }
-.msg[data-role="assistant"] .msg-role { color: var(--signal); }
-.msg-stats { font-size: var(--fs-micro); color: var(--text-disabled); margin-left: auto; }
-.msg-body { font-size: var(--fs-body); line-height: 1.6; color: var(--text); }
-.msg-caret::after { content: '▍'; color: var(--accent); animation: caret 0.9s steps(2,end) infinite; }
-@keyframes caret { 0%,100%{opacity:1;} 50%{opacity:0;} }
-
-.composer { display: grid; grid-template-columns: 1fr auto; gap: var(--gap-stack); }
+/* Chat row → <scratch-message>; composer → <scratch-composer>. */
 
 /* ===================================================================
    Modal demo
    =================================================================== */
-.modal {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-dashed);
-  border-radius: var(--r-lg);
-  width: 100%; max-width: 460px;
-  box-shadow: var(--shadow-modal);
-  overflow: hidden;
-}
-.modal-eyebrow { font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-disabled); padding: var(--sp-2) var(--sp-3) 0; }
-.modal-eyebrow::before { content: '// '; }
-.modal scratch-tabs::part(strip) { margin-top: -4px; }
-.modal scratch-tabs::part(panels) { padding-top: var(--sp-2); }
+/* Modal surface → <scratch-modal>. */
+scratch-modal scratch-tabs::part(strip) { margin-top: -4px; }
+scratch-modal scratch-tabs::part(panels) { padding-top: var(--sp-2); }
 .modal-x { background: none; border: none; color: var(--text-muted); font-size: 20px; line-height: 1; cursor: pointer; margin: 0 var(--sp-3); padding: 0; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; transform: translateY(-8px); }
 .modal-x:hover { color: var(--text-bright); }
 .modal-pane { padding: 0 var(--sp-4) var(--sp-4); }
