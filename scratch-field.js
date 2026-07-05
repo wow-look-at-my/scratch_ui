@@ -8,7 +8,14 @@
  *   <scratch-field placeholder="filter…"></scratch-field>
  *   <scratch-field placeholder="system prompt…" multiline rows="4"></scratch-field>
  *   <scratch-field value="preset" disabled></scratch-field>   ← dashed border
+ *   <scratch-field type="password" placeholder="api key"></scratch-field>
+ *   <scratch-field type="number" min="0" max="64" step="8"></scratch-field>
+ *
+ * `type` picks the single-line input's type — text (default) · password ·
+ * number · search · email · url; anything else falls back to text, and
+ * `multiline` ignores it. min/max/step pass through when present (number use).
  */
+const SCRATCH_FIELD_TYPES = new Set(['text', 'password', 'number', 'search', 'email', 'url']);
 const SCRATCH_FIELD_CSS = `
   :host { display: block; }
   :host([inline]) { display: inline-block; }
@@ -48,7 +55,7 @@ SCRATCH_FIELD_SHEET.replaceSync(SCRATCH_FIELD_CSS);
 
 class ScratchField extends HTMLElement {
   static formAssociated = true;
-  static get observedAttributes() { return ['placeholder', 'value', 'multiline', 'rows', 'disabled']; }
+  static get observedAttributes() { return ['placeholder', 'value', 'multiline', 'rows', 'disabled', 'type', 'min', 'max', 'step']; }
 
   constructor() {
     super();
@@ -88,6 +95,15 @@ class ScratchField extends HTMLElement {
     if (ph != null) this._el.setAttribute('placeholder', ph);
     if (this.hasAttribute('rows') && this._el.tagName === 'TEXTAREA') {
       this._el.rows = parseInt(this.getAttribute('rows'), 10) || 3;
+    }
+    if (this._el.tagName === 'INPUT') {
+      const t = (this.getAttribute('type') || 'text').toLowerCase();
+      this._el.type = SCRATCH_FIELD_TYPES.has(t) ? t : 'text';
+      for (const a of ['min', 'max', 'step']) {
+        const av = this.getAttribute(a);
+        if (av != null) this._el.setAttribute(a, av);
+        else this._el.removeAttribute(a);
+      }
     }
     this._el.disabled = this.hasAttribute('disabled');
     const v = this.getAttribute('value');

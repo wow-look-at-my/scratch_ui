@@ -9,7 +9,12 @@
  *   <scratch-button variant="accent">add</scratch-button> amber / primary
  *   <scratch-button variant="danger">remove</scratch-button>
  *   <scratch-button variant="link">details</scratch-button>
+ *   <scratch-button variant="ghost">✎</scratch-button>    quiet borderless tier
  *   <scratch-button disabled>…</scratch-button>
+ *
+ * Form-associated: <scratch-button type="submit"> submits the owning <form>
+ * (via ElementInternals.requestSubmit). Without the attribute a button never
+ * submits — existing manual wiring keeps working.
  *
  * Fallbacks are baked in so it still renders coherently with no global theme.
  */
@@ -107,6 +112,22 @@ const SCRATCH_BUTTON_CSS = `
   :host([variant="link"]) button:hover { background: none; color: var(--accent-hover, #ffc64d); }
   :host([variant="link"]:hover) { color: var(--accent-hover, #ffc64d); }
 
+  /* Ghost variant — the quiet borderless tier (icon/text micro-actions).
+     No box, no corner-marks, no ring burst: muted at rest, bright on hover
+     over a faint wash. */
+  :host([variant="ghost"]) { --btn-fg: var(--text-muted, #6b7280); }
+  :host([variant="ghost"]) button { background: none; border: none; }
+  :host([variant="ghost"]) button::before,
+  :host([variant="ghost"]) button::after { display: none; }
+  :host([variant="ghost"]) button:hover { background: var(--bg-hover, #1e2330); }
+  /* disabled ghost: dimmed only — no dashed box, no dither (there's no box) */
+  :host([variant="ghost"][disabled]) {
+    opacity: 0.45;
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+  :host([variant="ghost"][disabled]) button { border: none; }
+
   /* Disabled — dashed border (the system's disabled signal) + dithered out
      with a 2×2px checkerboard. Squares alternate between 75% and 25%
      visibility (a soft screen, not hard holes). No corner-marks: those signal
@@ -132,13 +153,15 @@ const SCRATCH_BUTTON_TPL = document.createElement('template');
 SCRATCH_BUTTON_TPL.innerHTML = `<button part="button"><slot></slot></button>`;
 
 class ScratchButton extends HTMLElement {
+  static formAssociated = true;
   static get observedAttributes() { return ['disabled']; }
   constructor() {
     super();
+    this._internals = this.attachInternals ? this.attachInternals() : null;
     const root = this.attachShadow({ mode: 'open' });
     root.adoptedStyleSheets = [SCRATCH_BUTTON_SHEET];
     root.appendChild(SCRATCH_BUTTON_TPL.content.cloneNode(true));
-    this.addEventListener('click', () => this._confirm());
+    this.addEventListener('click', () => { this._confirm(); this._maybeSubmit(); });
   }
   connectedCallback() { this._sync(); }
   attributeChangedCallback() { this._sync(); }
@@ -146,12 +169,21 @@ class ScratchButton extends HTMLElement {
     const b = this.shadowRoot.querySelector('button');
     if (b) b.disabled = this.hasAttribute('disabled');
   }
+  get disabled() { return this.hasAttribute('disabled'); }
+  set disabled(v) { this.toggleAttribute('disabled', !!v); }
+  /* type="submit" opts a button into submitting its owning form — the default
+     (no type) never submits, so existing usage is untouched. */
+  _maybeSubmit() {
+    if (this.hasAttribute('disabled')) return;
+    if (this.getAttribute('type') !== 'submit') return;
+    if (this._internals && this._internals.form) this._internals.form.requestSubmit();
+  }
   /* Click shockwave — delegated to the shared <scratch-ring> component so the
      effect is identical across every corner-marked surface. */
   _confirm() {
     if (this.hasAttribute('disabled')) return;
     const v = this.getAttribute('variant');
-    if (v === 'link') return;   // text links don't shockwave
+    if (v === 'link' || v === 'ghost') return;   // quiet tiers don't shockwave
     if (!window.ScratchRing) return;
     // colored variants burst vivid + at full strength; neutral default is soft.
     const cs = getComputedStyle(this);
