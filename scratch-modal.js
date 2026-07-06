@@ -11,7 +11,9 @@
 const SCRATCH_MODAL_CSS = `
   :host { display: block; width: 100%; max-width: 460px; }
   .surface {
-    background: var(--bg-surface, #12151c);
+    /* Floating surface must be opaque — layer the translucent wash over --bg so page content can't bleed through. */
+    background-color: var(--bg, #0d0f14);
+    background-image: linear-gradient(var(--bg-surface, #12151c), var(--bg-surface, #12151c));
     border: 1px solid var(--border-dashed, #333844);
     border-radius: var(--r-lg, 0);
     box-shadow: var(--shadow-modal, 0 18px 50px rgba(0,0,0,0.55));

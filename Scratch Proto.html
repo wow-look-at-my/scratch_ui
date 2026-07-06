@@ -3,23 +3,28 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="darkreader-lock" />
 <title>Scratch Proto — Design Language</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="scratch-proto.css?v=61" />
+<link rel="stylesheet" href="scratch-tokens.css?v=1" />
+<link rel="stylesheet" href="scratch-proto.css?v=62" />
 <script src="scratch-ring.js?v=58" defer></script>
-<script src="scratch-button.js?v=52" defer></script>
+<script src="scratch-button.js?v=53" defer></script>
 <script src="scratch-preview.js?v=20" defer></script>
 <script src="scratch-led.js?v=58" defer></script>
-<script src="scratch-field.js?v=52" defer></script>
+<script src="scratch-field.js?v=53" defer></script>
 <script src="scratch-tabs.js?v=52" defer></script>
 <script src="scratch-nav.js?v=52" defer></script>
-<script src="scratch-badge.js?v=60" defer></script>
+<script src="scratch-badge.js?v=61" defer></script>
 <script src="scratch-card.js?v=57" defer></script>
 <script src="scratch-message.js?v=57" defer></script>
 <script src="scratch-composer.js?v=57" defer></script>
-<script src="scratch-modal.js?v=57" defer></script>
+<script src="scratch-modal.js?v=58" defer></script>
+<script src="scratch-progress.js?v=1" defer></script>
+<script src="scratch-select.js?v=1" defer></script>
+<script src="scratch-toggle.js?v=1" defer></script>
 </head>
 <body>
 <button class="sg-railtoggle" id="railtoggle" aria-label="Open navigation"><span class="bars"><i></i><i></i><i></i></span>Nav</button>
@@ -44,7 +49,7 @@
     </scratch-nav>
     <div class="sg-rail-foot">
       <div class="build-stamp">
-        <div class="row"><scratch-led state="good" live></scratch-led> SW:ACTIVE <span class="sep">·</span> <b>v0.1</b></div>
+        <div class="row"><scratch-led state="good" live></scratch-led> SW:ACTIVE <span class="sep">·</span> <b>v0.2</b></div>
         <div>RECONCILED FROM 2 REPOS</div>
         <div>SRC: scratch · simple-llm-ui</div>
       </div>
@@ -66,8 +71,7 @@
         a dot-grid substrate, faint scanlines, registration corner-marks, amber caution accents,
         and build-stamp metadata. It reads like an internal instrument that was never meant to ship —
         and looks proud of it. This page is the canonical reference, reconciled from the
-        <code>scratch</code> and <code>simple-llm-ui</code> repos. Open <strong>Tweaks</strong> to flip
-        the open decisions live.
+        <code>scratch</code> and <code>simple-llm-ui</code> repos.
       </p>
     </header>
 
@@ -229,7 +233,7 @@
 
       <div class="sg-subhead">Applied spacing · component padding &amp; gaps</div>
       <p class="sg-prose">Components reference semantic spacing tokens — not raw px — so padding and gaps are tuned from
-      one place. Drag these in <strong>Tweaks → Density</strong> and every button, field, tab, and card reflows live.</p>
+      one place.</p>
       <div class="plate">
         <span class="plate-label">live · governed by --pad-* / --gap-*</span>
         <div class="plate-col" style="gap:var(--sp-5)">
@@ -305,7 +309,7 @@
       </div>
       <p class="sg-prose" style="margin-top:calc(-1 * var(--sp-2));font-size:var(--fs-small);color:var(--text-muted)">
       A 24px radial dot-grid is fixed to the viewport behind everything; a faint 2px scanline rides on top. Both reconciled
-      <em>on</em> (scratch's variant). Toggle either in Tweaks.</p>
+      <em>on</em> (scratch's variant).</p>
 
       <div class="sg-subhead">Registration corner-marks</div>
       <div class="plate-row">
@@ -379,15 +383,83 @@
         </div>
       </div>
 
+      <div class="plate">
+        <span class="plate-label">variant="ghost" · the quiet borderless tier</span>
+        <div class="plate-row" style="align-items:center;">
+          <scratch-button variant="ghost">✎</scratch-button>
+          <scratch-button variant="ghost">⧉</scratch-button>
+          <scratch-button variant="ghost">×</scratch-button>
+          <scratch-button variant="ghost">rename</scratch-button>
+          <scratch-button variant="ghost" disabled>✎</scratch-button>
+          <span class="preview-sub">muted → bright on hover · no marks, no box, no ring · disabled = dimmed only</span>
+        </div>
+      </div>
+      <p class="sg-prose" style="font-size:var(--fs-small);color:var(--text-muted)">Buttons are form-associated:
+      <code>type="submit"</code> submits the owning <code>&lt;form&gt;</code> (native validation included). No
+      <code>type</code>, no submit — a plain button never touches a form, so existing wiring is untouched.</p>
+
       <div class="sg-subhead">Inputs</div>
       <div class="plate">
-        <span class="plate-label">&lt;scratch-field&gt; · disabled = dashed</span>
+        <span class="plate-label">&lt;scratch-field&gt; · disabled = dashed · type="password | number | …"</span>
         <div class="plate-stack">
           <scratch-field placeholder="name"></scratch-field>
           <scratch-field placeholder="base url (e.g. https://api.openai.com)"></scratch-field>
           <scratch-field placeholder="filter ..."></scratch-field>
           <scratch-field value="locked endpoint" disabled></scratch-field>
+          <scratch-field type="password" value="sk-scratch-000000" placeholder="api key"></scratch-field>
+          <scratch-field type="number" value="4096" min="0" max="131072" step="1024"></scratch-field>
           <scratch-field multiline placeholder="system prompt ..."></scratch-field>
+        </div>
+      </div>
+      <p class="sg-prose" style="font-size:var(--fs-small);color:var(--text-muted)"><code>type</code> covers the
+      single-line modes — text (default) · password · number · search · email · url — with <code>min</code> /
+      <code>max</code> / <code>step</code> passed through for number use. <code>multiline</code> ignores it.</p>
+
+      <div class="sg-subhead">Select</div>
+      <p class="sg-prose">Component <code>&lt;scratch-select&gt;</code> — light-DOM <code>&lt;option&gt;</code> children are
+      the options source, mirrored into a sealed control and kept live by a MutationObserver (edit the list any time;
+      the current value survives while it still names an option). Form-associated; fires composed
+      <code>input</code>/<code>change</code>. Option text renders <em>verbatim</em> — no uppercase, so model ids read as-is.</p>
+      <div class="plate">
+        <span class="plate-label">&lt;scratch-select&gt; · placeholder / disabled = dashed</span>
+        <div class="plate-stack" style="max-width:280px;">
+          <scratch-select placeholder="pick a model">
+            <option value="llama3.3:70b">llama3.3:70b</option>
+            <option value="qwen2.5-coder:32b">qwen2.5-coder:32b</option>
+            <option value="deepseek-r1:14b">deepseek-r1:14b</option>
+          </scratch-select>
+          <scratch-select disabled>
+            <option>locked upstream</option>
+          </scratch-select>
+        </div>
+      </div>
+
+      <div class="sg-subhead">Toggle</div>
+      <p class="sg-prose">Component <code>&lt;scratch-toggle&gt;</code> — form-associated checkbox riding a hidden native
+      <code>&lt;input type="checkbox"&gt;</code>, so keyboard and a11y come for free. The box is hard-edged; checked fills
+      an inset amber square (LED-adjacent, never rounded). The label is slotted — click anywhere to flip.</p>
+      <div class="plate">
+        <span class="plate-label">&lt;scratch-toggle&gt; · on / off / disabled = dashed</span>
+        <div class="plate-col" style="gap:var(--sp-3)">
+          <scratch-toggle checked>stream responses</scratch-toggle>
+          <scratch-toggle>retro-title sweep</scratch-toggle>
+          <scratch-toggle disabled>telemetry — not in this build</scratch-toggle>
+        </div>
+      </div>
+
+      <div class="sg-subhead">Progress</div>
+      <p class="sg-prose">Component <code>&lt;scratch-progress&gt;</code> — a thin instrument bar. <code>value</code> /
+      <code>max</code> drive the fill; <code>state</code> picks the semantic color; <code>indeterminate</code> sweeps a
+      segment on the system curve. The motion rule holds: under <code>prefers-reduced-motion</code> the sweep is replaced
+      by a static dim 40% fill — no motion, same meaning. Updates are cheap (a <code>style.width</code> mutation), so
+      feeding it every frame is fine. Height via <code>--progress-height</code> (6px).</p>
+      <div class="plate">
+        <span class="plate-label">&lt;scratch-progress&gt; · determinate / indeterminate</span>
+        <div class="plate-col" style="gap:var(--sp-4)">
+          <div class="plate-row" style="align-items:center;"><scratch-progress value="72" style="width:240px;"></scratch-progress><span class="preview-sub">accent · value=72</span></div>
+          <div class="plate-row" style="align-items:center;"><scratch-progress state="signal" value="100" style="width:240px;"></scratch-progress><span class="preview-sub">signal · complete</span></div>
+          <div class="plate-row" style="align-items:center;"><scratch-progress state="danger" value="31" style="width:240px;"></scratch-progress><span class="preview-sub">danger · failing</span></div>
+          <div class="plate-row" style="align-items:center;"><scratch-progress indeterminate style="width:240px;"></scratch-progress><span class="preview-sub">indeterminate · sweeping</span></div>
         </div>
       </div>
 
@@ -416,11 +488,13 @@
 
       <div class="sg-subhead">Badges</div>
       <div class="plate">
-        <span class="plate-label">&lt;scratch-badge&gt; · default / variant="key"</span>
+        <span class="plate-label">&lt;scratch-badge&gt; · default / variant="key" / variant="off"</span>
         <div class="plate-row">
           <scratch-badge>Prototype</scratch-badge>
           <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:700;color:var(--text-bright)">Anthropic <scratch-badge variant="key">KEY</scratch-badge></span>
           <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:700;color:var(--text-bright)">Ollama <scratch-badge variant="key">KEY</scratch-badge></span>
+          <scratch-badge variant="off">disabled</scratch-badge>
+          <span class="preview-sub">off — the inactive chip: dashed, muted, no LED</span>
         </div>
       </div>
 
@@ -507,15 +581,15 @@
         <span class="sg-section-note">scratch vs simple-llm-ui · resolved</span>
       </div>
       <p class="sg-prose">The two repos drifted. Per your call, the canon adopts <strong>scratch's richer variant</strong>,
-      fixes outright bugs, and adds the scale neither had. Open items are wired as Tweaks.</p>
+      fixes outright bugs, and adds the scale neither had.</p>
 
       <table class="spec">
         <thead>
           <tr><th>Decision</th><th>scratch</th><th>simple-llm-ui</th><th>Canon</th><th style="text-align:right">Verdict</th></tr>
         </thead>
         <tbody>
-          <tr><td class="mono">Scanline overlay</td><td>on</td><td class="muted">dropped</td><td class="accent">on (Tweak)</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
-          <tr><td class="mono">Card corner-marks</td><td>brackets</td><td class="muted">plain box</td><td class="accent">brackets (Tweak)</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
+          <tr><td class="mono">Scanline overlay</td><td>on</td><td class="muted">dropped</td><td class="accent">on</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
+          <tr><td class="mono">Card corner-marks</td><td>brackets</td><td class="muted">plain box</td><td class="accent">brackets</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
           <tr><td class="mono">Prototype badge</td><td>badge-proto</td><td class="muted">plain .badge</td><td class="accent">both, scoped</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
           <tr><td class="mono">--signal-glow / --warning</td><td>defined</td><td class="muted">missing</td><td class="accent">restored</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
           <tr><td class="mono">--ease-out (sole curve)</td><td>defined</td><td class="muted">missing</td><td class="accent">restored; --ease-bounce dropped</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
@@ -532,15 +606,6 @@
   </main>
 </div>
 
-<!-- Tweaks panel mount -->
-<div id="tweaks-root"></div>
-
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-<script type="text/babel" src="tweaks-panel.jsx"></script>
-<script type="text/babel" src="tweaks-app.jsx"></script>
-
 <script>
   // Live token readout in the Applied-spacing panel
   (function () {
@@ -552,7 +617,6 @@
       });
     };
     refresh();
-    window.addEventListener('tweakchange', () => requestAnimationFrame(refresh));
   })();
 
   // Off-canvas rail drawer (narrow screens)
