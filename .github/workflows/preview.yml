@@ -1,30 +1,99 @@
-name: PR preview
+name: Deploy site
 
-# Deploy the spec site (src/: the demo pages + the components they load) to
-# buildhost via the org's buildhost-flavour PR-preview reusable workflow. PRs
-# deploy to https://sites.pazer.build/scratch_ui/branch/pr-<number>/ with a
-# sticky PR comment; pushes to master deploy to .../branch/master/. The project
-# defaults to the (lowercase) repo name -> "scratch_ui".
+# Publishes the site surface described by pages-manifest.json to buildhost
+# (sites.pazer.build) as a public static site. The manifest — not this
+# workflow — decides what gets published; the assembly step just executes it.
+#
+# One workflow, every deploy flavour:
+#   push (any branch)  -> https://sites.pazer.build/scratch_ui/branch/<branch>/
+#                         (master is the canonical consumer site; any other
+#                         branch gets its own site for verification, with the
+#                         branch name flattened to a single path segment)
+#   pull_request       -> https://sites.pazer.build/scratch_ui/branch/pr-<number>/
+#                         plus a sticky PR comment with the URL
+#   workflow_dispatch  -> manual redeploy of the chosen ref
+#
+# The upload is a direct tar.gz PUT to buildhost authenticated via GitHub
+# OIDC — no static secrets, and no GitHub artifact storage anywhere in the
+# deploy path.
 
 on:
   push:
-    branches: [master]
   pull_request:
     types: [opened, reopened, synchronize]
+  workflow_dispatch:
 
-# The called workflow declares these at its workflow level, so the caller must
-# grant at least the same set (a lesser grant is a startup_failure). actions:
-# read is only exercised by artifact-name mode, which we don't use.
 permissions:
   contents: read
-  actions: read
-  pull-requests: write
-  id-token: write
+  id-token: write # buildhost OIDC auth
+  pull-requests: write # sticky preview comment
+
+# One deploy at a time per target site; a newer run for the same target
+# supersedes an older in-flight one. Cancelling mid-run is safe: the site PUT
+# replaces the branch atomically, so a cancelled run just leaves the previous
+# deploy in place.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  preview:
-    uses: wow-look-at-my/actions/.github/workflows/buildhost-preview.yml@master
-    with:
-      source-dir: src
-      public: true
-    secrets: inherit
+  deploy:
+    runs-on: ubuntu-latest
+    # Fork PRs get no OIDC token, so they cannot authenticate to buildhost.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reads pages-manifest.json and stages _site/ (input -> output copies).
+      # Logic lives in its own .ts file — no code embedded in this YAML.
+      - name: Assemble _site/ from pages-manifest.json
+        uses: wow-look-at-my/actions@typescript#latest
+        with:
+          file: .github/scripts/assemble-pages.ts
+
+      - name: Compute site branch
+        id: site
+        uses: wow-look-at-my/actions@typescript#latest
+        with:
+          script: |
+            // PRs deploy to pr-<number>; pushes deploy under the pushed ref's
+            // name. buildhost serves sites under a single path segment, so
+            // flatten anything outside [A-Za-z0-9._-] out of the branch name
+            // (org convention: claude/foo -> claude-foo).
+            const branch = github.event_name === 'pull_request'
+              ? `pr-${github.event.number}`
+              : (github.ref_name || 'preview').replace(/[^A-Za-z0-9._-]/g, '-');
+            core.setOutput('branch', branch);
+            core.info(`site branch: ${branch}`);
+
+      # Direct tar.gz PUT to sites.pazer.build, OIDC-authenticated; project
+      # defaults to the repo name ("scratch_ui"), git_commit to github.sha.
+      - name: Publish _site/ to buildhost
+        id: publish
+        uses: wow-look-at-my/buildhost/.github/actions/buildhost-publish-site@master
+        with:
+          branch: ${{ steps.site.outputs.branch }}
+          source_dir: _site
+          public: 'true'
+
+      # Sticky preview comment (same marker + update-in-place mechanics as the
+      # org's buildhost-preview.yml reusable workflow).
+      - name: Comment preview URL
+        if: github.event_name == 'pull_request'
+        uses: wow-look-at-my/actions@typescript#latest
+        env:
+          PREVIEW_URL: ${{ steps.publish.outputs.site_url }}
+        with:
+          script: |
+            const url: string = process.env.PREVIEW_URL ?? "";
+            const marker = "<!-- pr-preview-buildhost -->";
+            const body = `${marker}\n:rocket: **Preview deployed to buildhost**\n\n${url}`;
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comments = await octokit.paginate(octokit.rest.issues.listComments, { owner, repo, issue_number });
+            const existing = comments.find((c: any) => c.body && c.body.includes(marker));
+            if (existing) {
+              await octokit.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await octokit.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
