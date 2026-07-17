@@ -25,6 +25,7 @@
 <script src="../components/scratch-progress.js" defer></script>
 <script src="../components/scratch-select.js" defer></script>
 <script src="../components/scratch-toggle.js" defer></script>
+<script src="../components/scratch-caution.js" defer></script>
 </head>
 <body>
 <button class="sg-railtoggle" id="railtoggle" aria-label="Open navigation"><span class="bars"><i></i><i></i><i></i></span>Nav</button>
@@ -344,9 +345,9 @@
             <span><scratch-led state="bad"></scratch-led>error</span>
           </div>
         </div>
-        <div class="caution-stripe" style="margin-top:var(--sp-4);padding-top:var(--sp-3);">
-          <span style="font-size:var(--fs-small);color:var(--text-muted)">.caution-stripe — diagonal hazard border for destructive / experimental zones. Intensity follows the viewport read line: 100% at the upper third, easing to 70% by the bottom — present, never obnoxious, in peripheral vision.</span>
-        </div>
+        <scratch-caution style="margin-top:var(--sp-4);padding-top:var(--sp-3);">
+          <span style="font-size:var(--fs-small);color:var(--text-muted)">&lt;scratch-caution&gt; — diagonal hazard border for destructive / experimental zones. The stripe self-dims against the viewport read line: 100% at the upper third, easing to 70% by the bottom — present, never obnoxious, in peripheral vision.</span>
+        </scratch-caution>
       </div>
 
       <div class="sg-subhead">Build-stamp</div>
@@ -649,35 +650,6 @@
       });
     }, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
     map.forEach((_, id) => { const el = document.getElementById(id); if (el) io.observe(el); });
-  })();
-
-  // Caution stripes: position-driven dimming. Divide the viewport into three
-  // equal rows; the upper line (y = vh/3) is where the eye reads, so a stripe
-  // centered there shows at full intensity. Intensity falls off linearly with
-  // the stripe center's distance from that line — calibrated so the very
-  // bottom of the viewport (distance 2·vh/3) sits at 70% — and is floored
-  // there: intensity = max(0.7, 1 − 0.45·d/vh). Scroll updates ARE the
-  // smoothness (position-driven, not time-animated), so no transition.
-  (function () {
-    const stripes = [...document.querySelectorAll('.caution-stripe')];
-    if (!stripes.length) return;
-    let queued = false;
-    const update = () => {
-      queued = false;
-      const vh = window.innerHeight;
-      stripes.forEach((el) => {
-        const r = el.getBoundingClientRect();
-        if (r.bottom < 0 || r.top > vh) return;   // fully offscreen: skip the math
-        const d = Math.abs((r.top + r.bottom) / 2 - vh / 3);
-        el.style.setProperty('--caution-intensity', Math.max(0.7, 1 - 0.45 * d / vh).toFixed(3));
-      });
-    };
-    const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
-    // capture on document: scroll doesn't bubble, but the capture phase still
-    // descends to inner scrollers — so this catches window AND container scrolls
-    document.addEventListener('scroll', schedule, { capture: true, passive: true });
-    addEventListener('resize', schedule, { passive: true });
-    update();   // set before first paint — no flash of full-strength stripes
   })();
 
   // Motion preview: animate the dot on click

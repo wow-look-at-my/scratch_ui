@@ -46,6 +46,7 @@ that are also import-safe as modules — each registers itself via a top-level
 | `scratch-button.js` | `<scratch-button>` |
 | `scratch-badge.js` | `<scratch-badge>` — composes `<scratch-led>`: load `scratch-led.js` too |
 | `scratch-card.js` | `<scratch-card>` |
+| `scratch-caution.js` | `<scratch-caution>` — hazard-striped zone; the stripe self-dims by viewport position (full at the upper-third read line, 70% floor at the bottom), contained in its shadow so slotted content never dims |
 | `scratch-composer.js` | `<scratch-composer>` — composes `<scratch-field>` + `<scratch-button>`: load both too |
 | `scratch-field.js` | `<scratch-field>` |
 | `scratch-led.js` | `<scratch-led>` |
