@@ -3,7 +3,11 @@
  * One sealed implementation for BOTH the overlay product nav and this guide's
  * own left rail. Items are auto-numbered (decimal-leading-zero); each carries
  * the connected left-edge indicator (half-strength --text-bright idle → full
- * on hover → accent when active).
+ * on hover → accent when active). The yellow active-item background is a
+ * single strip in the container that glides (translateY + height, --dur-slow)
+ * from the previous selection to the new one — snapping without a slide on
+ * first paint, resize, and item-set rebuilds, and honoring
+ * prefers-reduced-motion.
  *
  *   <scratch-nav label="Scratch">                  ← header "// Scratch" + ×
  *     <scratch-nav-item label="Location History Map"
@@ -73,7 +77,10 @@ const SCRATCH_NAV_ITEM_CSS = `
   .item:hover .name { color: var(--text-bright, #e8ecf4); }
   .item:hover::before { width: 2px; background: var(--text-bright, #e8ecf4); }
 
-  :host([active]) .item { background: var(--accent-glow, rgba(255,174,0,0.12)); }
+  /* The active background is painted by the nav container's sliding
+     .indicator so it can glide between selections. Transparent — not unset —
+     so the hover surface never covers the indicator on the active item. */
+  :host([active]) .item { background: transparent; }
   :host([active]) .name { color: var(--accent, #ffae00); }
   :host([active]) .num { color: var(--accent, #ffae00); }
   :host([active]) .item::before { width: 2px; background: var(--accent, #ffae00); }
@@ -114,7 +121,7 @@ customElements.define('scratch-nav-item', ScratchNavItem);
 
 /* ---- container ------------------------------------------------------ */
 const SCRATCH_NAV_CSS = `
-  :host { display: block; }
+  :host { display: block; position: relative; }
   :host([boxed]) {
     background: var(--bg-deep, #08090c);
     border: 1px solid var(--border, #2a2e3a);
@@ -144,6 +151,25 @@ const SCRATCH_NAV_CSS = `
   .close:hover { color: var(--text-bright, #e8ecf4); }
   .list { padding: 8px 0; }
   :host([flush]) .list { padding: 0; }
+
+  /* Sliding active-item highlight: one absolutely-positioned strip behind the
+     slotted items (their .item is position:relative, so it paints above),
+     moved with translateY + height so a selection change glides instead of
+     jumping. Positioned against the host (offsetTop space of the items). */
+  .indicator {
+    position: absolute; left: 0; right: 0; top: 0;
+    height: 0;
+    background: var(--accent-glow, rgba(255,174,0,0.12));
+    opacity: 0;
+    pointer-events: none;
+  }
+  .indicator.slide {
+    transition: transform var(--dur-slow, 0.19s) var(--ease-out, cubic-bezier(0.16,1,0.3,1)),
+                height var(--dur-slow, 0.19s) var(--ease-out, cubic-bezier(0.16,1,0.3,1));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .indicator.slide { transition: none; }
+  }
 `;
 const SCRATCH_NAV_SHEET = new CSSStyleSheet();
 SCRATCH_NAV_SHEET.replaceSync(SCRATCH_NAV_CSS);
@@ -156,9 +182,10 @@ class ScratchNav extends HTMLElement {
     this.shadowRoot.adoptedStyleSheets = [SCRATCH_NAV_SHEET];
     this.shadowRoot.innerHTML =
       `<div class="head"><span class="title"></span><button class="close" aria-label="Close">×</button></div>` +
-      `<div class="list"><slot></slot></div>`;
+      `<div class="list"><div class="indicator"></div><slot></slot></div>`;
     this._head = this.shadowRoot.querySelector('.head');
     this._title = this.shadowRoot.querySelector('.title');
+    this._indicator = this.shadowRoot.querySelector('.indicator');
     this.shadowRoot.querySelector('.close').addEventListener('click', () =>
       this.dispatchEvent(new CustomEvent('nav-close', { bubbles: true })));
     this.addEventListener('click', (e) => {
@@ -166,8 +193,20 @@ class ScratchNav extends HTMLElement {
       if (!item || item.hasAttribute('href')) return;   // links manage their own active
       this._activate(item);
     });
+    /* [active] moves via _activate here, but also from outside (the guide's
+       scroll-spy toggles it on link items) — follow both. A childList change
+       means the item set rebuilt: snap instead of slide. */
+    this._mo = new MutationObserver((muts) =>
+      this._position(muts.some((m) => m.type === 'childList')));
+    /* Re-measure when layout shifts under us (viewport resize, font swap). */
+    this._ro = new ResizeObserver(() => this._position(true));
   }
-  connectedCallback() { queueMicrotask(() => this._build()); }
+  connectedCallback() {
+    this._mo.observe(this, { childList: true, subtree: true, attributes: true, attributeFilter: ['active'] });
+    this._ro.observe(this);
+    queueMicrotask(() => this._build());
+  }
+  disconnectedCallback() { this._mo.disconnect(); this._ro.disconnect(); }
   attributeChangedCallback() { this._build(); }
   get _items() { return Array.from(this.querySelectorAll(':scope > scratch-nav-item')); }
   _build() {
@@ -177,6 +216,30 @@ class ScratchNav extends HTMLElement {
     // 00-based, matching the design language's decimal-leading-zero counter
     // (the "Index prefix" type specimen and the card demos both start at 00).
     this._items.forEach((item, i) => item.setIndex(i));
+    this._position(true);
+  }
+  /* Place the sliding highlight behind the active item. `snap` skips the
+     glide (first paint, resizes, rebuilds); appearing from hidden never
+     slides in from a stale position. */
+  _position(snap = false) {
+    const ind = this._indicator;
+    const active = this._items.find((n) => n.hasAttribute('active'));
+    if (!active) {
+      ind.style.opacity = '0';
+      this._indicatorOn = false;
+      return;
+    }
+    if (!this._indicatorOn) snap = true;
+    if (snap) ind.classList.remove('slide');
+    ind.style.opacity = '1';
+    ind.style.transform = `translateY(${active.offsetTop}px)`;
+    ind.style.height = `${active.offsetHeight}px`;
+    this._indicatorOn = true;
+    if (snap) {
+      // enable the glide only after this position has been committed
+      requestAnimationFrame(() => requestAnimationFrame(() =>
+        ind.classList.add('slide')));
+    }
   }
   _activate(item) {
     const items = this._items;
