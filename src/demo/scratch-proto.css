@@ -274,11 +274,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .dot-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .dot-legend .hint { color: var(--text-disabled); }
 
-/* Caution stripe */
-.caution-stripe {
-  border-top: 3px solid transparent;
-  border-image: repeating-linear-gradient(45deg, var(--accent) 0 6px, transparent 6px 12px) 3;
-}
+/* Caution stripe → sealed web component: <scratch-caution> (scratch-caution.js).
+   The hazard stripe and its viewport read-line dimming live in the component's
+   shadow; no .caution-stripe rules. */
 
 /* Registration marks utility */
 .reg-marks { position: relative; }

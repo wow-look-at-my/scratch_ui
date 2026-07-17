@@ -33,9 +33,18 @@ const SCRATCH_MESSAGE_CSS = `
   }
   :host([streaming]) .body::after {
     content: '▍'; color: var(--accent, #ffae00);
-    animation: msg-caret 0.9s steps(2, end) infinite;
+    animation: msg-caret 0.9s var(--ease-out, cubic-bezier(0.16,1,0.3,1)) infinite;
   }
-  @keyframes msg-caret { 0%,100%{opacity:1;} 50%{opacity:0;} }
+  /* Hold → fast fade → hold → fast fade. Each fade spans 10% of the cycle
+     (90ms ≈ --dur-fast) so it still reads as a caret blink, not a slow pulse
+     — but the on/off flips render as smooth opacity ramps. (The old
+     steps(2, end) timing quantized each half-cycle into two hard jumps —
+     opacity 1 → .5 → 0 → .5 → 1 — which read as a low-frame-rate stutter.) */
+  @keyframes msg-caret {
+    0%, 40%  { opacity: 1; }
+    50%, 90% { opacity: 0; }
+    100%     { opacity: 1; }
+  }
   @media (prefers-reduced-motion: reduce) {
     :host([streaming]) .body::after { animation: none; }
   }
