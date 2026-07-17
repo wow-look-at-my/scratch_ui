@@ -41,10 +41,43 @@ that are also import-safe as modules — each registers itself via a top-level
 | `scratch-modal.js` | `<scratch-modal>` |
 | `scratch-nav.js` | `<scratch-nav>`, `<scratch-nav-item>` |
 | `scratch-preview.js` | `<scratch-preview>` |
+| `scratch-progress.js` | `<scratch-progress>` |
+| `scratch-select.js` | `<scratch-select>` |
 | `scratch-tabs.js` | `<scratch-tabs>`, `<scratch-tab>` |
+| `scratch-toggle.js` | `<scratch-toggle>` |
+
+API quick notes (the newer controls + upgraded attributes):
+
+- `<scratch-progress>` — `value` / `max` (default 100) / `indeterminate` /
+  `state="accent|signal|danger"` (fill color; accent default). Reflects
+  `role="progressbar"` + `aria-value*` on the host; bar height via the
+  `--progress-height` component token (6px). Value updates only mutate the
+  fill's `style.width`, so per-frame updates are cheap. The indeterminate
+  sweep degrades to a static dim 40% fill under `prefers-reduced-motion`.
+- `<scratch-select>` — form-associated dropdown. Light-DOM `<option>` children
+  are the options source (mirrored into the shadow control, kept live by a
+  MutationObserver; the current value survives rebuilds while it still names
+  an option). Attributes: `value` (seeds; the property / user pick is
+  authoritative after), `placeholder` (disabled+hidden first option),
+  `disabled`. `focus()` delegates; fires composed bubbling `input`/`change`.
+  Option text renders verbatim (no uppercase).
+- `<scratch-toggle>` — form-associated checkbox (`checked`/`disabled`
+  attributes, `checked` property reflected both ways, submits `"on"`). Label
+  text is slotted; clicking anywhere toggles; keyboard/a11y via a hidden
+  native checkbox. Fires composed bubbling `change` (+`input`) on user toggle.
+- `<scratch-button>` — new `variant="ghost"` (quiet borderless tier: no box,
+  no corner-marks, no ring; muted → bright on hover; disabled = dimmed only).
+  Now form-associated: `type="submit"` submits the owning form; no `type`
+  never submits. `disabled` is also a property accessor.
+- `<scratch-field>` — new `type` for the single-line mode
+  (`text|password|number|search|email|url`; `multiline` ignores it) plus
+  `min`/`max`/`step` passthrough for number use.
+- `<scratch-badge>` — new `variant="off"`: the neutral dim/inactive chip
+  (muted text, dashed border, no LED).
 
 ### Living spec
 
+- `index.html` — a small landing page linking the spec pages (the site root).
 - `Scratch Proto.html` — the full style guide: every token, component, and rule.
 - `Icon Language.html` — the icon language spec.
 
@@ -52,6 +85,9 @@ Open the pages in a browser, or serve the repo root with any static server. The
 design language is fully dependency-free, spec pages included: no framework, no
 build step, no external scripts (the pages' only external requests are the
 Google Fonts stylesheets).
+
+CI publishes the spec pages on every push as a public per-branch site at
+`https://sites.pazer.build/scratch_ui/branch/<branch-slug>/`.
 
 ## Consuming
 
