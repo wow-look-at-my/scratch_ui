@@ -1,0 +1,30 @@
+name: PR preview
+
+# Deploy the spec site (src/: the demo pages + the components they load) to
+# buildhost via the org's buildhost-flavour PR-preview reusable workflow. PRs
+# deploy to https://sites.pazer.build/scratch_ui/branch/pr-<number>/ with a
+# sticky PR comment; pushes to master deploy to .../branch/master/. The project
+# defaults to the (lowercase) repo name -> "scratch_ui".
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+# The called workflow declares these at its workflow level, so the caller must
+# grant at least the same set (a lesser grant is a startup_failure). actions:
+# read is only exercised by artifact-name mode, which we don't use.
+permissions:
+  contents: read
+  actions: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  preview:
+    uses: wow-look-at-my/actions/.github/workflows/buildhost-preview.yml@master
+    with:
+      source-dir: src
+      public: true
+    secrets: inherit

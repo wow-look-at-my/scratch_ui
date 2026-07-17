@@ -8,8 +8,8 @@
  * Usage — you rarely create the tag by hand; call the static helper:
  *   ScratchRing.burst(targetEl);           // ring over targetEl's rect
  *
- * Auto-delegation: any click on a .card (or [data-cc-ring]) bursts a ring.
- * <scratch-button> calls ScratchRing.burst(this) from its own click handler.
+ * <scratch-button> and <scratch-card> call ScratchRing.burst(this) from their
+ * own click handlers when window.ScratchRing exists.
  */
 const SCRATCH_RING_CSS = `
   :host {
@@ -64,9 +64,3 @@ class ScratchRing extends HTMLElement {
 }
 customElements.define('scratch-ring', ScratchRing);
 window.ScratchRing = ScratchRing;
-
-/* Auto-delegate clicks on corner-marked light-DOM surfaces. */
-document.addEventListener('click', (e) => {
-  const el = e.target.closest && e.target.closest('.card, [data-cc-ring]');
-  if (el) ScratchRing.burst(el);
-});

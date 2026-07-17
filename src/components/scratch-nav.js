@@ -82,6 +82,10 @@ const SCRATCH_NAV_ITEM_CSS = `
 const SCRATCH_NAV_ITEM_SHEET = new CSSStyleSheet();
 SCRATCH_NAV_ITEM_SHEET.replaceSync(SCRATCH_NAV_ITEM_CSS);
 
+/* Escape attribute values before interpolating them into shadow innerHTML. */
+const SCRATCH_NAV_ESC = (s) =>
+  String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
 class ScratchNavItem extends HTMLElement {
   static get observedAttributes() { return ['label', 'desc', 'href', 'number']; }
   constructor() {
@@ -92,13 +96,14 @@ class ScratchNavItem extends HTMLElement {
   connectedCallback() { this._render(); }
   attributeChangedCallback() { if (this.shadowRoot.childElementCount) this._render(); }
   _render() {
+    const esc = SCRATCH_NAV_ESC;
     const href = this.getAttribute('href');
     const tag = href ? 'a' : 'div';
     const num = this.getAttribute('number') || '';
     this.shadowRoot.innerHTML =
-      `<${tag} class="item" part="item"${href ? ` href="${href}"` : ' role="button" tabindex="0"'}>` +
-        `<span class="row"><span class="num">${num}</span><span class="name">${this.getAttribute('label') || ''}</span></span>` +
-        `<span class="desc">${this.getAttribute('desc') || ''}</span>` +
+      `<${tag} class="item" part="item"${href ? ` href="${esc(href)}"` : ' role="button" tabindex="0"'}>` +
+        `<span class="row"><span class="num">${esc(num)}</span><span class="name">${esc(this.getAttribute('label') || '')}</span></span>` +
+        `<span class="desc">${esc(this.getAttribute('desc') || '')}</span>` +
       `</${tag}>`;
   }
   setIndex(n) {
@@ -169,7 +174,9 @@ class ScratchNav extends HTMLElement {
     const label = this.getAttribute('label');
     this._head.classList.toggle('show', label != null);
     this._title.textContent = label || '';
-    this._items.forEach((item, i) => item.setIndex(i + 1));
+    // 00-based, matching the design language's decimal-leading-zero counter
+    // (the "Index prefix" type specimen and the card demos both start at 00).
+    this._items.forEach((item, i) => item.setIndex(i));
   }
   _activate(item) {
     const items = this._items;

@@ -7,22 +7,34 @@ vanilla custom elements (shadow DOM).
 Aesthetic: exposed wireframe, dot-grid substrate, monospace typography, amber
 caution accents, registration marks, build-stamp metadata.
 
+## Layout
+
+- `src/components/` — the reusable design language: `scratch-tokens.css` plus
+  one `.js` file per component. This is the consumable package surface
+  (`package.json` `files`/`exports` point here).
+- `src/demo/` — the demo/spec site: the landing page, the two spec pages, and
+  their demo-only stylesheet (`scratch-proto.css`). Pages reference the
+  components as `../components/...`, so serving `src/` serves the whole site.
+- `index.html` (repo root) — a redirect stub for the legacy GitHub Pages
+  deploy, which serves the master branch root; it just forwards to the
+  buildhost site below.
+
 ## Files
 
 ### CSS
 
-- `scratch-tokens.css` — every design token (one `:root` block of custom
-  properties: surfaces, text, accent/signal/danger, borders, fonts, type scale,
-  spacing, radius, motion, elevation). **The consumable contract**: the only
-  file an app needs to import to adopt the design language. Tokens are
+- `src/components/scratch-tokens.css` — every design token (one `:root` block
+  of custom properties: surfaces, text, accent/signal/danger, borders, fonts,
+  type scale, spacing, radius, motion, elevation). **The consumable contract**:
+  the only file an app needs to import to adopt the design language. Tokens are
   inherited custom properties, so they pierce shadow DOM and theme all the
   components; every component also carries baked-in `var(..., fallback)`
   defaults, so a missing token degrades gracefully instead of breaking.
-- `scratch-proto.css` — the demo pages' reset, element-level base styles, and
-  style-guide scaffolding. Apps generally should NOT import this (it restyles
-  elements globally); it exists for the spec pages below.
+- `src/demo/scratch-proto.css` — the demo pages' reset, element-level base
+  styles, and style-guide scaffolding. Apps generally should NOT import this
+  (it restyles elements globally); it exists for the spec pages.
 
-### Components
+### Components (`src/components/`)
 
 One custom element per file. Classic scripts (loadable via `<script defer>`)
 that are also import-safe as modules — each registers itself via a top-level
@@ -32,9 +44,9 @@ that are also import-safe as modules — each registers itself via a top-level
 |---|---|
 | `scratch-ring.js` | `<scratch-ring>` + `window.ScratchRing` (click-burst ring; buttons/cards use it when present) |
 | `scratch-button.js` | `<scratch-button>` |
-| `scratch-badge.js` | `<scratch-badge>` |
+| `scratch-badge.js` | `<scratch-badge>` — composes `<scratch-led>`: load `scratch-led.js` too |
 | `scratch-card.js` | `<scratch-card>` |
-| `scratch-composer.js` | `<scratch-composer>` |
+| `scratch-composer.js` | `<scratch-composer>` — composes `<scratch-field>` + `<scratch-button>`: load both too |
 | `scratch-field.js` | `<scratch-field>` |
 | `scratch-led.js` | `<scratch-led>` |
 | `scratch-message.js` | `<scratch-message>` |
@@ -45,6 +57,12 @@ that are also import-safe as modules — each registers itself via a top-level
 | `scratch-select.js` | `<scratch-select>` |
 | `scratch-tabs.js` | `<scratch-tabs>`, `<scratch-tab>` |
 | `scratch-toggle.js` | `<scratch-toggle>` |
+
+Some components compose others in their shadow DOM (marked in the table):
+`scratch-composer` renders a `<scratch-field>` and a `<scratch-button>`, and
+`scratch-badge` renders a `<scratch-led>`. The files don't import each other
+(that would break classic-script loading), so load/import the dependencies
+alongside — otherwise the inner elements stay unresolved and inert.
 
 API quick notes (the newer controls + upgraded attributes):
 
@@ -74,20 +92,30 @@ API quick notes (the newer controls + upgraded attributes):
   `min`/`max`/`step` passthrough for number use.
 - `<scratch-badge>` — new `variant="off"`: the neutral dim/inactive chip
   (muted text, dashed border, no LED).
+- `<scratch-message>` — `author="user|assistant"` picks the label color
+  (amber/green). Renamed from `role`, which collided with the ARIA global
+  `role` attribute.
 
-### Living spec
+### Living spec (`src/demo/`)
 
-- `index.html` — a small landing page linking the spec pages (the site root).
+- `index.html` — a small landing page linking the spec pages.
 - `Scratch Proto.html` — the full style guide: every token, component, and rule.
 - `Icon Language.html` — the icon language spec.
 
-Open the pages in a browser, or serve the repo root with any static server. The
-design language is fully dependency-free, spec pages included: no framework, no
-build step, no external scripts (the pages' only external requests are the
-Google Fonts stylesheets).
+Open the pages in a browser, or serve `src/` with any static server
+(`src/index.html` forwards to `demo/`). The design language is fully
+dependency-free, spec pages included: no framework, no build step, no external
+scripts (the pages' only external requests are the Google Fonts stylesheets).
 
-CI publishes the spec pages on every push as a public per-branch site at
-`https://sites.pazer.build/scratch_ui/branch/<branch-slug>/`.
+## Previews
+
+`.github/workflows/preview.yml` calls the org's reusable
+`buildhost-preview.yml` workflow to publish `src/` as a public static site on
+buildhost:
+
+- master: <https://sites.pazer.build/scratch_ui/branch/master/>
+- pull requests: `https://sites.pazer.build/scratch_ui/branch/pr-<number>/`,
+  posted as a sticky comment on the PR.
 
 ## Consuming
 
@@ -95,10 +123,9 @@ CI publishes the spec pages on every push as a public per-branch site at
 
 ```html
 <link rel="stylesheet" href="scratch-tokens.css" />
-<link rel="stylesheet" href="scratch-proto.css" /> <!-- demo reset/scaffolding; skip if you only want tokens -->
 <script src="scratch-ring.js" defer></script>
 <script src="scratch-button.js" defer></script>
-<!-- ...one tag per component you use -->
+<!-- ...one tag per component you use (copied/served from src/components/) -->
 ```
 
 ### As a pnpm git dependency (bundlers)
@@ -119,9 +146,9 @@ import "scratch-ui/scratch-button.js";
 
 Notes:
 
-- The repo is private, so git-based installs need credentials. In CI, use a git
-  `insteadOf` token rewrite:
-  `git config --global url."https://x-access-token:${TOKEN}@github.com/wow-look-at-my/".insteadOf "https://github.com/wow-look-at-my/"`.
+- The package `exports` map resolves `scratch-ui/<file>` to
+  `src/components/<file>`, so the bare subpath imports above keep working
+  regardless of the repo layout.
 - The components register themselves as a **top-level side effect** of being
   imported/loaded. The package deliberately does not declare
   `"sideEffects": false` — keep it that way, or bundlers will tree-shake the
