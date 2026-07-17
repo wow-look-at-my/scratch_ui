@@ -19,11 +19,13 @@ jobs:
         uses: wow-look-at-my/actions@typescript#latest
         with:
           script: |
-            //   *.js — classic scripts loaded via <script defer>: node --check
-            const names = fs.readdirSync('.').filter((n) => fs.statSync(n).isFile());
+            //   src/**/*.js — classic scripts loaded via <script defer>: node --check
+            const names = fs.readdirSync('src', { recursive: true })
+              .map((n) => `src/${n}`)
+              .filter((n) => fs.statSync(n).isFile());
             const js = names.filter((n) => n.endsWith('.js')).sort();
             if (js.length === 0) {
-              core.setFailed('Repo layout changed: found 0 .js files at the root — update the CI syntax check to cover the new layout.');
+              core.setFailed('Repo layout changed: found 0 .js files under src/ — update the CI syntax check to cover the new layout.');
               return;
             }
             for (const f of js) {
@@ -32,118 +34,13 @@ jobs:
             }
             core.info(`Syntax OK: ${js.length} .js (node --check)`);
 
-  # Publish the spec pages as a public per-branch static site on buildhost
-  # (https://sites.pazer.build/scratch_ui/branch/<slug>/), and surface the link
-  # as an upserted comment on the branch's open PR.
-  publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      # OIDC token for the buildhost publish (no static secret).
-      id-token: write
-      # Post/update the preview link as a comment on the branch's open PR.
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v4
-
-      # The pages are plain static files — stage exactly what they load.
-      - name: Stage site files
-        run: |
-          mkdir _site
-          cp index.html 'Scratch Proto.html' 'Icon Language.html' *.css scratch-*.js LICENSE _site/
-
-      # buildhost site branches are a single URL path segment ("/{project}/
-      # branch/{branch}", not "{branch...}"), but github.ref_name can contain
-      # "/", so slugify it into one safe segment for the site URL.
-      - uses: wow-look-at-my/actions@typescript#latest
-        id: slug
-        with:
-          script: |
-            const slug = github.ref_name.replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "");
-            core.info(`branch "${github.ref_name}" -> site slug "${slug}"`);
-            core.setOutput("branch", slug);
-
-      - uses: wow-look-at-my/buildhost/.github/actions/buildhost-publish-site@master
-        id: publish
-        with:
-          project: scratch_ui
-          branch: ${{ steps.slug.outputs.branch }}
-          source_dir: _site
-          # The repo is private; serve just the spec site publicly so it can
-          # be opened without a token. Release artifacts stay private.
-          public: 'true'
-
-      # Surface the spec-site link two ways: the run summary, and an upserted
-      # comment on the open PR for this branch (so reviewers see it on the PR,
-      # not just buried in the Actions run). Skipped on master (no PR) and when
-      # the branch has no open PR yet -- the next push upserts the same comment
-      # in place via the marker, so it never spams.
-      - uses: wow-look-at-my/actions@typescript#latest
-        env:
-          # The injected octokit isn't authenticated and the secrets context
-          # doesn't reliably expose GITHUB_TOKEN, so pass the automatic token
-          # (carrying this job's pull-requests: write) in via env explicitly.
-          PREVIEW_GH_TOKEN: ${{ github.token }}
-        with:
-          script: |
-            const url = ${{ toJSON(steps.publish.outputs.site_url) }};
-            await core.summary.addHeading('Spec preview', 3).addRaw(url).write();
-
-            if (github.ref === 'refs/heads/master') return;
-
-            const token = process.env.PREVIEW_GH_TOKEN;
-            if (!token) {
-              core.warning('No GITHUB_TOKEN available; skipping preview comment.');
-              return;
-            }
-            const oct = getOctokit(token);
-            const { owner, repo } = context.repo;
-            const { data: prs } = await oct.rest.pulls.list({
-              owner,
-              repo,
-              state: 'open',
-              head: `${owner}:${github.ref_name}`,
-            });
-            if (prs.length === 0) {
-              core.info(`No open PR for branch ${github.ref_name}; skipping comment.`);
-              return;
-            }
-
-            const marker = '<!-- preview-link -->';
-            const body = [
-              marker,
-              '### Spec preview',
-              '',
-              `Live spec pages for this branch: ${url}`,
-              '',
-              '_Updated automatically on every push._',
-            ].join('\n');
-
-            for (const pr of prs) {
-              const { data: comments } = await oct.rest.issues.listComments({
-                owner,
-                repo,
-                issue_number: pr.number,
-                per_page: 100,
-              });
-              const existing = comments.find((c: { body?: string | null }) => c.body?.includes(marker));
-              if (existing) {
-                await oct.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
-                core.info(`Updated preview comment on PR #${pr.number}`);
-              } else {
-                await oct.rest.issues.createComment({ owner, repo, issue_number: pr.number, body });
-                core.info(`Created preview comment on PR #${pr.number}`);
-              }
-            }
-
   # Aggregate gate for the org ruleset ("require-all-builds"), which requires a
-  # passing status check named exactly `all-builds` on every branch update.
-  # This workflow's work is split across two jobs, so this zero-work job fans
-  # them in and reports that one context. always() keeps it reporting when a
-  # needed job fails or is skipped; it fails on any failure/cancelled result
-  # and passes on success/skipped.
+  # passing status check named exactly `all-builds` on the merged SHA. This
+  # zero-work job fans in every job in this workflow and reports that one
+  # context. always() keeps it reporting when a needed job fails or is skipped;
+  # it fails on any failure/cancelled result and passes on success/skipped.
   all-builds:
-    needs: [checks, publish]
+    needs: [checks]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:

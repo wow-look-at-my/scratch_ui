@@ -6,5 +6,11 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wow-look-at-my/scratch_ui.git"
+  },
+  "files": [
+    "src/components"
+  ],
+  "exports": {
+    "./*": "./src/components/*"
   }
 }

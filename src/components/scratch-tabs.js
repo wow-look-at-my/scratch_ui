@@ -86,9 +86,13 @@ class ScratchTabs extends HTMLElement {
   _build() {
     const tabs = this._tabs;
     if (!tabs.length) return;
-    // honor `selected` attribute on first build
-    const sel = tabs.findIndex(t => t.hasAttribute('selected'));
-    if (sel >= 0) this._active = sel;
+    // honor `selected` attribute on the FIRST build only — later rebuilds
+    // (e.g. a `tab-relabel`) must not snap the user back to the default tab
+    if (!this._built) {
+      this._built = true;
+      const sel = tabs.findIndex(t => t.hasAttribute('selected'));
+      if (sel >= 0) this._active = sel;
+    }
     if (this._active >= tabs.length) this._active = 0;
 
     this._strip.innerHTML = '';
