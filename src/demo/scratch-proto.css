@@ -274,10 +274,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .dot-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .dot-legend .hint { color: var(--text-disabled); }
 
-/* Caution stripe */
+/* Caution stripe — the amber diagonals are position-dimmed so they read at
+   full strength only where the eye rests: --caution-intensity (set per
+   instance by the read-line script in Scratch Proto.html; 1 at the viewport's
+   upper-third line, floored at 0.7 by the viewport bottom) multiplies the
+   stripe's alpha. It scales ONLY the stripe — not element opacity — so the
+   zone's content never dims with it. */
 .caution-stripe {
   border-top: 3px solid transparent;
-  border-image: repeating-linear-gradient(45deg, var(--accent) 0 6px, transparent 6px 12px) 3;
+  border-image: repeating-linear-gradient(45deg,
+    color-mix(in srgb, var(--accent) calc(var(--caution-intensity, 1) * 100%), transparent) 0 6px,
+    transparent 6px 12px) 3;
 }
 
 /* Registration marks utility */
