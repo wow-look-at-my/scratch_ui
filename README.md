@@ -112,11 +112,10 @@ scripts (the pages' only external requests are the Google Fonts stylesheets).
 GitHub Pages is the canonical host for external consumers. The repo's Pages
 source is **GitHub Actions**: on every push to master,
 `.github/workflows/pages.yml` assembles the artifact from
-**`pages-manifest.json`** — a checked-in list of entries, each either a copy
-(`{"from": "<repo file or dir>", "to": "<site path>"}`) or a generated
-meta-refresh stub (`{"redirect": "<target>", "to": "<site path>"}`) — and
-deploys it. The manifest, not the workflow, decides what gets published;
-change the site by editing the manifest.
+**`pages-manifest.json`** — a checked-in list of
+`{"from": "<repo file or dir>", "to": "<site path>"}` copies — and deploys
+it. The manifest, not the workflow, decides what gets published; change the
+site by editing the manifest.
 
 The manifest publishes the components and tokens at the **site root**, so
 consumers embed bare root-relative file URLs — the same convention
@@ -128,9 +127,9 @@ https://wow-look-at-my.github.io/scratch_ui/scratch-button.js
 ```
 
 The spec site is served under `/demo/` (the site root's `index.html` forwards
-there), `/components/` mirrors the root component files so the demo's relative
-`../components/` references resolve, and redirect stubs keep the legacy root
-deep links (`/Scratch Proto.html`, `/Icon Language.html`) working.
+there — the spec pages can't live at the root itself, because their relative
+`../components/` references would escape the `/scratch_ui/` project path), and
+`/components/` mirrors the root component files so those references resolve.
 
 ## Previews
 

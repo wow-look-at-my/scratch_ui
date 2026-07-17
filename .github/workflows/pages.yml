@@ -30,9 +30,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Reads pages-manifest.json, stages _site/ (copies + generated redirect
-      # stubs from .github/scripts/pages-redirect.html). Logic lives in its own
-      # .ts file — no code embedded in this YAML.
+      # Reads pages-manifest.json and stages _site/ (input -> output copies).
+      # Logic lives in its own .ts file — no code embedded in this YAML.
       - name: Assemble _site/ from pages-manifest.json
         uses: wow-look-at-my/actions@typescript#latest
         with:

@@ -1,11 +1,9 @@
 {
-  "comment": "Drives the GitHub Pages deploy (.github/workflows/pages.yml assembles the artifact from this file; nothing else decides what gets published). Each entry maps a repo input to a site output path rooted at https://wow-look-at-my.github.io/scratch_ui/. {from, to}: copy a file or directory (recursive) into the artifact at 'to'. {redirect, to}: generate a meta-refresh stub at 'to' pointing at 'redirect'. Components + tokens are published at the site ROOT — the pre-restructure layout external consumers embed, mirroring the js-snippets root-relative URL convention — and also under /components so the demo's relative ../components/ references resolve; the redirect stubs keep legacy deep links to the spec pages working.",
+  "comment": "Drives the GitHub Pages deploy (.github/workflows/pages.yml assembles the artifact from this file via .github/scripts/assemble-pages.ts; nothing else decides what gets published). Each {from, to} entry copies a repo file or directory (recursive) to a site output path rooted at https://wow-look-at-my.github.io/scratch_ui/. Components + tokens are published at the site ROOT — the pre-restructure layout external consumers embed, mirroring the js-snippets root-relative URL convention — and also under /components so the demo's relative ../components/ references resolve; src/index.html forwards the site root to the spec site under /demo/.",
   "entries": [
     { "from": "src/components", "to": "/" },
     { "from": "src/components", "to": "/components" },
     { "from": "src/demo", "to": "/demo" },
-    { "from": "src/index.html", "to": "/index.html" },
-    { "redirect": "demo/Scratch Proto.html", "to": "/Scratch Proto.html" },
-    { "redirect": "demo/Icon Language.html", "to": "/Icon Language.html" }
+    { "from": "src/index.html", "to": "/index.html" }
   ]
 }
