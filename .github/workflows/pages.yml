@@ -30,56 +30,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Reads pages-manifest.json, stages _site/ (copies + generated redirect
+      # stubs from .github/scripts/pages-redirect.html). Logic lives in its own
+      # .ts file — no code embedded in this YAML.
       - name: Assemble _site/ from pages-manifest.json
         uses: wow-look-at-my/actions@typescript#latest
         with:
-          script: |
-            const out = '_site';
-            const manifest = JSON.parse(fs.readFileSync('pages-manifest.json', 'utf-8'));
-            const outRoot = path.resolve(out);
-            fs.rmSync(outRoot, { recursive: true, force: true });
-            fs.mkdirSync(outRoot, { recursive: true });
-            const lines: string[] = [];
-            for (const entry of manifest.entries) {
-              // '/x' site paths resolve INSIDE the artifact root, and never above it
-              const dest = path.resolve(outRoot, '.' + path.posix.join('/', entry.to));
-              if (dest !== outRoot && !dest.startsWith(outRoot + path.sep)) {
-                core.setFailed(`pages-manifest.json: output path escapes the site root: ${entry.to}`);
-                return;
-              }
-              fs.mkdirSync(path.dirname(dest), { recursive: true });
-              if (entry.redirect != null) {
-                const url = encodeURI(entry.redirect);
-                fs.writeFileSync(dest, [
-                  '<!DOCTYPE html>',
-                  '<html lang="en">',
-                  '<head>',
-                  '<meta charset="UTF-8" />',
-                  `<meta http-equiv="refresh" content="0; url=${url}" />`,
-                  `<link rel="canonical" href="${url}" />`,
-                  '<title>Moved</title>',
-                  '</head>',
-                  '<body>',
-                  `<p><a href="${url}">Moved to ${entry.redirect}</a></p>`,
-                  '</body>',
-                  '</html>',
-                  '',
-                ].join('\n'));
-                lines.push(`redirect  ${entry.to}  ->  ${entry.redirect}`);
-              } else {
-                if (!fs.existsSync(entry.from)) {
-                  core.setFailed(`pages-manifest.json: input path not found: ${entry.from}`);
-                  return;
-                }
-                fs.cpSync(entry.from, dest, { recursive: true });
-                lines.push(`copy      ${entry.from}  ->  ${entry.to}`);
-              }
-            }
-            const files = fs.readdirSync(out, { recursive: true })
-              .map(String)
-              .filter((n) => fs.statSync(path.join(out, n)).isFile());
-            core.info(`pages-manifest.json -> ${out}/ (${files.length} files):`);
-            for (const l of lines) core.info(`  ${l}`);
+          file: .github/scripts/assemble-pages.ts
 
       - uses: actions/upload-pages-artifact@v5
         with:
