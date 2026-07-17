@@ -673,7 +673,9 @@
       });
     };
     const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
-    addEventListener('scroll', schedule, { passive: true });
+    // capture on document: scroll doesn't bubble, but the capture phase still
+    // descends to inner scrollers — so this catches window AND container scrolls
+    document.addEventListener('scroll', schedule, { capture: true, passive: true });
     addEventListener('resize', schedule, { passive: true });
     update();   // set before first paint — no flash of full-strength stripes
   })();
