@@ -77,6 +77,7 @@ API quick notes (the newer controls + upgraded attributes):
 
 ### Living spec
 
+- `index.html` — a small landing page linking the spec pages (the site root).
 - `Scratch Proto.html` — the full style guide: every token, component, and rule.
 - `Icon Language.html` — the icon language spec.
 
@@ -84,6 +85,9 @@ Open the pages in a browser, or serve the repo root with any static server. The
 design language is fully dependency-free, spec pages included: no framework, no
 build step, no external scripts (the pages' only external requests are the
 Google Fonts stylesheets).
+
+CI publishes the spec pages on every push as a public per-branch site at
+`https://sites.pazer.build/scratch_ui/branch/<branch-slug>/`.
 
 ## Consuming
 
