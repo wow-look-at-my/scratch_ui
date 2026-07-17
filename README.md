@@ -115,7 +115,8 @@ source is **GitHub Actions**: on every push to master,
 **`pages-manifest.json`** — a checked-in list of
 `{"from": "<repo file or dir>", "to": "<site path>"}` copies — and deploys
 it. The manifest, not the workflow, decides what gets published; change the
-site by editing the manifest.
+site by editing the manifest. CI validates it against its JSON Schema
+(`pages-manifest.schema.json`, checked by the org's json-validator action).
 
 The manifest publishes the components and tokens at the **site root**, so
 consumers embed bare root-relative file URLs — the same convention

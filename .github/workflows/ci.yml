@@ -34,6 +34,14 @@ jobs:
             }
             core.info(`Syntax OK: ${js.length} .js (node --check)`);
 
+      # The Pages deploy manifest must satisfy its checked-in JSON Schema
+      # (pages-manifest.schema.json mirrors the assembly script's constraints).
+      - name: Validate pages-manifest.json against its schema
+        uses: wow-look-at-my/json-validator@master
+        with:
+          files: 'pages-manifest.json'
+          schema: 'pages-manifest.schema.json'
+
   # Aggregate gate for the org ruleset ("require-all-builds"), which requires a
   # passing status check named exactly `all-builds` on the merged SHA. This
   # zero-work job fans in every job in this workflow and reports that one
