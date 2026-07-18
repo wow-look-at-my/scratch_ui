@@ -1,10 +1,10 @@
-// Assembles the deployable site (_site/) from pages-manifest.json.
-// Executed by .github/workflows/preview.yml via wow-look-at-my/actions@typescript#latest
+// Assembles the GitHub Pages artifact (_site/) from pages-manifest.json.
+// Executed by .github/workflows/pages.yml via wow-look-at-my/actions@typescript#latest
 // (file: mode — same model as an inline script: the body runs inside an async
 // function with `core`, `fs`, `path`, etc. already in scope; no imports).
 //
 // Each manifest entry {from, to} copies a repo file or directory (recursive)
-// into the staged site at the path `to`. The manifest is the single source
+// into the artifact at the site path `to`. The manifest is the single source
 // of truth for what gets published; this script just executes it.
 
 const out = '_site';
