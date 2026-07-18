@@ -9,14 +9,12 @@ name: Deploy site
 #   push to master    -> https://sites.pazer.build/scratch_ui/branch/master/
 #                        (the canonical consumer site)
 #   pull_request      -> https://sites.pazer.build/scratch_ui/branch/pr-<number>/
-#   workflow_dispatch -> manual redeploy of the chosen ref
 
 on:
   push:
     branches: [master]
   pull_request:
     types: [opened, reopened, synchronize]
-  workflow_dispatch:
 
 permissions:
   contents: read
