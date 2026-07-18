@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/wow-look-at-my/scratch_ui/pages-manifest.schema.json",
-  "title": "scratch_ui site manifest",
-  "description": "Input -> output copy map that drives the buildhost site deploy: .github/workflows/preview.yml runs .github/scripts/assemble-pages.ts, which stages _site/ from pages-manifest.json. This schema mirrors exactly the constraints the assembly script enforces — no more.",
+  "title": "scratch_ui Pages manifest",
+  "description": "Input -> output copy map that drives the GitHub Pages deploy: .github/workflows/pages.yml runs .github/scripts/assemble-pages.ts, which stages the artifact from pages-manifest.json. This schema mirrors exactly the constraints the assembly script enforces — no more.",
   "type": "object",
   "additionalProperties": false,
   "required": ["entries"],

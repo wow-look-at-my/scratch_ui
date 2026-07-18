@@ -1,0 +1,45 @@
+name: Deploy GitHub Pages
+
+# Publishes the site surface described by pages-manifest.json to GitHub Pages
+# (repo Pages source: GitHub Actions). The manifest — not this workflow —
+# decides what gets published; the assembly step just executes it. This is a
+# deploy workflow: the master branch filter is intentional and must stay.
+# PR previews are unaffected and stay on buildhost (preview.yml).
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One Pages deploy at a time; never cancel an in-flight production deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reads pages-manifest.json and stages _site/ (input -> output copies).
+      # Logic lives in its own .ts file — no code embedded in this YAML.
+      - name: Assemble _site/ from pages-manifest.json
+        uses: wow-look-at-my/actions@typescript#latest
+        with:
+          file: .github/scripts/assemble-pages.ts
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v5
