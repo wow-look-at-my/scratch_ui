@@ -16,7 +16,7 @@ caution accents, registration marks, build-stamp metadata.
   their demo-only stylesheet (`scratch-proto.css`). Pages reference the
   components as `../components/...`, so serving `src/` serves the whole site.
 - `pages-manifest.json` (repo root) — the input→output map that drives the
-  GitHub Pages deploy (see Hosting below).
+  site deploy to buildhost (see Hosting below).
 
 ## Files
 
@@ -107,40 +107,41 @@ Open the pages in a browser, or serve `src/` with any static server
 dependency-free, spec pages included: no framework, no build step, no external
 scripts (the pages' only external requests are the Google Fonts stylesheets).
 
-## Hosting (GitHub Pages)
+## Hosting (buildhost)
 
-GitHub Pages is the canonical host for external consumers. The repo's Pages
-source is **GitHub Actions**: on every push to master,
-`.github/workflows/pages.yml` assembles the artifact from
-**`pages-manifest.json`** — a checked-in list of
-`{"from": "<repo file or dir>", "to": "<site path>"}` copies — and deploys
-it. The manifest, not the workflow, decides what gets published; change the
-site by editing the manifest. CI validates it against its JSON Schema
-(`pages-manifest.schema.json`, checked by the org's json-validator action).
+[buildhost](https://github.com/wow-look-at-my/buildhost) is the canonical host
+for external consumers. (GitHub Pages is retired — the repo's Pages site has
+been switched off, so the old `wow-look-at-my.github.io/scratch_ui/` URLs are
+gone.) On every push to master, `.github/workflows/preview.yml` assembles
+`_site/` from **`pages-manifest.json`** — a checked-in list of
+`{"from": "<repo file or dir>", "to": "<site path>"}` copies — and publishes
+it as a public static site via buildhost's own `buildhost-publish-site`
+action (GitHub OIDC auth: no static secrets). The manifest, not the workflow,
+decides what gets published; change the site by editing the manifest. CI
+validates it against its JSON Schema (`pages-manifest.schema.json`, checked
+by the org's json-validator action).
 
 The manifest publishes the components and tokens at the **site root**, so
 consumers embed bare root-relative file URLs — the same convention
 `js-snippets` uses for its hosted modules:
 
 ```
-https://wow-look-at-my.github.io/scratch_ui/scratch-tokens.css
-https://wow-look-at-my.github.io/scratch_ui/scratch-button.js
+https://sites.pazer.build/scratch_ui/branch/master/scratch-tokens.css
+https://sites.pazer.build/scratch_ui/branch/master/scratch-button.js
 ```
 
 The spec site is served under `/demo/` (the site root's `index.html` forwards
 there — the spec pages can't live at the root itself, because their relative
-`../components/` references would escape the `/scratch_ui/` project path), and
+`../components/` references would escape the site's base path), and
 `/components/` mirrors the root component files so those references resolve.
 
 ## Previews
 
-`.github/workflows/preview.yml` calls the org's reusable
-`buildhost-preview.yml` workflow to publish `src/` as a public static site on
-buildhost (PR previews live here, not on Pages):
+The same workflow deploys every pull request, so each PR gets its own copy of
+the full site (same assembled layout as master):
 
-- master: <https://sites.pazer.build/scratch_ui/branch/master/>
-- pull requests: `https://sites.pazer.build/scratch_ui/branch/pr-<number>/`,
-  posted as a sticky comment on the PR.
+- master (canonical): <https://sites.pazer.build/scratch_ui/branch/master/>
+- pull requests: `https://sites.pazer.build/scratch_ui/branch/pr-<number>/`
 
 ## Consuming
 

@@ -1,10 +1,14 @@
-name: PR preview
+name: Deploy site
 
-# Deploy the spec site (src/: the demo pages + the components they load) to
-# buildhost via the org's buildhost-flavour PR-preview reusable workflow. PRs
-# deploy to https://sites.pazer.build/scratch_ui/branch/pr-<number>/ with a
-# sticky PR comment; pushes to master deploy to .../branch/master/. The project
-# defaults to the (lowercase) repo name -> "scratch_ui".
+# Publishes the site surface described by pages-manifest.json to buildhost as a
+# public static site, using buildhost's own buildhost-publish-site action for
+# the upload (tar.gz PUT to sites.pazer.build, GitHub OIDC auth — no static
+# secrets). The manifest — not this workflow — decides what gets published; the
+# assembly step just executes it.
+#
+#   push to master    -> https://sites.pazer.build/scratch_ui/branch/master/
+#                        (the canonical consumer site)
+#   pull_request      -> https://sites.pazer.build/scratch_ui/branch/pr-<number>/
 
 on:
   push:
@@ -12,19 +16,29 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
-# The called workflow declares these at its workflow level, so the caller must
-# grant at least the same set (a lesser grant is a startup_failure). actions:
-# read is only exercised by artifact-name mode, which we don't use.
 permissions:
   contents: read
-  actions: read
-  pull-requests: write
-  id-token: write
+  id-token: write # buildhost OIDC auth
 
 jobs:
-  preview:
-    uses: wow-look-at-my/actions/.github/workflows/buildhost-preview.yml@master
-    with:
-      source-dir: src
-      public: true
-    secrets: inherit
+  deploy:
+    runs-on: ubuntu-latest
+    # Fork PRs get no OIDC token, so they cannot authenticate to buildhost.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reads pages-manifest.json and stages _site/ (input -> output copies).
+      - name: Assemble _site/ from pages-manifest.json
+        uses: wow-look-at-my/actions@typescript#latest
+        with:
+          file: .github/scripts/assemble-pages.ts
+
+      # Same branch naming as the org's buildhost-preview.yml reusable
+      # workflow: pr-<number> for pull requests, the pushed ref otherwise.
+      - name: Publish _site/ to buildhost
+        uses: wow-look-at-my/buildhost/.github/actions/buildhost-publish-site@master
+        with:
+          branch: ${{ github.event.number && format('pr-{0}', github.event.number) || github.ref_name }}
+          source_dir: _site
+          public: 'true'
