@@ -42,12 +42,15 @@ jobs:
           files: 'pages-manifest.json'
           schema: 'pages-manifest.schema.json'
 
-  # Aggregate gate for the org ruleset ("require-all-builds"), which requires a
-  # passing status check named exactly `all-builds` on the merged SHA. This
-  # zero-work job fans in every job in this workflow and reports that one
-  # context. always() keeps it reporting when a needed job fails or is skipped;
-  # it fails on any failure/cancelled result and passes on success/skipped.
-  all-builds:
+  # Zero-work fan-in of every job in this workflow. always() keeps it reporting
+  # when a needed job fails or is skipped; it fails on any failure/cancelled
+  # result and passes on success/skipped. Deliberately NOT named `all-builds`:
+  # the org's required all-builds gate is a commit status posted by the
+  # required-builds-manager app, which aggregates every build on the SHA
+  # itself — a workflow job with that name only shadows the real gate in the
+  # GitHub UI, and the buildhost publish guard fails any deploy on a SHA
+  # carrying one (see preview.yml's permissions comment).
+  aggregate:
     needs: [checks]
     if: ${{ always() }}
     runs-on: ubuntu-latest
