@@ -10,10 +10,13 @@
  *   <scratch-field value="preset" disabled></scratch-field>   ← dashed border
  *   <scratch-field type="password" placeholder="api key"></scratch-field>
  *   <scratch-field type="number" min="0" max="64" step="8"></scratch-field>
+ *   <scratch-field inputmode="numeric" placeholder="tokens"></scratch-field>
  *
  * `type` picks the single-line input's type — text (default) · password ·
  * number · search · email · url; anything else falls back to text, and
  * `multiline` ignores it. min/max/step pass through when present (number use).
+ * `inputmode` passes through in both modes — the virtual-keyboard hint for a
+ * free-text field that expects e.g. digits without number-input semantics.
  */
 const SCRATCH_FIELD_TYPES = new Set(['text', 'password', 'number', 'search', 'email', 'url']);
 const SCRATCH_FIELD_CSS = `
@@ -55,7 +58,7 @@ SCRATCH_FIELD_SHEET.replaceSync(SCRATCH_FIELD_CSS);
 
 class ScratchField extends HTMLElement {
   static formAssociated = true;
-  static get observedAttributes() { return ['placeholder', 'value', 'multiline', 'rows', 'disabled', 'type', 'min', 'max', 'step']; }
+  static get observedAttributes() { return ['placeholder', 'value', 'multiline', 'rows', 'disabled', 'type', 'min', 'max', 'step', 'inputmode']; }
 
   constructor() {
     super();
@@ -105,6 +108,9 @@ class ScratchField extends HTMLElement {
         else this._el.removeAttribute(a);
       }
     }
+    const im = this.getAttribute('inputmode');
+    if (im != null) this._el.setAttribute('inputmode', im);
+    else this._el.removeAttribute('inputmode');
     this._el.disabled = this.hasAttribute('disabled');
     const v = this.getAttribute('value');
     if (v != null && this._value == null) { this._el.value = v; this._value = v; }
