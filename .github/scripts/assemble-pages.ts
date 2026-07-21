@@ -1,5 +1,5 @@
-// Assembles the GitHub Pages artifact (_site/) from pages-manifest.json.
-// Executed by .github/workflows/pages.yml via wow-look-at-my/actions@typescript#latest
+// Assembles the buildhost site staging dir (_site/) from pages-manifest.json.
+// Executed by .github/workflows/preview.yml via wow-look-at-my/actions@typescript#latest
 // (file: mode — same model as an inline script: the body runs inside an async
 // function with `core`, `fs`, `path`, etc. already in scope; no imports).
 //
