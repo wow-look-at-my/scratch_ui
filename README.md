@@ -89,7 +89,9 @@ API quick notes (the newer controls + upgraded attributes):
   never submits. `disabled` is also a property accessor.
 - `<scratch-field>` — new `type` for the single-line mode
   (`text|password|number|search|email|url`; `multiline` ignores it) plus
-  `min`/`max`/`step` passthrough for number use.
+  `min`/`max`/`step` passthrough for number use, and `inputmode` passthrough
+  in both modes (the virtual-keyboard hint — e.g. `inputmode="numeric"` on a
+  free-text field that expects digits without number-input semantics).
 - `<scratch-badge>` — new `variant="off"`: the neutral dim/inactive chip
   (muted text, dashed border, no LED).
 - `<scratch-message>` — `author="user|assistant"` picks the label color

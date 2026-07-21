@@ -409,12 +409,16 @@
           <scratch-field value="locked endpoint" disabled></scratch-field>
           <scratch-field type="password" value="sk-scratch-000000" placeholder="api key"></scratch-field>
           <scratch-field type="number" value="4096" min="0" max="131072" step="1024"></scratch-field>
+          <scratch-field inputmode="numeric" placeholder="assumed context (tokens)"></scratch-field>
           <scratch-field multiline placeholder="system prompt ..."></scratch-field>
         </div>
       </div>
       <p class="sg-prose" style="font-size:var(--fs-small);color:var(--text-muted)"><code>type</code> covers the
       single-line modes — text (default) · password · number · search · email · url — with <code>min</code> /
-      <code>max</code> / <code>step</code> passed through for number use. <code>multiline</code> ignores it.</p>
+      <code>max</code> / <code>step</code> passed through for number use. <code>multiline</code> ignores it.
+      <code>inputmode</code> passes through in both modes: the virtual-keyboard hint (e.g.
+      <code>inputmode="numeric"</code>) for a free-text field that expects digits without number-input
+      semantics.</p>
 
       <div class="sg-subhead">Select</div>
       <p class="sg-prose">Component <code>&lt;scratch-select&gt;</code> — light-DOM <code>&lt;option&gt;</code> children are
