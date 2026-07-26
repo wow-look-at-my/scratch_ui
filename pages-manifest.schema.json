@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wow-look-at-my/scratch_ui/pages-manifest.schema.json",
+  "title": "scratch_ui Pages manifest",
+  "description": "Input -> output copy map that drives the GitHub Pages deploy: .github/workflows/pages.yml runs .github/scripts/assemble-pages.ts, which stages the artifact from pages-manifest.json. This schema mirrors exactly the constraints the assembly script enforces — no more.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["entries"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional pointer at this schema, for editor tooling and validators."
+    },
+    "comment": {
+      "type": "string",
+      "description": "Free-form documentation (JSON has no comments)."
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Each entry copies a repo file or directory (recursive) to a site path.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "to"],
+        "properties": {
+          "from": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[^/]",
+            "description": "Input path, relative to the repo root (must not start with /)."
+          },
+          "to": {
+            "type": "string",
+            "pattern": "^/",
+            "not": { "pattern": "\\.\\." },
+            "description": "Output site path (must start with /). '..' is rejected — the schema-level mirror of the assembly script's root-escape guard."
+          }
+        }
+      }
+    }
+  }
+}

@@ -7,9 +7,11 @@
 <title>Scratch Proto — Icon Language</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="scratch-tokens.css?v=1" />
-<link rel="stylesheet" href="scratch-proto.css?v=39" />
+<link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../components/scratch-tokens.css" />
+<link rel="stylesheet" href="scratch-proto.css" />
+<script src="../components/scratch-led.js" defer></script>
+<script src="../components/scratch-badge.js" defer></script>
 <style>
   /* ── Specimen-only layout ────────────────────────────── */
   .icon-main {
@@ -80,7 +82,9 @@
   .icon-use { font-size: var(--fs-tiny); color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
 
   /* ── Favicon scale proof row ────────────────────────── */
-  .scale-row {
+  /* (fav- prefixed: scratch-proto.css already owns .scale-row for the
+     spacing-scale specimen, which means something else entirely) */
+  .fav-scale-row {
     display: flex; align-items: flex-end; gap: var(--sp-5);
     flex-wrap: wrap; margin-top: var(--sp-4);
     border: 1px solid var(--border); background-color: var(--bg-surface);
@@ -129,7 +133,7 @@
   <header class="sg-masthead">
     <div class="sg-masthead-row">
       <h1>Icon Language</h1>
-      <span class="badge-proto">Favicons</span>
+      <scratch-badge>Favicons</scratch-badge>
     </div>
     <div class="sg-masthead-tag">Per-site marks · squared chip · amber glyph</div>
     <p class="sg-lede">
@@ -162,7 +166,7 @@
     <p class="sg-prose">Every mark shown at its real favicon sizes. The chip edge defines the square against
     a dark tab; the glyph must stay legible at <code>16px</code>.</p>
 
-    <div class="scale-row" id="scaleRow"><!-- injected --></div>
+    <div class="fav-scale-row" id="scaleRow"><!-- injected --></div>
 
     <div class="tab-proof" id="tabProof"><!-- injected --></div>
   </section>

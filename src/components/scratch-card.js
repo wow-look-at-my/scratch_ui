@@ -70,6 +70,10 @@ const SCRATCH_CARD_CSS = `
 const SCRATCH_CARD_SHEET = new CSSStyleSheet();
 SCRATCH_CARD_SHEET.replaceSync(SCRATCH_CARD_CSS);
 
+/* Escape attribute values before interpolating them into shadow innerHTML. */
+const SCRATCH_CARD_ESC = (s) =>
+  String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
 class ScratchCard extends HTMLElement {
   static get observedAttributes() { return ['index', 'name', 'desc', 'href']; }
   constructor() {
@@ -83,13 +87,14 @@ class ScratchCard extends HTMLElement {
   connectedCallback() { this._render(); }
   attributeChangedCallback() { if (this.shadowRoot.childElementCount) this._render(); }
   _render() {
+    const esc = SCRATCH_CARD_ESC;
     const href = this.getAttribute('href');
     const tag = href ? 'a' : 'div';
     this.shadowRoot.innerHTML =
-      `<${tag} class="card" part="card"${href ? ` href="${href}"` : ' role="button" tabindex="0"'}>` +
-        `<span class="index">${this.getAttribute('index') || ''}</span>` +
-        `<div class="name">${this.getAttribute('name') || ''}</div>` +
-        `<div class="desc">${this.getAttribute('desc') || ''}</div>` +
+      `<${tag} class="card" part="card"${href ? ` href="${esc(href)}"` : ' role="button" tabindex="0"'}>` +
+        `<span class="index">${esc(this.getAttribute('index') || '')}</span>` +
+        `<div class="name">${esc(this.getAttribute('name') || '')}</div>` +
+        `<div class="desc">${esc(this.getAttribute('desc') || '')}</div>` +
         `<slot></slot>` +
       `</${tag}>`;
   }
