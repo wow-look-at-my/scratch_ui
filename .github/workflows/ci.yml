@@ -4,8 +4,9 @@ on:
   push:
 
 jobs:
-  # Named to match the org ruleset's required status check ("all-builds").
-  all-builds:
+  # Static syntax checks: there is no build system or test suite, so CI
+  # validates that every source file at least parses.
+  checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,14 +19,13 @@ jobs:
         uses: wow-look-at-my/actions@typescript#latest
         with:
           script: |
-            // Static checks for a plain-browser prototype: there is no build
-            // system or test suite, so CI validates that every source file at
-            // least parses.
-            //   *.js — classic scripts loaded via <script defer>: node --check
-            const names = fs.readdirSync('.').filter((n) => fs.statSync(n).isFile());
+            //   src/**/*.js — classic scripts loaded via <script defer>: node --check
+            const names = fs.readdirSync('src', { recursive: true })
+              .map((n) => `src/${n}`)
+              .filter((n) => fs.statSync(n).isFile());
             const js = names.filter((n) => n.endsWith('.js')).sort();
             if (js.length === 0) {
-              core.setFailed('Repo layout changed: found 0 .js files at the root — update the CI syntax check to cover the new layout.');
+              core.setFailed('Repo layout changed: found 0 .js files under src/ — update the CI syntax check to cover the new layout.');
               return;
             }
             for (const f of js) {
@@ -33,3 +33,35 @@ jobs:
               await $`node --check ${f}`;
             }
             core.info(`Syntax OK: ${js.length} .js (node --check)`);
+
+      # The Pages deploy manifest must satisfy its checked-in JSON Schema
+      # (pages-manifest.schema.json mirrors the assembly script's constraints).
+      - name: Validate pages-manifest.json against its schema
+        uses: wow-look-at-my/json-validator@master
+        with:
+          files: 'pages-manifest.json'
+          schema: 'pages-manifest.schema.json'
+
+  # Zero-work fan-in of every job in this workflow. always() keeps it reporting
+  # when a needed job fails or is skipped; it fails on any failure/cancelled
+  # result and passes on success/skipped. Deliberately NOT named `all-builds`:
+  # the org's required all-builds gate is a commit status posted by the
+  # required-builds-manager app, which aggregates every build on the SHA
+  # itself — a workflow job with that name only shadows the real gate in the
+  # GitHub UI, and the buildhost publish guard fails any deploy on a SHA
+  # carrying one (see preview.yml's permissions comment).
+  aggregate:
+    needs: [checks]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wow-look-at-my/actions@typescript#latest
+        with:
+          needs: ${{ toJSON(needs) }}
+          script: |
+            const results = Object.entries(needs).map(([job, n]) => [job, n.result] as const);
+            for (const [job, result] of results) core.info(`${job}: ${result}`);
+            const bad = results.filter(([, r]) => r === "failure" || r === "cancelled");
+            if (bad.length > 0) {
+              core.setFailed(`Jobs failed or were cancelled: ${bad.map(([j]) => j).join(", ")}`);
+            }

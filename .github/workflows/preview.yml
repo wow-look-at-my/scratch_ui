@@ -1,0 +1,54 @@
+name: Deploy site
+
+# Publishes the site surface described by pages-manifest.json to buildhost as a
+# public static site, using buildhost's own buildhost-publish-site action for
+# the upload (tar.gz PUT to sites.pazer.build, GitHub OIDC auth — no static
+# secrets). The manifest — not this workflow — decides what gets published; the
+# assembly step just executes it.
+#
+#   push to master    -> https://sites.pazer.build/scratch_ui/branch/master/
+#                        (the canonical consumer site)
+#   pull_request      -> https://sites.pazer.build/scratch_ui/branch/pr-<number>/
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+  id-token: write # buildhost OIDC auth
+  # The buildhost-publish-site action (consumed @master) now front-runs the
+  # org's no-all-builds shadow guard, which scans this run's jobs and the
+  # head commit's check runs — it FAILS CLOSED without these two reads.
+  actions: read
+  checks: read
+  # buildhost-publish-site records what it uploaded on the org's linked
+  # artifacts page; that recording is part of publishing, not optional,
+  # so the publish fails without this.
+  artifact-metadata: write
+  deployments: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Fork PRs get no OIDC token, so they cannot authenticate to buildhost.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+
+      # Reads pages-manifest.json and stages _site/ (input -> output copies).
+      - name: Assemble _site/ from pages-manifest.json
+        uses: wow-look-at-my/actions@typescript#latest
+        with:
+          file: .github/scripts/assemble-pages.ts
+
+      # Same branch naming as the org's buildhost-preview.yml reusable
+      # workflow: pr-<number> for pull requests, the pushed ref otherwise.
+      - name: Publish _site/ to buildhost
+        uses: wow-look-at-my/buildhost/.github/actions/buildhost-publish-site@master
+        with:
+          branch: ${{ github.event.number && format('pr-{0}', github.event.number) || github.ref_name }}
+          source_dir: _site
+          public: 'true'

@@ -2,6 +2,7 @@
  *
  *   <scratch-badge>Prototype</scratch-badge>          proto: accent tag + static LED
  *   <scratch-badge variant="key">KEY</scratch-badge>  plain neutral tag (e.g. "has API key")
+ *   <scratch-badge variant="off">OFF</scratch-badge>  dim chip: dashed, no LED (inactive)
  *
  * The proto variant composes <scratch-led> internally (component-in-component),
  * so its dot is the same sealed indicator used everywhere else. Static by
@@ -30,6 +31,20 @@ const SCRATCH_BADGE_CSS = `
     color: var(--accent, #ffae00);
     background: var(--accent-glow, rgba(255,174,0,0.12));
     border: 1px solid var(--accent-dim, #7d6939);
+    border-radius: var(--r-sm, 0);
+    padding: 5px 9px;
+    line-height: 1;
+  }
+  /* off — neutral DIM chip: the disabled/inactive tag. Dashed border (the
+     system's disabled signal), muted text, no fill, no LED. */
+  :host([variant="off"]) .box {
+    font-size: var(--fs-micro, 10px);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted, #6b7280);
+    background: none;
+    border: 1px dashed var(--border-dashed, #333844);
     border-radius: var(--r-sm, 0);
     padding: 5px 9px;
     line-height: 1;
