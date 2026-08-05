@@ -34,7 +34,7 @@ jobs:
             }
             core.info(`Syntax OK: ${js.length} .js (node --check)`);
 
-      # The Pages deploy manifest must satisfy its checked-in JSON Schema
+      # The site deploy manifest must satisfy its checked-in JSON Schema
       # (pages-manifest.schema.json mirrors the assembly script's constraints).
       - name: Validate pages-manifest.json against its schema
         uses: wow-look-at-my/json-validator@master
