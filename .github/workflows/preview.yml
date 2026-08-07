@@ -47,7 +47,7 @@ jobs:
       # Same branch naming as the org's buildhost-preview.yml reusable
       # workflow: pr-<number> for pull requests, the pushed ref otherwise.
       - name: Publish _site/ to buildhost
-        uses: wow-look-at-my/buildhost/.github/actions/buildhost-publish-site@master
+        uses: wow-look-at-my/buildhost/.github/actions/buildhost-publish-site@claude/demo-service-worker-ptp87v
         with:
           branch: ${{ github.event.number && format('pr-{0}', github.event.number) || github.ref_name }}
           # On a pull_request event github.sha is the synthetic MERGE commit,
