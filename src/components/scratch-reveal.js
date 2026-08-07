@@ -1,7 +1,7 @@
 /* scratch-reveal.js — proximity edge-light for the bordered controls.
  *
  * A cursor near a control brightens its 1px border, brightest at the point on
- * the edge closest to the pointer, fading to nothing at 120px. Fluent's
+ * the edge closest to the pointer, fading to nothing at 512px. Fluent's
  * "reveal" highlight in the system's own palette: the boxes stop being flat
  * outlines and read as lit surfaces the cursor sweeps across.
  *
@@ -20,6 +20,10 @@
  *     is what covers a hybrid laptop — the media query passes there, and a
  *     touch still lights nothing and douses anything the mouse left lit.
  *
+ * REDUCED MOTION gets nothing either: a light that chases the cursor is
+ * motion. Gated the same two ways — the ring is never generated, and the
+ * tracker stops (live, so switching the preference on goes dark immediately).
+ *
  * Escape hatch for controls this can't see (a closed shadow root, or a host
  * built after its subtree was scanned):
  *   ScratchReveal.track(el) / ScratchReveal.untrack(el) / ScratchReveal.scan(root)
@@ -29,7 +33,7 @@
    gets directly under it. RADIUS is baked into the gradient below rather than
    exposed as a token: the JS falloff and the gradient have to agree, and two
    knobs that must match are one knob. */
-const SCRATCH_REVEAL_RADIUS = 120;
+const SCRATCH_REVEAL_RADIUS = 512;
 const SCRATCH_REVEAL_PEAK = 0.55;
 
 const SCRATCH_REVEAL_CSS = `
@@ -74,10 +78,19 @@ const SCRATCH_REVEAL_CSS = `
                 var(--rv-tint), transparent 100%);
   }
 
-  /* The toggle's box is 14px across — an order of magnitude under the falloff,
-     so a gradient inside it would read as flat. Light its ring uniformly and
-     let --rv-o alone carry the proximity. */
+  /* The toggle's box is 14px across — far under the falloff, so a gradient
+     inside it would read as flat. Light its ring uniformly and let --rv-o
+     alone carry the proximity. */
   :host(scratch-toggle) .box::before { background: var(--rv-tint); }
+}
+
+/* A light that chases the cursor is motion, so reduced-motion gets no ring at
+   all — content:none means the pseudo-element is never generated, the same way
+   it is absent on a touch device. AFTER the block above so it wins. The
+   tracker stops too, rather than writing properties nothing reads. */
+@media (prefers-reduced-motion: reduce) {
+  :host(:not(scratch-toggle))::before,
+  :host(scratch-toggle) .box::before { content: none; }
 }
 `;
 
@@ -182,6 +195,11 @@ const ScratchReveal = (() => {
     }
   });
 
+  /* Live, not read once: someone can turn reduced-motion on mid-session, and
+     anything already lit has to go dark then rather than at the next redraw. */
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  reduceMotion.addEventListener('change', () => { if (reduceMotion.matches) stop(); });
+
   let px = 0, py = 0, queued = false, tracking = false;
 
   function schedule() {
@@ -219,7 +237,7 @@ const ScratchReveal = (() => {
   }
 
   function onMove(e) {
-    if (e.pointerType !== 'mouse') { stop(); return; }
+    if (e.pointerType !== 'mouse' || reduceMotion.matches) { stop(); return; }
     px = e.clientX;
     py = e.clientY;
     tracking = true;
