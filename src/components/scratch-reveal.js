@@ -34,7 +34,9 @@
    exposed as a token: the JS falloff and the gradient have to agree, and two
    knobs that must match are one knob. */
 const SCRATCH_REVEAL_RADIUS = 512;
-const SCRATCH_REVEAL_PEAK = 0.55;
+/* PEAK scales the whole effect: --rv-o is PEAK * t^2, and the tint is the only
+   other term, so this alone sets how loud the reveal reads. */
+const SCRATCH_REVEAL_PEAK = 0.1375;
 
 const SCRATCH_REVEAL_CSS = `
 @media (hover: hover) and (pointer: fine) {
