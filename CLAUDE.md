@@ -54,12 +54,15 @@ Two gotchas:
 
 - A job-level `permissions:` block **replaces** the workflow-level one — if a
   job ever gets its own block, re-grant both reads there.
-- The publish registers a **GitHub Deployment** (that is how a preview URL
-  reaches a PR — this repo posts no preview comment). It needs
-  `deployments: write`, and it must be pinned to the PR head via
-  `git_commit: ${{ github.event.pull_request.head.sha || github.sha }}`: on a
-  `pull_request` event `github.sha` is the synthetic merge commit, which is in
-  no branch, so a Deployment against it never surfaces on the PR.
+- The publish registers a **GitHub Deployment** — that is how a preview URL
+  reaches a PR, since this repo posts no preview comment. It needs
+  `deployments: write` plus two inputs, which are not interchangeable:
+  `deployment_ref: ${{ github.head_ref || github.ref_name }}` (GitHub stores a
+  deployment's ref verbatim, and a bare SHA belongs to no branch, so the branch
+  and PR views read "This branch has not been deployed"), and
+  `git_commit: ${{ github.event.pull_request.head.sha || github.sha }}` (the
+  recorded commit, which must stay a real SHA — on a `pull_request` event
+  `github.sha` is the merge commit and dies with the PR).
 - If the deploy is ever switched to an org **reusable workflow** (e.g.
   `buildhost-preview.yml`), the caller must grant every permission the
   reusable declares, or the run fails as `startup_failure` with **zero
