@@ -42,6 +42,7 @@ that are also import-safe as modules — each registers itself via a top-level
 | file | element(s) |
 |---|---|
 | `scratch-ring.js` | `<scratch-ring>` + `window.ScratchRing` (click-burst ring; buttons/cards use it when present) |
+| `scratch-reveal.js` | `window.ScratchReveal` — no element. Proximity edge-light: bordered interactive controls brighten the edge nearest the cursor. Mouse only; optional |
 | `scratch-button.js` | `<scratch-button>` |
 | `scratch-badge.js` | `<scratch-badge>` — composes `<scratch-led>`: load `scratch-led.js` too |
 | `scratch-card.js` | `<scratch-card>` |
@@ -184,6 +185,10 @@ Notes:
 - Import `scratch-ring.js` alongside the components if you want the click
   ring: `scratch-button`/`scratch-card` burst rings only when
   `window.ScratchRing` exists, and degrade gracefully without it.
+- Import `scratch-reveal.js` for the proximity edge-light. It finds the
+  controls itself — light DOM and open shadow roots — so there is nothing to
+  call; `ScratchReveal.track(el)` exists only for a closed shadow root it
+  can't see. Without the file, controls render unchanged.
 - Overriding a token on `:root` re-themes every component (inherited custom
   properties cross shadow boundaries).
 

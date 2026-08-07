@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="../components/scratch-tokens.css" />
 <link rel="stylesheet" href="scratch-proto.css" />
 <script src="../components/scratch-ring.js" defer></script>
+<script src="../components/scratch-reveal.js" defer></script>
 <script src="../components/scratch-button.js" defer></script>
 <script src="../components/scratch-preview.js" defer></script>
 <script src="../components/scratch-led.js" defer></script>
@@ -50,7 +51,7 @@
     </scratch-nav>
     <div class="sg-rail-foot">
       <div class="build-stamp">
-        <div class="row"><scratch-led live></scratch-led> SW:ACTIVE <span class="sep">·</span> <b>v0.2</b></div>
+        <div class="row"><scratch-led></scratch-led> <b>v0.2</b></div>
         <div>RECONCILED FROM 2 REPOS</div>
         <div>SRC: scratch · simple-llm-ui</div>
       </div>
@@ -223,7 +224,7 @@
           </div>
           <div class="plate-col" style="align-items:center;gap:var(--sp-2)">
             <div style="display:flex;align-items:center;gap:var(--sp-3);height:64px">
-              <scratch-led live></scratch-led>
+              <scratch-led></scratch-led>
               <div style="width:64px;height:22px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r-pill)"></div>
             </div>
             <div class="preview-sub">--r-pill = 999px</div>
@@ -329,6 +330,29 @@
         </div>
       </div>
 
+      <div class="sg-subhead">Proximity edge-reveal</div>
+      <p class="sg-prose">Bordered <em>interactive</em> controls light their edge as the cursor approaches — brightest
+      at the point closest to it, fading out by 120px. Proximity, not hover: the near edge lifts before you arrive, so
+      a cluster of controls reads as a lit surface instead of a grid of flat outlines. Static boxes (cards, messages,
+      plates) never light. The glow carries the same message as the corner-marks — <em>you can act on this</em> — which
+      is why a disabled control and the borderless <code>link</code> / <code>ghost</code> button tiers stay dark.</p>
+      <p class="sg-prose" style="font-size:var(--fs-small);color:var(--text-muted)"><strong>Mouse only.</strong> A
+      finger has no hover position, so a tap would light an edge with no cursor on screen to explain it. Two gates:
+      the CSS sits behind <code>(hover: hover) and (pointer: fine)</code>, and the tracker ignores any pointer that
+      isn't a mouse — so on a hybrid laptop, where that media query passes, a touch lights nothing and douses whatever
+      the mouse left lit. Loading <code>scratch-reveal.js</code> is what turns this on; without it every control
+      renders exactly as it does otherwise.</p>
+      <div class="plate">
+        <span class="plate-label">bring the cursor near these — no need to hover</span>
+        <div class="plate-row" style="gap:var(--sp-5);align-items:center">
+          <scratch-button>test</scratch-button>
+          <scratch-field inline placeholder="field"></scratch-field>
+          <scratch-select inline><option>select</option></scratch-select>
+          <scratch-toggle>toggle</scratch-toggle>
+          <scratch-button disabled>disabled</scratch-button>
+        </div>
+      </div>
+
       <div class="sg-subhead">Status · prototype badge · caution stripe</div>
       <p class="sg-prose"><strong>Motion rule:</strong> a dot pulses <em>only</em> while work is actively happening —
       <code>running</code> or <code>queued</code>. Every other state is a static dot; the pulse is a signal that
@@ -354,7 +378,7 @@
       <div class="plate">
         <span class="plate-label">footer metadata</span>
         <div class="build-stamp">
-          <div class="row"><scratch-led live></scratch-led> SW:ACTIVE <span class="sep">·</span> <b>BUILD:59FC335</b></div>
+          <div class="row"><scratch-led></scratch-led> <b>BUILD:59FC335</b></div>
           <div>DEPLOYED:4 DAYS AGO</div>
           <div>SRC</div>
         </div>

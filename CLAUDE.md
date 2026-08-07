@@ -19,6 +19,17 @@ GitHub Pages was switched off org-wide on 2026-07-20. Every
 `wow-look-at-my.github.io` URL is dead — never reference or reintroduce one
 (in docs, demo pages, or workflows).
 
+## Shadow-DOM styling: `:host` loses to the consuming page
+
+A host element lives in the LIGHT tree, so its `::before` / `::after` are also
+matched by the page's own rules — and for normal declarations an outer tree
+beats the shadow tree. A page reset (`*, *::before { padding: 0 }`, which
+`src/demo/scratch-proto.css` has) therefore overrides `:host::before { padding }`.
+Never build host-pseudo geometry from box-model properties a reset touches
+(`padding`, `margin`, `border`, `box-sizing`); `scratch-reveal.js` sizes its
+1px ring with `mask-position` / `mask-size` for exactly this reason. Styles on
+elements *inside* the shadow root are unaffected.
+
 ## CI and the org merge gate (`all-builds`)
 
 - PRs merge into master only when the **`all-builds` commit status** on the

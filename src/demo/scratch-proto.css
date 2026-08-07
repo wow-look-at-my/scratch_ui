@@ -362,7 +362,6 @@ scratch-modal scratch-tabs::part(panels) { padding-top: var(--sp-2); }
 .spec .mono { color: var(--text-bright); }
 .spec .muted { color: var(--text-muted); }
 .spec .accent { color: var(--accent); }
-.bar { display: inline-block; height: 12px; background: var(--accent); border-radius: 1px; vertical-align: middle; }
 
 /* Reconciliation table verdict pills */
 .verdict { font-size: var(--fs-micro); text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 7px; border-radius: var(--r-sm); white-space: nowrap; }
