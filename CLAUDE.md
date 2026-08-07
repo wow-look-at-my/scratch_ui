@@ -49,24 +49,34 @@ GitHub Pages was switched off org-wide on 2026-07-20. Every
 
 ## CI and the org merge gate (`all-builds`)
 
+- **One workflow, one job**: `.github/workflows/ci.yml` builds, verifies and
+  publishes. Every step feeds the next — the build produces what the manifest
+  publishes, and assembling `_site/` is also the check that every component IS
+  published — so splitting them buys nothing and costs a second checkout and
+  install. Its triggers (`push` to master + `pull_request`) are the deploy's:
+  the PR number the preview site is named after only exists on the
+  `pull_request` event, and keeping `push` pinned to master is what stops a
+  PR update building twice.
 - PRs merge into master only when the **`all-builds` commit status** on the
   head SHA is green. That status is posted automatically by an org app
   (**required-builds-manager**), which aggregates every build on the SHA
   itself — no job naming or aggregator wiring in this repo is needed to
-  satisfy it.
+  satisfy it. That is why there is no fan-in job.
 - **Never name a workflow job (or check) `all-builds`.** A job with that name
   only shadows the real gate in the GitHub UI, and the buildhost publish
   guard rejects any deploy on a SHA carrying one — this repo hit it directly
-  (PR #17, 2026-07-20; the guard's error instructs a rename). Use a neutral
-  fan-in name: `ci.yml`'s aggregator job is `aggregate`.
+  (PR #17, 2026-07-20; the guard's error instructs a rename).
+- `runs-on` is `${{ vars.CI_RUNNER || 'ubuntu-latest' }}` — the org's
+  self-hosted runner, with the fallback for forks and repos the org has not
+  onboarded. A hardcoded `ubuntu-latest` burns paid minutes.
 
-## Deploy workflow (`preview.yml`) permissions
+## Publish permissions
 
 The `buildhost-publish-site@master` action front-runs the org's publish guard
 (since 2026-07-20), which scans the run's jobs and the head commit's check
 runs. The **calling job's token must grant `actions: read` + `checks: read`**,
 or the guard fails closed with an error naming the missing grants (PR #17
-added them); `preview.yml`'s workflow-level `permissions:` block carries both.
+added them); `ci.yml`'s workflow-level `permissions:` block carries both.
 Two gotchas:
 
 - A job-level `permissions:` block **replaces** the workflow-level one — if a
@@ -77,9 +87,8 @@ Two gotchas:
   jobs** — the error annotation exists only in the GitHub web UI; the API
   shows no jobs and no logs to pull.
 
-Keep `preview.yml` minimal: checkout → install → `pnpm build` → assemble
+Keep the publish path minimal: checkout → install → `pnpm build` → assemble
 `_site/` from `pages-manifest.json` → the stock `buildhost-publish-site`
-action. A version
-that wrapped the publish step in custom code was reverted (#15) before the
-minimal form re-landed (#16). The manifest, not the workflow, decides what
-gets published — change the site by editing the manifest.
+action. A version that wrapped the publish step in custom code was reverted
+(#15) before the minimal form re-landed (#16). The manifest, not the workflow,
+decides what gets published — change the site by editing the manifest.

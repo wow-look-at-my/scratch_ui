@@ -135,7 +135,7 @@ a dev-time step only — a consumer fetches plain `.js` and `.css`.
 [buildhost](https://github.com/wow-look-at-my/buildhost) is the canonical host
 for external consumers. (GitHub Pages is retired — the repo's Pages site has
 been switched off, so the old `wow-look-at-my.github.io/scratch_ui/` URLs are
-gone.) On every push to master, `.github/workflows/preview.yml` builds the
+gone.) On every push to master, `.github/workflows/ci.yml` builds the
 components and assembles `_site/` from **`pages-manifest.json`** — a
 checked-in list of `{"from": "<repo file or dir>", "to": "<site path>"}`
 copies — then publishes it as a public static site via buildhost's own

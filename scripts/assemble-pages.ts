@@ -1,6 +1,6 @@
 // Assembles the buildhost site staging dir (_site/) from pages-manifest.json.
 // Built by ts0 (ts0.scripts.json) and run as dist-scripts/assemble-pages.js —
-// by .github/workflows/preview.yml, by ci.yml, and by `pnpm site` locally.
+// by .github/workflows/ci.yml and by `pnpm site` locally.
 // It lives OUTSIDE .github/ on purpose: tsc's default include never descends
 // into a dot-directory, so a build script under .github/ type-checks nothing
 // while still reporting a green build.
