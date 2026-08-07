@@ -52,7 +52,7 @@ that are also import-safe as modules — each registers itself via a top-level
 | `scratch-led.js` | `<scratch-led>` |
 | `scratch-message.js` | `<scratch-message>` |
 | `scratch-modal.js` | `<scratch-modal>` |
-| `scratch-nav.js` | `<scratch-nav>`, `<scratch-nav-item>` |
+| `scratch-nav.js` | `<scratch-nav>`, `<scratch-nav-item>` — composes `<scratch-button>` for the header ×: load `scratch-button.js` too |
 | `scratch-preview.js` | `<scratch-preview>` |
 | `scratch-progress.js` | `<scratch-progress>` |
 | `scratch-select.js` | `<scratch-select>` |
@@ -60,8 +60,9 @@ that are also import-safe as modules — each registers itself via a top-level
 | `scratch-toggle.js` | `<scratch-toggle>` |
 
 Some components compose others in their shadow DOM (marked in the table):
-`scratch-composer` renders a `<scratch-field>` and a `<scratch-button>`, and
-`scratch-badge` renders a `<scratch-led>`. The files don't import each other
+`scratch-composer` renders a `<scratch-field>` and a `<scratch-button>`,
+`scratch-badge` renders a `<scratch-led>`, and `scratch-nav` renders a
+`<scratch-button>` for its close ×. The files don't import each other
 (that would break classic-script loading), so load/import the dependencies
 alongside — otherwise the inner elements stay unresolved and inert.
 
@@ -87,14 +88,20 @@ API quick notes (the newer controls + upgraded attributes):
 - `<scratch-button>` — new `variant="ghost"` (quiet borderless tier: no box,
   no corner-marks, no ring; muted → bright on hover; disabled = dimmed only).
   Now form-associated: `type="submit"` submits the owning form; no `type`
-  never submits. `disabled` is also a property accessor.
+  never submits. `disabled` is also a property accessor. `aria-label` on the
+  host is forwarded to the inner `<button>` — the focusable element — so an
+  icon-only button can actually carry a name.
 - `<scratch-field>` — new `type` for the single-line mode
   (`text|password|number|search|email|url`; `multiline` ignores it) plus
   `min`/`max`/`step` passthrough for number use, and `inputmode` passthrough
   in both modes (the virtual-keyboard hint — e.g. `inputmode="numeric"` on a
   free-text field that expects digits without number-input semantics).
-- `<scratch-badge>` — new `variant="off"`: the neutral dim/inactive chip
-  (muted text, dashed border, no LED).
+- `<scratch-badge>` — `variant="off"` is the neutral dim/inactive chip (muted
+  text, dashed border, no LED). `variant="accent"` / `variant="signal"` are the
+  colour-only chips: proto's shape without the dot, for labelling a verdict or
+  outcome (proto's LED reports a *state*, and a static amber dot already means
+  "stale" in the LED language). Every variant shares one chip geometry; a
+  variant carries colour only, `key` aside.
 - `<scratch-message>` — `author="user|assistant"` picks the label color
   (amber/green). Renamed from `role`, which collided with the ARIA global
   `role` attribute.

@@ -29,7 +29,7 @@
 <script src="../components/scratch-caution.js" defer></script>
 </head>
 <body>
-<button class="sg-railtoggle" id="railtoggle" aria-label="Open navigation"><span class="bars"><i></i><i></i><i></i></span>Nav</button>
+<scratch-button class="sg-railtoggle" id="railtoggle" aria-label="Open navigation"><span class="bars"><i></i><i></i><i></i></span>Nav</scratch-button>
 <div class="sg-railscrim" id="railscrim"></div>
 <div class="sg">
 
@@ -546,7 +546,7 @@
         <span class="plate-label">&lt;scratch-modal&gt;</span>
         <scratch-modal eyebrow="settings">
           <scratch-tabs>
-            <button slot="trail" class="modal-x" aria-label="Close">×</button>
+            <scratch-button slot="trail" class="modal-x" variant="ghost" aria-label="Close">×</scratch-button>
             <scratch-tab label="Favorites"><div class="modal-pane">No favorites pinned yet.</div></scratch-tab>
             <scratch-tab label="Upstreams" selected>
               <div class="modal-pane" style="display:flex;flex-direction:column;gap:var(--sp-3)">
@@ -617,16 +617,16 @@
           <tr><th>Decision</th><th>scratch</th><th>simple-llm-ui</th><th>Canon</th><th style="text-align:right">Verdict</th></tr>
         </thead>
         <tbody>
-          <tr><td class="mono">Scanline overlay</td><td>on</td><td class="muted">dropped</td><td class="accent">on</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
-          <tr><td class="mono">Card corner-marks</td><td>brackets</td><td class="muted">plain box</td><td class="accent">brackets</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
-          <tr><td class="mono">Prototype badge</td><td>badge-proto</td><td class="muted">plain .badge</td><td class="accent">both, scoped</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
-          <tr><td class="mono">--signal-glow / --warning</td><td>defined</td><td class="muted">missing</td><td class="accent">restored</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
-          <tr><td class="mono">--ease-out (sole curve)</td><td>defined</td><td class="muted">missing</td><td class="accent">restored; --ease-bounce dropped</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
-          <tr><td class="mono">var(--muted) typo</td><td class="muted">—</td><td>broken ref</td><td class="accent">→ --text-muted</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
-          <tr><td class="mono">grid-dot opacity</td><td>0.08</td><td>0.08 / 0.06*</td><td class="accent">0.08</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
-          <tr><td class="mono">Spacing scale</td><td class="muted">ad-hoc</td><td class="muted">ad-hoc</td><td class="accent">4-based, 8 steps</td><td style="text-align:right"><span class="verdict added">added</span></td></tr>
-          <tr><td class="mono">Radius tokens</td><td class="muted">4 / 6px raw</td><td class="muted">4 / 6px raw</td><td class="accent">0 — square; pill for dots</td><td style="text-align:right"><span class="verdict added">added</span></td></tr>
-          <tr><td class="mono">Type scale</td><td class="muted">implicit</td><td class="muted">implicit</td><td class="accent">8 named steps</td><td style="text-align:right"><span class="verdict added">added</span></td></tr>
+          <tr><td class="mono">Scanline overlay</td><td>on</td><td class="muted">dropped</td><td class="accent">on</td><td style="text-align:right"><scratch-badge variant="signal">kept</scratch-badge></td></tr>
+          <tr><td class="mono">Card corner-marks</td><td>brackets</td><td class="muted">plain box</td><td class="accent">brackets</td><td style="text-align:right"><scratch-badge variant="signal">kept</scratch-badge></td></tr>
+          <tr><td class="mono">Prototype badge</td><td>badge-proto</td><td class="muted">plain .badge</td><td class="accent">both, scoped</td><td style="text-align:right"><scratch-badge variant="signal">kept</scratch-badge></td></tr>
+          <tr><td class="mono">--signal-glow / --warning</td><td>defined</td><td class="muted">missing</td><td class="accent">restored</td><td style="text-align:right"><scratch-badge variant="accent">fixed</scratch-badge></td></tr>
+          <tr><td class="mono">--ease-out (sole curve)</td><td>defined</td><td class="muted">missing</td><td class="accent">restored; --ease-bounce dropped</td><td style="text-align:right"><scratch-badge variant="accent">fixed</scratch-badge></td></tr>
+          <tr><td class="mono">var(--muted) typo</td><td class="muted">—</td><td>broken ref</td><td class="accent">→ --text-muted</td><td style="text-align:right"><scratch-badge variant="accent">fixed</scratch-badge></td></tr>
+          <tr><td class="mono">grid-dot opacity</td><td>0.08</td><td>0.08 / 0.06*</td><td class="accent">0.08</td><td style="text-align:right"><scratch-badge variant="accent">fixed</scratch-badge></td></tr>
+          <tr><td class="mono">Spacing scale</td><td class="muted">ad-hoc</td><td class="muted">ad-hoc</td><td class="accent">4-based, 8 steps</td><td style="text-align:right"><scratch-badge variant="key">added</scratch-badge></td></tr>
+          <tr><td class="mono">Radius tokens</td><td class="muted">4 / 6px raw</td><td class="muted">4 / 6px raw</td><td class="accent">0 — square; pill for dots</td><td style="text-align:right"><scratch-badge variant="key">added</scratch-badge></td></tr>
+          <tr><td class="mono">Type scale</td><td class="muted">implicit</td><td class="muted">implicit</td><td class="accent">8 named steps</td><td style="text-align:right"><scratch-badge variant="key">added</scratch-badge></td></tr>
         </tbody>
       </table>
       <p class="sg-prose" style="margin-top:var(--sp-3);font-size:var(--fs-tiny);color:var(--text-disabled)">* nav.css fallback drifted to 0.06; canon locks 0.08 everywhere.</p>

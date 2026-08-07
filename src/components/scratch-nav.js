@@ -9,6 +9,8 @@
  * first paint, resize, and item-set rebuilds, and honoring
  * prefers-reduced-motion.
  *
+ * Composes <scratch-button> for the header's × — load scratch-button.js too.
+ *
  *   <scratch-nav label="Scratch">                  ← header "// Scratch" + ×
  *     <scratch-nav-item label="Location History Map"
  *                       desc="Real-time GPS position"></scratch-nav-item>
@@ -144,11 +146,8 @@ const SCRATCH_NAV_CSS = `
     font-size: 15px; font-weight: 600; color: var(--text-bright, #e8ecf4);
   }
   .title::before { content: '// '; color: var(--text-muted, #6b7280); font-weight: 400; }
-  .close {
-    background: none; border: none; cursor: pointer;
-    color: var(--text-muted, #6b7280); font-size: 18px; line-height: 1;
-  }
-  .close:hover { color: var(--text-bright, #e8ecf4); }
+  /* the × is a ghost <scratch-button>; only the glyph size is ours */
+  .close { font-size: 18px; }
   .list { padding: 8px 0; }
   :host([flush]) .list { padding: 0; }
 
@@ -181,7 +180,7 @@ class ScratchNav extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.adoptedStyleSheets = [SCRATCH_NAV_SHEET];
     this.shadowRoot.innerHTML =
-      `<div class="head"><span class="title"></span><button class="close" aria-label="Close">×</button></div>` +
+      `<div class="head"><span class="title"></span><scratch-button class="close" variant="ghost" aria-label="Close">×</scratch-button></div>` +
       `<div class="list"><div class="indicator"></div><slot></slot></div>`;
     this._head = this.shadowRoot.querySelector('.head');
     this._title = this.shadowRoot.querySelector('.title');

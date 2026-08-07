@@ -57,13 +57,10 @@
     font-size: var(--fs-micro); color: var(--text-disabled);
     font-variant-numeric: tabular-nums;
   }
-  /* Registration corner ticks — the signature motif */
-  .icon-cell::before, .icon-cell::after {
-    content: ''; position: absolute; width: 9px; height: 9px;
-    border-color: var(--text-disabled); border-style: solid; pointer-events: none;
-  }
-  .icon-cell::before { top: 4px; left: 4px; border-width: 1px 0 0 1px; }
-  .icon-cell::after  { bottom: 4px; right: 4px; border-width: 0 1px 1px 0; }
+  /* No registration corner-marks here: they are the cue for an INTERACTIVE
+     surface (see the design language's Signature Patterns), and a catalogue
+     cell is not one. They are also sealed into scratch-button/scratch-card so
+     they cannot drift — a page must never redraw them by hand. */
 
   .icon-art {
     width: 132px; height: 132px;

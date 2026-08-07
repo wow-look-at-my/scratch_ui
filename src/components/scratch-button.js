@@ -9,8 +9,11 @@
  *   <scratch-button variant="accent">add</scratch-button> amber / primary
  *   <scratch-button variant="danger">remove</scratch-button>
  *   <scratch-button variant="link">details</scratch-button>
- *   <scratch-button variant="ghost">✎</scratch-button>    quiet borderless tier
+ *   <scratch-button variant="ghost" aria-label="Edit">✎</scratch-button>  quiet borderless tier
  *   <scratch-button disabled>…</scratch-button>
+ *
+ * aria-label on the host is forwarded to the inner <button> (the focusable
+ * element) — always give an icon-only button one.
  *
  * Form-associated: <scratch-button type="submit"> submits the owning <form>
  * (via ElementInternals.requestSubmit). Without the attribute a button never
@@ -154,7 +157,7 @@ SCRATCH_BUTTON_TPL.innerHTML = `<button part="button"><slot></slot></button>`;
 
 class ScratchButton extends HTMLElement {
   static formAssociated = true;
-  static get observedAttributes() { return ['disabled']; }
+  static get observedAttributes() { return ['disabled', 'aria-label']; }
   constructor() {
     super();
     this._internals = this.attachInternals ? this.attachInternals() : null;
@@ -167,7 +170,14 @@ class ScratchButton extends HTMLElement {
   attributeChangedCallback() { this._sync(); }
   _sync() {
     const b = this.shadowRoot.querySelector('button');
-    if (b) b.disabled = this.hasAttribute('disabled');
+    if (!b) return;
+    b.disabled = this.hasAttribute('disabled');
+    /* The focusable element is the inner button, so an aria-label left on the
+       host never reaches the a11y tree — an icon-only ghost button would ship
+       with no accessible name at all. */
+    const label = this.getAttribute('aria-label');
+    if (label != null) b.setAttribute('aria-label', label);
+    else b.removeAttribute('aria-label');
   }
   get disabled() { return this.hasAttribute('disabled'); }
   set disabled(v) { this.toggleAttribute('disabled', !!v); }
