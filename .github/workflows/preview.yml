@@ -50,5 +50,10 @@ jobs:
         uses: wow-look-at-my/buildhost/.github/actions/buildhost-publish-site@master
         with:
           branch: ${{ github.event.number && format('pr-{0}', github.event.number) || github.ref_name }}
+          # On a pull_request event github.sha is the synthetic MERGE commit,
+          # which belongs to no branch: a Deployment created against it never
+          # appears on the PR, and the commit it records dies with the PR. Pin
+          # both to the PR head.
+          git_commit: ${{ github.event.pull_request.head.sha || github.sha }}
           source_dir: _site
           public: 'true'

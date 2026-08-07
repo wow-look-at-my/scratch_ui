@@ -85,10 +85,12 @@ const SCRATCH_REVEAL_SHEET = new CSSStyleSheet();
 SCRATCH_REVEAL_SHEET.replaceSync(SCRATCH_REVEAL_CSS);
 
 const ScratchReveal = (() => {
-  /* Only the controls that HAVE a border to light. Cards and messages are
-     bordered but not interactive; tabs and nav items are interactive but
-     borderless — neither has an edge this effect could mean anything on. */
-  const SELECTOR = 'scratch-button, scratch-field, scratch-select, scratch-toggle';
+  /* Bordered AND interactive — both conditions, or the glow means nothing.
+     scratch-card is in: it wears the registration corner-marks the spec page
+     defines as the cue for an interactive surface, and it bursts a click ring.
+     Out: messages and previews (bordered, inert), tabs and nav items
+     (interactive, borderless). */
+  const SELECTOR = 'scratch-button, scratch-card, scratch-field, scratch-select, scratch-toggle';
 
   const tracked = new Set();   // adopted the sheet, observed for visibility
   const onscreen = new Set();  // subset worth measuring this frame
