@@ -1,10 +1,26 @@
 {
   "$schema": "./pages-manifest.schema.json",
-  "comment": "Drives the buildhost site deploy (.github/workflows/preview.yml assembles _site/ from this file via .github/scripts/assemble-pages.ts and publishes it to sites.pazer.build; nothing else decides what gets published). Each {from, to} entry copies a repo file or directory (recursive) to a site output path rooted at https://sites.pazer.build/scratch_ui/branch/master/ (or the matching pr-<n>/branch site). Components + tokens are published at the site ROOT — the pre-restructure layout external consumers embed, mirroring the js-snippets root-relative URL convention — and also under /components so the demo's relative ../components/ references resolve; src/index.html forwards the site root to the spec site under /demo/.",
+  "comment": "Drives the buildhost site deploy (.github/workflows/ci.yml runs scripts/assemble-pages.ts, built by ts0 to dist-scripts/, which assembles _site/ from this file and publishes it to sites.pazer.build; nothing else decides what gets published). Each {from, to} entry copies a repo file or directory (recursive) to a site output path rooted at https://sites.pazer.build/scratch_ui/branch/master/ (or the matching pr-<n> branch site). Sources live per component (src/components/<name>/<name>.ts + .css) and compile to dist/<name>/<name>.js, but the PUBLISHED surface is flat — external consumers embed root-relative URLs like /scratch-button.js, the js-snippets convention — so each component gets an explicit flattening entry here. assemble-pages.ts fails when a component has no such entry, so a new component cannot be silently left unpublished. The spec site is served under /demo/ and src/index.html forwards the site root to it.",
   "entries": [
-    { "from": "src/components", "to": "/" },
-    { "from": "src/components", "to": "/components" },
+    { "from": "dist/scratch-badge/scratch-badge.js", "to": "/scratch-badge.js" },
+    { "from": "dist/scratch-button/scratch-button.js", "to": "/scratch-button.js" },
+    { "from": "dist/scratch-card/scratch-card.js", "to": "/scratch-card.js" },
+    { "from": "dist/scratch-caution/scratch-caution.js", "to": "/scratch-caution.js" },
+    { "from": "dist/scratch-composer/scratch-composer.js", "to": "/scratch-composer.js" },
+    { "from": "dist/scratch-field/scratch-field.js", "to": "/scratch-field.js" },
+    { "from": "dist/scratch-led/scratch-led.js", "to": "/scratch-led.js" },
+    { "from": "dist/scratch-message/scratch-message.js", "to": "/scratch-message.js" },
+    { "from": "dist/scratch-modal/scratch-modal.js", "to": "/scratch-modal.js" },
+    { "from": "dist/scratch-nav/scratch-nav.js", "to": "/scratch-nav.js" },
+    { "from": "dist/scratch-preview/scratch-preview.js", "to": "/scratch-preview.js" },
+    { "from": "dist/scratch-progress/scratch-progress.js", "to": "/scratch-progress.js" },
+    { "from": "dist/scratch-ring/scratch-ring.js", "to": "/scratch-ring.js" },
+    { "from": "dist/scratch-select/scratch-select.js", "to": "/scratch-select.js" },
+    { "from": "dist/scratch-tabs/scratch-tabs.js", "to": "/scratch-tabs.js" },
+    { "from": "dist/scratch-toggle/scratch-toggle.js", "to": "/scratch-toggle.js" },
+    { "from": "src/css/scratch-tokens.css", "to": "/scratch-tokens.css" },
     { "from": "src/demo", "to": "/demo" },
+    { "from": "src/css/scratch-proto.css", "to": "/demo/scratch-proto.css" },
     { "from": "src/index.html", "to": "/index.html" }
   ]
 }

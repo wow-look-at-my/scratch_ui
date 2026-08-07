@@ -1,0 +1,14 @@
+{
+	"//": "Editor/IDE config only. ts0 generates its own tsconfig for each build's type-check; this mirrors them (bundler resolution, no emit) so editors agree with CI.",
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+		"strict": true,
+		"noEmit": true,
+		"skipLibCheck": true,
+		"allowImportingTsExtensions": true
+	},
+	"include": ["src/**/*.ts", "scripts/**/*.ts", "css.d.ts"]
+}

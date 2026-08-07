@@ -1,0 +1,49 @@
+:host {
+  display: block;
+  /* default (accent) fill colors */
+  --fill: var(--accent, #ffae00);
+  --fill-glow: var(--accent-glow, rgba(255, 174, 0, 0.12));
+}
+:host([state="signal"]) {
+  --fill: var(--signal, #00e47a);
+  --fill-glow: var(--signal-glow, rgba(0, 228, 122, 0.08));
+}
+:host([state="danger"]) {
+  --fill: var(--danger, #ff4444);
+  --fill-glow: var(--danger-glow, rgba(255, 68, 68, 0.10));
+}
+
+.track {
+  height: var(--progress-height, 6px);
+  box-sizing: border-box;
+  background: var(--bg-elevated, #181c26);
+  border: 1px solid var(--border, #2a2e3a);
+  border-radius: var(--r-sm, 0);
+  overflow: hidden;
+  position: relative;
+}
+.fill {
+  height: 100%;
+  width: 0%;
+  background: var(--fill);
+  /* subtle glow edge in the state color */
+  box-shadow: 0 0 8px var(--fill-glow);
+}
+
+/* Indeterminate — a 30%-wide segment sweeps the track on the system
+   ease/duration tokens (loop period = 8 × --dur-slow). */
+:host([indeterminate]) .fill {
+  width: 30%;
+  animation: scratch-progress-sweep calc(var(--dur-slow, 0.19s) * 8) var(--ease-out, cubic-bezier(0.16,1,0.3,1)) infinite;
+}
+@keyframes scratch-progress-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(334%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  :host([indeterminate]) .fill {
+    animation: none;
+    width: 40%;
+    opacity: 0.5;
+  }
+}

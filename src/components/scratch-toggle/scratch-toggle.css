@@ -1,0 +1,58 @@
+:host { display: inline-flex; vertical-align: middle; }
+
+label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: var(--fs-small, 12px);
+  color: var(--text, #c8cdd8);
+}
+
+/* the native checkbox: invisible but real — keyboard, focus, a11y */
+input {
+  position: absolute;
+  opacity: 0;
+  width: 1px; height: 1px;
+  margin: 0;
+  pointer-events: none;
+}
+
+.box {
+  width: 14px; height: 14px;
+  box-sizing: border-box;
+  flex: none;
+  position: relative;
+  background: var(--bg-deep, #08090c);
+  border: 1px solid var(--border, #2a2e3a);
+  border-radius: 0;   /* hard-edged, always — never a pill */
+  transition: border-color var(--dur, 0.11s) var(--ease-out, cubic-bezier(0.16,1,0.3,1)), box-shadow 250ms var(--ease-out, cubic-bezier(0.16,1,0.3,1));
+}
+/* the inset amber square — the "LED" fill */
+.box::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: var(--accent, #ffae00);
+  opacity: 0;
+  transition: opacity var(--dur-fast, 0.09s) var(--ease-out, cubic-bezier(0.16,1,0.3,1));
+}
+
+label:hover .box { border-color: color-mix(in srgb, var(--border, #2a2e3a), white 30%); }
+input:checked ~ .box { border-color: var(--accent-dim, #7d6939); box-shadow: 0 0 6px var(--accent-glow, rgba(255, 174, 0, 0.12)); }
+input:checked ~ .box::after { opacity: 1; }
+input:focus-visible ~ .box { outline: 2px solid var(--accent, #ffae00); outline-offset: 2px; box-shadow: 0 0 18px color-mix(in srgb, var(--accent, #ffae00) 38%, transparent); }
+
+/* DISABLED — dashed box + dimmed label, inert. */
+:host([disabled]) { pointer-events: none; }
+:host([disabled]) label { cursor: not-allowed; color: var(--text-disabled, #565b69); }
+:host([disabled]) .box {
+  border-style: dashed;
+  border-color: var(--border-dashed, #333844);
+  background: none;
+  box-shadow: none;
+}
+:host([disabled]) .box::after { background: var(--text-disabled, #565b69); }

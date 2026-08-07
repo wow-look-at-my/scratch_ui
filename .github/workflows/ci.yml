@@ -1,13 +1,43 @@
 name: CI
 
+# Build, verify, publish — one job, because every step feeds the next: the
+# build produces what the manifest publishes, and the assemble step is also
+# the check that every component IS published.
+#
+#   push to master    -> https://sites.pazer.build/scratch_ui/branch/master/
+#                        (the canonical consumer site)
+#   pull_request      -> https://sites.pazer.build/scratch_ui/branch/pr-<number>/
+#
+# Triggers are the deploy workflow's, kept as they were: the pull_request
+# event is what supplies the PR number the preview site is named after, and
+# `push` stays pinned to master so a PR update builds once, not twice.
+
 on:
   push:
+    branches: [master]
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+env:
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+
+permissions:
+  contents: read
+  id-token: write # buildhost OIDC auth
+  # The buildhost-publish-site action (consumed @master) front-runs the org's
+  # no-all-builds shadow guard, which scans this run's jobs and the head
+  # commit's check runs — it FAILS CLOSED without these two reads.
+  actions: read
+  checks: read
+  # buildhost-publish-site records what it uploaded on the org's linked
+  # artifacts page; that recording is part of publishing, not optional,
+  # so the publish fails without this.
+  artifact-metadata: write
+  deployments: write
 
 jobs:
-  # Static syntax checks: there is no build system or test suite, so CI
-  # validates that every source file at least parses.
-  checks:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -15,24 +45,28 @@ jobs:
         with:
           node-version: 22
 
-      - name: Syntax-check JS
-        uses: wow-look-at-my/actions@typescript#latest
-        with:
-          script: |
-            //   src/**/*.js — classic scripts loaded via <script defer>: node --check
-            const names = fs.readdirSync('src', { recursive: true })
-              .map((n) => `src/${n}`)
-              .filter((n) => fs.statSync(n).isFile());
-            const js = names.filter((n) => n.endsWith('.js')).sort();
-            if (js.length === 0) {
-              core.setFailed('Repo layout changed: found 0 .js files under src/ — update the CI syntax check to cover the new layout.');
-              return;
-            }
-            for (const f of js) {
-              core.info(`node --check ${f}`);
-              await $`node --check ${f}`;
-            }
-            core.info(`Syntax OK: ${js.length} .js (node --check)`);
+      # pnpm, pinned via package.json "packageManager" and provisioned by
+      # corepack (ships with Node) — no third-party setup action needed.
+      - name: Enable pnpm
+        run: corepack enable
+
+      # No lockfile is committed (so ts0 is never pinned to a commit) — `pnpm
+      # install` resolves the ts0 branch dependency to its current HEAD on every
+      # run. ts0's git-dep build script is allowlisted via package.json
+      # "pnpm.onlyBuiltDependencies".
+      - run: pnpm install
+
+      # Type-checks (strict, `any` rejected) and compiles both halves:
+      # src/components/ -> dist/, and scripts/ -> dist-scripts/. A type error
+      # in either fails the build.
+      - name: Build
+        run: pnpm build
+
+      # Executes pages-manifest.json into _site/, which also enforces that
+      # every component under src/components/ has a published entry — the
+      # check that stops a new component from being silently unpublished.
+      - name: Assemble _site/ from pages-manifest.json
+        run: node dist-scripts/assemble-pages.js
 
       # The site deploy manifest must satisfy its checked-in JSON Schema
       # (pages-manifest.schema.json mirrors the assembly script's constraints).
@@ -42,26 +76,12 @@ jobs:
           files: 'pages-manifest.json'
           schema: 'pages-manifest.schema.json'
 
-  # Zero-work fan-in of every job in this workflow. always() keeps it reporting
-  # when a needed job fails or is skipped; it fails on any failure/cancelled
-  # result and passes on success/skipped. Deliberately NOT named `all-builds`:
-  # the org's required all-builds gate is a commit status posted by the
-  # required-builds-manager app, which aggregates every build on the SHA
-  # itself — a workflow job with that name only shadows the real gate in the
-  # GitHub UI, and the buildhost publish guard fails any deploy on a SHA
-  # carrying one (see preview.yml's permissions comment).
-  aggregate:
-    needs: [checks]
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: wow-look-at-my/actions@typescript#latest
+      # Only the publish is gated: a fork PR gets no OIDC token and cannot
+      # authenticate to buildhost, but it still builds and verifies above.
+      - name: Publish _site/ to buildhost
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: wow-look-at-my/buildhost/.github/actions/buildhost-publish-site@master
         with:
-          needs: ${{ toJSON(needs) }}
-          script: |
-            const results = Object.entries(needs).map(([job, n]) => [job, n.result] as const);
-            for (const [job, result] of results) core.info(`${job}: ${result}`);
-            const bad = results.filter(([, r]) => r === "failure" || r === "cancelled");
-            if (bad.length > 0) {
-              core.setFailed(`Jobs failed or were cancelled: ${bad.map(([j]) => j).join(", ")}`);
-            }
+          branch: ${{ github.event.number && format('pr-{0}', github.event.number) || github.ref_name }}
+          source_dir: _site
+          public: 'true'

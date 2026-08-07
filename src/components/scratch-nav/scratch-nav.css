@@ -1,0 +1,49 @@
+:host { display: block; position: relative; }
+:host([boxed]) {
+  background: var(--bg-deep, #08090c);
+  border: 1px solid var(--border, #2a2e3a);
+  border-radius: var(--r-md, 0);
+  overflow: hidden;
+  background-image:
+    var(--scanline, none),
+    radial-gradient(circle, var(--grid-dot, rgba(200,205,216,0.08)) 1px, transparent 1px);
+  background-size: auto, var(--grid-size, 24px) var(--grid-size, 24px);
+  background-attachment: fixed, fixed;
+}
+.head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 16px 14px;
+  border-bottom: 1px solid var(--border-dashed, #333844);
+}
+.head:not(.show) { display: none; }
+.title {
+  font-family: var(--font-display, "Space Grotesk", sans-serif);
+  font-size: 15px; font-weight: 600; color: var(--text-bright, #e8ecf4);
+}
+.title::before { content: '// '; color: var(--text-muted, #6b7280); font-weight: 400; }
+.close {
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted, #6b7280); font-size: 18px; line-height: 1;
+}
+.close:hover { color: var(--text-bright, #e8ecf4); }
+.list { padding: 8px 0; }
+:host([flush]) .list { padding: 0; }
+
+/* Sliding active-item highlight: one absolutely-positioned strip behind the
+   slotted items (their .item is position:relative, so it paints above),
+   moved with translateY + height so a selection change glides instead of
+   jumping. Positioned against the host (offsetTop space of the items). */
+.indicator {
+  position: absolute; left: 0; right: 0; top: 0;
+  height: 0;
+  background: var(--accent-glow, rgba(255,174,0,0.12));
+  opacity: 0;
+  pointer-events: none;
+}
+.indicator.slide {
+  transition: transform var(--dur-slow, 0.19s) var(--ease-out, cubic-bezier(0.16,1,0.3,1)),
+              height var(--dur-slow, 0.19s) var(--ease-out, cubic-bezier(0.16,1,0.3,1));
+}
+@media (prefers-reduced-motion: reduce) {
+  .indicator.slide { transition: none; }
+}

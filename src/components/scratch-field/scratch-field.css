@@ -1,0 +1,31 @@
+:host { display: block; }
+:host([inline]) { display: inline-block; }
+
+.control {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  color: var(--text, #c8cdd8);
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: var(--fs-small, 12px);
+  background: var(--bg-deep, #08090c);
+  border: 1px solid var(--border, #2a2e3a);
+  border-radius: var(--r-md, 0);
+  padding: var(--pad-control-y, 8px) var(--pad-control-x, 12px);
+  outline: none;
+  transition: border-color var(--dur, 0.11s) var(--ease-out, cubic-bezier(0.16,1,0.3,1)), box-shadow 250ms var(--ease-out, cubic-bezier(0.16,1,0.3,1)), background-color var(--dur, 0.11s) var(--ease-out, cubic-bezier(0.16,1,0.3,1));
+}
+.control::placeholder { color: var(--text-disabled, #565b69); }
+.control:hover:not(:focus) { border-color: color-mix(in srgb, var(--border, #2a2e3a), white 30%); }
+.control:focus { border-color: var(--accent-dim, #7d6939); box-shadow: 0 0 18px color-mix(in srgb, var(--accent, #ffae00) 38%, transparent); }
+
+/* DISABLED — dashed border is the system's single "disabled" signal;
+   dashed/dotted borders appear nowhere else. */
+:host([disabled]) .control {
+  border-style: dashed;
+  border-color: var(--border-dashed, #333844);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+textarea.control { resize: vertical; min-height: 64px; display: block; }

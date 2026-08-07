@@ -1,0 +1,52 @@
+:host { display: block; }
+.item {
+  position: relative;
+  display: block;
+  padding: 11px 16px;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--dur, 0.11s) var(--ease-out, cubic-bezier(0.16,1,0.3,1)), box-shadow 250ms var(--ease-out, cubic-bezier(0.16,1,0.3,1));
+}
+/* shorter when there's no description (rail style) */
+:host(:not([desc])) .item { padding: var(--sp-2, 8px) var(--sp-3, 12px); }
+
+.row { display: flex; align-items: baseline; gap: 6px; }
+.num {
+  color: var(--text-disabled, #565b69);
+  font-size: var(--fs-tiny, 11px);
+  font-variant-numeric: tabular-nums;
+}
+.name {
+  font-size: 13px; font-weight: 500;
+  color: var(--text, #c8cdd8);
+  transition: color var(--dur, 0.11s) var(--ease-out, cubic-bezier(0.16,1,0.3,1));
+}
+:host(:not([desc])) .name { font-size: var(--fs-small, 12px); font-weight: 400; color: var(--text-muted, #6b7280); }
+.desc {
+  display: block;
+  font-size: 11px; color: var(--text-muted, #6b7280);
+  margin-top: 3px;
+}
+.desc:empty { display: none; }
+
+/* connected left-edge indicator */
+.item::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--text-bright, #e8ecf4) 50%, transparent);
+  transition: width var(--dur, 0.11s) var(--ease-out, cubic-bezier(0.16,1,0.3,1)), background-color var(--dur, 0.11s) var(--ease-out, cubic-bezier(0.16,1,0.3,1));
+}
+.item:hover { background: var(--bg-surface, #12151c); }
+.item:hover .name { color: var(--text-bright, #e8ecf4); }
+.item:hover::before { width: 2px; background: var(--text-bright, #e8ecf4); }
+
+/* The active background is painted by the nav container's sliding
+   .indicator so it can glide between selections. Transparent — not unset —
+   so the hover surface never covers the indicator on the active item. */
+:host([active]) .item { background: transparent; }
+:host([active]) .name { color: var(--accent, #ffae00); }
+:host([active]) .num { color: var(--accent, #ffae00); }
+:host([active]) .item::before { width: 2px; background: var(--accent, #ffae00); }
+.item:focus-visible { outline: 2px solid var(--accent, #ffae00); outline-offset: -2px; box-shadow: 0 0 18px color-mix(in srgb, var(--accent, #ffae00) 38%, transparent); }

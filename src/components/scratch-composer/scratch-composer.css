@@ -1,0 +1,3 @@
+:host { display: grid; grid-template-columns: 1fr auto; gap: var(--gap-stack, 8px); align-items: stretch; }
+scratch-field { display: block; }
+scratch-button { display: inline-flex; align-items: stretch; }
