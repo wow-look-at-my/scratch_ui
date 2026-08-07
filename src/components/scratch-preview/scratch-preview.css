@@ -1,0 +1,62 @@
+:host {
+  display: block;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  color: var(--text-muted, #6b7280);
+  font-size: var(--fs-micro, 10px);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.wrap {
+  border: 1px solid var(--border, #2a2e3a);
+  border-radius: var(--r-md, 0);
+  overflow: hidden;
+  background: var(--bg-surface, #12151c);
+  position: relative;   /* the index is positioned against this */
+}
+.index {
+  position: absolute; top: 6px; right: 9px;
+  font-size: var(--fs-micro, 10px);
+  color: var(--text-disabled, #565b69);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+.body {
+  min-height: 72px;
+  border-bottom: 1px solid var(--border, #2a2e3a);
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.body::after {
+  content: '';
+  position: absolute; inset: 0;
+  pointer-events: none;
+  display: none;
+  background-image: radial-gradient(circle, var(--grid-dot, rgba(200,205,216,0.08)) 1px, transparent 1px);
+  background-size: var(--grid-size, 24px) var(--grid-size, 24px);
+}
+:host([grid]) .body::after { display: block; }
+.caption { padding: var(--sp-2, 8px) var(--sp-3, 12px); }
+.title {
+  font-size: var(--fs-tiny, 11px);
+  color: var(--text-bright, #e8ecf4);
+  text-transform: none;
+  letter-spacing: normal;
+}
+.sub {
+  font-size: var(--fs-micro, 10px);
+  color: var(--text-muted, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.note {
+  font-size: var(--fs-tiny, 11px);
+  color: var(--text-muted, #6b7280);
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+/* an unset caption line (or index) takes no space */
+.index:empty, .title:empty, .sub:empty, .note:empty { display: none; }

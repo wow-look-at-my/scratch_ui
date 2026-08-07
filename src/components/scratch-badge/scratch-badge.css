@@ -1,0 +1,57 @@
+:host { display: inline-flex; vertical-align: middle; }
+/* Every variant is the same chip; a variant carries COLOUR, nothing else.
+   Keeping the geometry here is what stops the tiers drifting apart as the
+   family grows. "key" is the one shape exception and says so. */
+.box {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  user-select: none;
+  box-sizing: border-box;
+  font-size: var(--fs-micro, 10px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm, 0);
+  padding: 5px 9px;
+  line-height: 1;
+}
+/* proto (default) — the prototype tag: amber chip + status LED.
+   accent is the same chip WITHOUT the dot, for labelling a thing rather than
+   reporting a state (a static amber LED already means "stale"). */
+:host(:not([variant])) .box,
+:host([variant="proto"]) .box,
+:host([variant="accent"]) .box {
+  color: var(--accent, #ffae00);
+  background: var(--accent-glow, rgba(255,174,0,0.12));
+  border-color: var(--accent-dim, #7d6939);
+}
+/* signal — the success/kept chip */
+:host([variant="signal"]) .box {
+  color: var(--signal, #00e47a);
+  background: var(--signal-glow, rgba(0,228,122,0.08));
+  border-color: var(--signal-dim, #00b25f);
+}
+/* off — neutral DIM chip: the disabled/inactive tag. Dashed border (the
+   system's disabled signal), muted text, no fill, no LED. */
+:host([variant="off"]) .box {
+  color: var(--text-muted, #6b7280);
+  background: none;
+  border: 1px dashed var(--border-dashed, #333844);
+}
+/* key — plain neutral tag; the one variant with its own metrics */
+:host([variant="key"]) .box {
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #6b7280);
+  background: var(--bg-elevated, #181c26);
+  border-color: var(--border, #2a2e3a);
+  padding: 4px 6px;
+}
+/* the LED only renders for proto */
+scratch-led { display: none; }
+:host(:not([variant])) scratch-led,
+:host([variant="proto"]) scratch-led { display: inline-block; }
