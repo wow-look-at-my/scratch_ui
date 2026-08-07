@@ -49,16 +49,17 @@ jobs:
         run: corepack enable
 
       # Compiles src/components/<name>/<name>.ts (+ its .css) -> dist/, which
-      # is what the manifest publishes. `pnpm install` also runs it via
-      # `prepare`; this makes the dependency explicit and fails loudly.
+      # is what the manifest publishes, and scripts/ -> dist-scripts/.
+      # `pnpm install` also builds via `prepare`; this makes the dependency
+      # explicit and fails loudly.
       - run: pnpm install
 
-      - name: Build components
+      - name: Build
         run: pnpm build
 
       # Reads pages-manifest.json and stages _site/ (input -> output copies).
       - name: Assemble _site/ from pages-manifest.json
-        run: node .github/scripts/assemble-pages.ts
+        run: node dist-scripts/assemble-pages.js
 
       # Same branch naming as the org's buildhost-preview.yml reusable
       # workflow: pr-<number> for pull requests, the pushed ref otherwise.

@@ -10,9 +10,8 @@
   "type": "module",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "build": "ts0 build",
-    "typecheck": "tsc --noEmit",
-    "site": "ts0 build && node .github/scripts/assemble-pages.ts",
+    "build": "ts0 build && ts0 build --config ts0.scripts.json",
+    "site": "pnpm build && node dist-scripts/assemble-pages.js",
     "prepare": "ts0 build"
   },
   "files": [
@@ -25,8 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
-    "ts0": "git+https://github.com/wow-look-at-my/ts0.git#master",
-    "typescript": "^5.7.0"
+    "ts0": "git+https://github.com/wow-look-at-my/ts0.git#master"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -24,9 +24,8 @@ caution accents, registration marks, build-stamp metadata.
 ## Build
 
 ```
-pnpm install     # also builds, via `prepare`
-pnpm build       # ts0: type-check (strict) + compile src/components/ -> dist/
-pnpm typecheck   # tsc --noEmit, adds the build scripts to the check
+pnpm install     # also builds the components, via `prepare`
+pnpm build       # ts0: type-check (strict) + compile src/ and scripts/
 pnpm site        # build, then assemble _site/ from pages-manifest.json
 ```
 

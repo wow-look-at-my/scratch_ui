@@ -1,5 +1,5 @@
 {
-	"//": "Editors, and the `typecheck` script. ts0 generates its own tsconfig to type-check what it builds (src/components + what it imports); this mirrors it and additionally covers the build scripts, which run under Node's type STRIPPING — stripping never type-checks, so without this pass a type error there would only surface as a runtime failure.",
+	"//": "Editor/IDE config only. ts0 generates its own tsconfig for each build's type-check; this mirrors them (bundler resolution, no emit) so editors agree with CI.",
 	"compilerOptions": {
 		"target": "ESNext",
 		"module": "ESNext",
@@ -10,5 +10,5 @@
 		"skipLibCheck": true,
 		"allowImportingTsExtensions": true
 	},
-	"include": ["src/**/*.ts", "css.d.ts", ".github/scripts/**/*.ts"]
+	"include": ["src/**/*.ts", "scripts/**/*.ts", "css.d.ts"]
 }

@@ -1,6 +1,9 @@
 // Assembles the buildhost site staging dir (_site/) from pages-manifest.json.
-// Run by .github/workflows/preview.yml and by `npm run site` locally, both as
-// `node .github/scripts/assemble-pages.ts` (Node >= 22.18 runs TypeScript).
+// Built by ts0 (ts0.scripts.json) and run as dist-scripts/assemble-pages.js —
+// by .github/workflows/preview.yml, by ci.yml, and by `pnpm site` locally.
+// It lives OUTSIDE .github/ on purpose: tsc's default include never descends
+// into a dot-directory, so a build script under .github/ type-checks nothing
+// while still reporting a green build.
 //
 // Each manifest entry {from, to} copies a repo file or directory (recursive)
 // into the artifact at the site path `to`. The manifest is the single source

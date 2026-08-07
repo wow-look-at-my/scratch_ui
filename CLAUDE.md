@@ -36,8 +36,16 @@ GitHub Pages was switched off org-wide on 2026-07-20. Every
   sets `esbuild.splitting: false` — splitting emits cross-file `import`s.
   Code genuinely shared between components lives in `src/lib/` and is inlined
   at build time.
-- `dist/`, `_site/` and the lockfile are gitignored; ts0 is a branch
-  dependency resolved to HEAD on every install (as in js-snippets).
+- `dist/`, `dist-scripts/`, `_site/` and the lockfile are gitignored; ts0 is a
+  branch dependency resolved to HEAD on every install (as in js-snippets).
+- Type-checking is part of building, never a separate step. `pnpm build` runs
+  ts0 twice: `ts0.json` (browser, `src/components/` -> `dist/`) and
+  `ts0.scripts.json` (node, `scripts/` -> `dist-scripts/`).
+- **Build scripts live in `scripts/`, never under `.github/`.** tsc's default
+  include never descends into a dot-directory, so a `.ts` under `.github/`
+  is bundled without being type-checked at all — and ts0 still reports a
+  green build. Verified directly: the same file errors from `scripts/` and
+  passes from `.github/scripts/`.
 
 ## CI and the org merge gate (`all-builds`)
 
