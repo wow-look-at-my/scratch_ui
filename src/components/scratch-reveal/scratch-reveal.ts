@@ -37,7 +37,7 @@ import SCRATCH_REVEAL_CSS from './scratch-reveal.css';
    knobs that must match are one knob. PEAK scales the whole effect (--rv-o is
    PEAK * t^2, and the tint is the only other term). */
 const SCRATCH_REVEAL_RADIUS = 512;
-const SCRATCH_REVEAL_PEAK = 0.1375;
+const SCRATCH_REVEAL_PEAK = 0.275;
 
 const SCRATCH_REVEAL_SHEET = new CSSStyleSheet();
 SCRATCH_REVEAL_SHEET.replaceSync(SCRATCH_REVEAL_CSS);
