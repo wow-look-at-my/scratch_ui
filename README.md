@@ -105,6 +105,12 @@ API quick notes (the newer controls + upgraded attributes):
 - `<scratch-message>` — `author="user|assistant"` picks the label color
   (amber/green). Renamed from `role`, which collided with the ARIA global
   `role` attribute.
+- `<scratch-preview>` — the "visual above a caption" tile: `label` / `sub`,
+  plus `note` (a third caption line) and `index` (a catalogue number pinned
+  top-right); empty ones render nothing. It is the **non-interactive** tile —
+  no role, no tabindex, no click ring — where `<scratch-card>` is the
+  clickable one. Restyle the caption with `::part(title|sub|note|index)`
+  instead of rebuilding the tile.
 
 ### Living spec (`src/demo/`)
 

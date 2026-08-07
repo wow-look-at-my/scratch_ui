@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="scratch-proto.css" />
 <script src="../components/scratch-led.js" defer></script>
 <script src="../components/scratch-badge.js" defer></script>
+<script src="../components/scratch-preview.js" defer></script>
 <style>
   /* ── Specimen-only layout ────────────────────────────── */
   .icon-main {
@@ -40,43 +41,26 @@
     gap: var(--sp-4);
     margin-top: var(--sp-5);
   }
-  .icon-cell {
-    position: relative;
-    border: 1px solid var(--border);
-    background-color: var(--bg-surface);
-    background-image: var(--scanline);
-    background-attachment: fixed;
-    padding: var(--sp-5) var(--sp-4) var(--sp-4);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--sp-3);
+  /* Each cell IS a <scratch-preview> — the sealed "visual above a caption"
+     tile, which is non-interactive by design (no role, no tabindex, no click
+     ring), exactly right for a catalogue. The page only sets the specimen size
+     and centres the caption, via the component's own ::part hooks. */
+  .icon-cell { padding: var(--sp-4) 0 0; }
+  .icon-cell::part(body) { padding: var(--sp-2) var(--sp-4) var(--sp-4); }
+  .icon-cell::part(title),
+  .icon-cell::part(sub),
+  .icon-cell::part(note) { text-align: center; }
+  .icon-cell::part(title) {
+    font-family: var(--font-display); font-size: 0.95rem; font-weight: 600;
+    color: var(--text-bright); letter-spacing: 0.01em;
   }
-  .icon-cell .idx {
-    position: absolute; top: 6px; right: 9px;
-    font-size: var(--fs-micro); color: var(--text-disabled);
-    font-variant-numeric: tabular-nums;
-  }
-  /* No registration corner-marks here: they are the cue for an INTERACTIVE
-     surface (see the design language's Signature Patterns), and a catalogue
-     cell is not one. They are also sealed into scratch-button/scratch-card so
-     they cannot drift — a page must never redraw them by hand. */
+  .icon-cell::part(sub) { letter-spacing: 0.06em; margin-top: 2px; }
 
   .icon-art {
     width: 132px; height: 132px;
     /* faint outline so the dark chip reads against the dark cell */
     outline: 1px solid var(--border-light, #1e222c);
   }
-  .icon-meta { text-align: center; }
-  .icon-name {
-    font-family: var(--font-display); font-size: 0.95rem; font-weight: 600;
-    color: var(--text-bright); letter-spacing: 0.01em;
-  }
-  .icon-file {
-    font-size: var(--fs-micro); color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px;
-  }
-  .icon-use { font-size: var(--fs-tiny); color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
 
   /* ── Favicon scale proof row ────────────────────────── */
   /* (fav- prefixed: scratch-proto.css already owns .scale-row for the
@@ -248,15 +232,10 @@
 
   // Large specimen grid
   document.getElementById('iconGrid').innerHTML = ICONS.map((ic, i) => `
-    <div class="icon-cell">
-      <span class="idx">${String(i + 1).padStart(2, '0')}</span>
+    <scratch-preview class="icon-cell" index="${String(i + 1).padStart(2, '0')}"
+      label="${ic.name}" sub="${ic.file}" note="${ic.use}">
       ${svgFor(ic.key, 'class="fav icon-art"')}
-      <div class="icon-meta">
-        <div class="icon-name">${ic.name}</div>
-        <div class="icon-file">${ic.file}</div>
-        <div class="icon-use">${ic.use}</div>
-      </div>
-    </div>`).join('');
+    </scratch-preview>`).join('');
 
   // Scale proof
   const SIZES = [64, 48, 32, 16];
