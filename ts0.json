@@ -1,0 +1,9 @@
+{
+	"entry": "src/components",
+	"outdir": "dist",
+	"target": "browser",
+	"sourcemap": false,
+	"loaders": { ".css": "text" },
+	"declarations": false,
+	"esbuild": { "splitting": false }
+}

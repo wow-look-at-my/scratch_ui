@@ -1,0 +1,52 @@
+:host { display: inline-flex; vertical-align: middle; }
+.box {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  user-select: none;
+  box-sizing: border-box;
+}
+/* proto (default) */
+:host(:not([variant])) .box, :host([variant="proto"]) .box {
+  font-size: var(--fs-micro, 10px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent, #ffae00);
+  background: var(--accent-glow, rgba(255,174,0,0.12));
+  border: 1px solid var(--accent-dim, #7d6939);
+  border-radius: var(--r-sm, 0);
+  padding: 5px 9px;
+  line-height: 1;
+}
+/* off — neutral DIM chip: the disabled/inactive tag. Dashed border (the
+   system's disabled signal), muted text, no fill, no LED. */
+:host([variant="off"]) .box {
+  font-size: var(--fs-micro, 10px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted, #6b7280);
+  background: none;
+  border: 1px dashed var(--border-dashed, #333844);
+  border-radius: var(--r-sm, 0);
+  padding: 5px 9px;
+  line-height: 1;
+}
+/* key — plain neutral tag */
+:host([variant="key"]) .box {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #6b7280);
+  background: var(--bg-elevated, #181c26);
+  border: 1px solid var(--border, #2a2e3a);
+  border-radius: var(--r-sm, 0);
+  padding: 4px 6px;
+  line-height: 1;
+}
+/* the LED only renders for proto */
+scratch-led { display: none; }
+:host(:not([variant])) scratch-led,
+:host([variant="proto"]) scratch-led { display: inline-block; }

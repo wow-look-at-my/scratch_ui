@@ -1,43 +1,63 @@
 # scratch_ui
 
 The **Scratch Proto** design language: design tokens + native web components.
-No build step, no dependencies, no framework — plain CSS custom properties and
-vanilla custom elements (shadow DOM).
+No dependencies, no framework — plain CSS custom properties and vanilla custom
+elements (shadow DOM), written in TypeScript.
 
 Aesthetic: exposed wireframe, dot-grid substrate, monospace typography, amber
 caution accents, registration marks, build-stamp metadata.
 
 ## Layout
 
-- `src/components/` — the reusable design language: `scratch-tokens.css` plus
-  one `.js` file per component. This is the consumable package surface
-  (`package.json` `files`/`exports` point here).
-- `src/demo/` — the demo/spec site: the landing page, the two spec pages, and
-  their demo-only stylesheet (`scratch-proto.css`). Pages reference the
-  components as `../components/...`, so serving `src/` serves the whole site.
+- `src/components/<name>/` — one folder per component, holding its `<name>.ts`
+  and `<name>.css`. `ts0 build` compiles each to `dist/<name>/<name>.js` with
+  its stylesheet inlined, so a component ships as one self-contained file.
+- `src/css/` — the stylesheets that are not a component's own:
+  `scratch-tokens.css` (the consumable token contract) and `scratch-proto.css`
+  (demo-only).
+- `src/demo/` — the demo/spec site: the landing page and the two spec pages.
+- `src/lib/` — helpers shared by more than one component, inlined at build
+  time (no runtime import).
 - `pages-manifest.json` (repo root) — the input→output map that drives the
   site deploy to buildhost (see Hosting below).
+
+## Build
+
+```
+pnpm install     # also builds, via `prepare`
+pnpm build       # ts0: type-check (strict) + compile src/components/ -> dist/
+pnpm site        # build, then assemble _site/ from pages-manifest.json
+```
+
+`dist/` and `_site/` are generated and gitignored. To view the spec pages
+locally, run `pnpm site` and serve `_site/` with any static server — the demo
+pages resolve components at the site root, the same layout master deploys.
 
 ## Files
 
 ### CSS
 
-- `src/components/scratch-tokens.css` — every design token (one `:root` block
-  of custom properties: surfaces, text, accent/signal/danger, borders, fonts,
+- `src/css/scratch-tokens.css` — every design token (one `:root` block of
+  custom properties: surfaces, text, accent/signal/danger, borders, fonts,
   type scale, spacing, radius, motion, elevation). **The consumable contract**:
   the only file an app needs to import to adopt the design language. Tokens are
   inherited custom properties, so they pierce shadow DOM and theme all the
   components; every component also carries baked-in `var(..., fallback)`
   defaults, so a missing token degrades gracefully instead of breaking.
-- `src/demo/scratch-proto.css` — the demo pages' reset, element-level base
+- `src/css/scratch-proto.css` — the demo pages' reset, element-level base
   styles, and style-guide scaffolding. Apps generally should NOT import this
   (it restyles elements globally); it exists for the spec pages.
+- `src/components/<name>/<name>.css` — a component's own shadow-DOM
+  stylesheet, imported as text and adopted via `CSSStyleSheet.replaceSync`.
 
 ### Components (`src/components/`)
 
-One custom element per file. Classic scripts (loadable via `<script defer>`)
-that are also import-safe as modules — each registers itself via a top-level
-`customElements.define(...)` side effect.
+One custom element per folder. The compiled files are classic scripts
+(loadable via `<script defer>`) that are also import-safe as modules — each
+registers itself via a top-level `customElements.define(...)` side effect, and
+none of them export anything, which is what keeps `<script defer>` working.
+The table below names each component by its published file (`<name>.js`),
+built from `src/components/<name>/<name>.ts`.
 
 | file | element(s) |
 |---|---|
@@ -104,24 +124,25 @@ API quick notes (the newer controls + upgraded attributes):
 - `Scratch Proto.html` — the full style guide: every token, component, and rule.
 - `Icon Language.html` — the icon language spec.
 
-Open the pages in a browser, or serve `src/` with any static server
-(`src/index.html` forwards to `demo/`). The design language is fully
-dependency-free, spec pages included: no framework, no build step, no external
-scripts (the pages' only external requests are the Google Fonts stylesheets).
+Run `pnpm site` and serve `_site/` with any static server (`_site/index.html`
+forwards to `demo/`). The shipped design language is dependency-free, spec
+pages included: no framework, no runtime dependency, no external scripts (the
+pages' only external requests are the Google Fonts stylesheets). The build is
+a dev-time step only — a consumer fetches plain `.js` and `.css`.
 
 ## Hosting (buildhost)
 
 [buildhost](https://github.com/wow-look-at-my/buildhost) is the canonical host
 for external consumers. (GitHub Pages is retired — the repo's Pages site has
 been switched off, so the old `wow-look-at-my.github.io/scratch_ui/` URLs are
-gone.) On every push to master, `.github/workflows/preview.yml` assembles
-`_site/` from **`pages-manifest.json`** — a checked-in list of
-`{"from": "<repo file or dir>", "to": "<site path>"}` copies — and publishes
-it as a public static site via buildhost's own `buildhost-publish-site`
-action (GitHub OIDC auth: no static secrets). The manifest, not the workflow,
-decides what gets published; change the site by editing the manifest. CI
-validates it against its JSON Schema (`pages-manifest.schema.json`, checked
-by the org's json-validator action).
+gone.) On every push to master, `.github/workflows/preview.yml` builds the
+components and assembles `_site/` from **`pages-manifest.json`** — a
+checked-in list of `{"from": "<repo file or dir>", "to": "<site path>"}`
+copies — then publishes it as a public static site via buildhost's own
+`buildhost-publish-site` action (GitHub OIDC auth: no static secrets). The
+manifest, not the workflow, decides what gets published; change the site by
+editing the manifest. CI validates it against its JSON Schema
+(`pages-manifest.schema.json`, checked by the org's json-validator action).
 
 The manifest publishes the components and tokens at the **site root**, so
 consumers embed bare root-relative file URLs — the same convention
@@ -132,10 +153,15 @@ https://sites.pazer.build/scratch_ui/branch/master/scratch-tokens.css
 https://sites.pazer.build/scratch_ui/branch/master/scratch-button.js
 ```
 
+Sources are nested per component (`dist/scratch-button/scratch-button.js`) but
+the published surface is flat, so each component carries its own flattening
+entry in the manifest. Adding a component means adding that entry: the
+assembly script fails when a `src/components/<name>/` has no `/<name>.js`
+entry, so a component cannot be silently left unpublished.
+
 The spec site is served under `/demo/` (the site root's `index.html` forwards
 there — the spec pages can't live at the root itself, because their relative
-`../components/` references would escape the site's base path), and
-`/components/` mirrors the root component files so those references resolve.
+`../` references would escape the site's base path).
 
 ## Previews
 
@@ -153,7 +179,7 @@ the full site (same assembled layout as master):
 <link rel="stylesheet" href="scratch-tokens.css" />
 <script src="scratch-ring.js" defer></script>
 <script src="scratch-button.js" defer></script>
-<!-- ...one tag per component you use (copied/served from src/components/) -->
+<!-- ...one tag per component you use (served from the buildhost site root) -->
 ```
 
 ### As a pnpm git dependency (bundlers)
@@ -174,9 +200,11 @@ import "scratch-ui/scratch-button.js";
 
 Notes:
 
-- The package `exports` map resolves `scratch-ui/<file>` to
-  `src/components/<file>`, so the bare subpath imports above keep working
-  regardless of the repo layout.
+- The package `exports` map resolves `scratch-ui/<name>.js` to the built
+  `dist/<name>/<name>.js` and `scratch-ui/scratch-tokens.css` to
+  `src/css/scratch-tokens.css`, so the bare subpath imports above keep working
+  regardless of the repo layout. Installing from git runs the package's
+  `prepare` script, which builds `dist/` — it is not committed.
 - The components register themselves as a **top-level side effect** of being
   imported/loaded. The package deliberately does not declare
   `"sideEffects": false` — keep it that way, or bundlers will tree-shake the

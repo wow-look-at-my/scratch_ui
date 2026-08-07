@@ -19,6 +19,26 @@ GitHub Pages was switched off org-wide on 2026-07-20. Every
 `wow-look-at-my.github.io` URL is dead — never reference or reintroduce one
 (in docs, demo pages, or workflows).
 
+## Sources are TypeScript; the published surface is flat
+
+- A component is a folder: `src/components/<name>/<name>.ts` + `<name>.css`.
+  The `.css` is imported as text (ts0's `.css: text` loader, declared by
+  `css.d.ts`) and adopted via `CSSStyleSheet.replaceSync` — never write CSS
+  into a template literal in the `.ts`.
+- `ts0 build` compiles to `dist/<name>/<name>.js`, but consumers fetch
+  `…/branch/master/<name>.js`. `pages-manifest.json` carries one flattening
+  entry per component to bridge that; `assemble-pages.ts` fails when a
+  component has no entry, so adding a component means adding its entry.
+- **No component may `export` anything.** They are loaded as classic
+  `<script defer>`, and a single `export` in the output is a syntax error
+  there. That is also why components never import each other (compose by
+  rendering the tag and telling consumers to load it too), and why `ts0.json`
+  sets `esbuild.splitting: false` — splitting emits cross-file `import`s.
+  Code genuinely shared between components lives in `src/lib/` and is inlined
+  at build time.
+- `dist/`, `_site/` and the lockfile are gitignored; ts0 is a branch
+  dependency resolved to HEAD on every install (as in js-snippets).
+
 ## CI and the org merge gate (`all-builds`)
 
 - PRs merge into master only when the **`all-builds` commit status** on the
@@ -49,8 +69,9 @@ Two gotchas:
   jobs** — the error annotation exists only in the GitHub web UI; the API
   shows no jobs and no logs to pull.
 
-Keep `preview.yml` minimal: checkout → assemble `_site/` from
-`pages-manifest.json` → the stock `buildhost-publish-site` action. A version
+Keep `preview.yml` minimal: checkout → install → `pnpm build` → assemble
+`_site/` from `pages-manifest.json` → the stock `buildhost-publish-site`
+action. A version
 that wrapped the publish step in custom code was reverted (#15) before the
 minimal form re-landed (#16). The manifest, not the workflow, decides what
 gets published — change the site by editing the manifest.

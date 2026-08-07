@@ -16,6 +16,9 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+env:
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+
 permissions:
   contents: read
   id-token: write # buildhost OIDC auth
@@ -38,11 +41,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      # Compiles src/components/<name>/<name>.ts (+ its .css) -> dist/, which
+      # is what the manifest publishes. `pnpm install` also runs it via
+      # `prepare`; this makes the dependency explicit and fails loudly.
+      - run: pnpm install
+
+      - name: Build components
+        run: pnpm build
+
       # Reads pages-manifest.json and stages _site/ (input -> output copies).
       - name: Assemble _site/ from pages-manifest.json
-        uses: wow-look-at-my/actions@typescript#latest
-        with:
-          file: .github/scripts/assemble-pages.ts
+        run: node .github/scripts/assemble-pages.ts
 
       # Same branch naming as the org's buildhost-preview.yml reusable
       # workflow: pr-<number> for pull requests, the pushed ref otherwise.
