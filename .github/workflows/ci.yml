@@ -32,6 +32,12 @@ jobs:
       - name: Build components
         run: pnpm build
 
+      # ts0's own check covers what it builds. This one adds the build scripts,
+      # which run under Node's type stripping — stripping never type-checks, so
+      # nothing else would catch a type error in them.
+      - name: Type-check the build scripts
+        run: pnpm typecheck
+
       # Executes pages-manifest.json into _site/, which also enforces that
       # every component under src/components/ has a published entry — the
       # check that stops a new component from being silently unpublished.
