@@ -19,6 +19,17 @@ GitHub Pages was switched off org-wide on 2026-07-20. Every
 `wow-look-at-my.github.io` URL is dead — never reference or reintroduce one
 (in docs, demo pages, or workflows).
 
+## Shadow-DOM styling: `:host` loses to the consuming page
+
+A host element lives in the LIGHT tree, so its `::before` / `::after` are also
+matched by the page's own rules — and for normal declarations an outer tree
+beats the shadow tree. A page reset (`*, *::before { padding: 0 }`, which
+`src/css/scratch-proto.css` has) therefore overrides `:host::before { padding }`.
+Never build host-pseudo geometry from box-model properties a reset touches
+(`padding`, `margin`, `border`, `box-sizing`); `scratch-reveal` sizes its 1px
+ring with `mask-position` / `mask-size` for exactly this reason. Styles on
+elements *inside* the shadow root are unaffected.
+
 ## Sources are TypeScript; the published surface is flat
 
 - A component is a folder: `src/components/<name>/<name>.ts` + `<name>.css`.
@@ -81,6 +92,15 @@ Two gotchas:
 
 - A job-level `permissions:` block **replaces** the workflow-level one — if a
   job ever gets its own block, re-grant both reads there.
+- The publish registers a **GitHub Deployment** — that is how a preview URL
+  reaches a PR, since this repo posts no preview comment. It needs
+  `deployments: write` plus two inputs, which are not interchangeable:
+  `deployment_ref: ${{ github.head_ref || github.ref_name }}` (GitHub stores a
+  deployment's ref verbatim, and a bare SHA belongs to no branch, so the branch
+  and PR views read "This branch has not been deployed"), and
+  `git_commit: ${{ github.event.pull_request.head.sha || github.sha }}` (the
+  recorded commit, which must stay a real SHA — on a `pull_request` event
+  `github.sha` is the merge commit and dies with the PR).
 - If the deploy is ever switched to an org **reusable workflow** (e.g.
   `buildhost-preview.yml`), the caller must grant every permission the
   reusable declares, or the run fails as `startup_failure` with **zero

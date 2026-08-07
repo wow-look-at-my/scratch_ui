@@ -14,6 +14,7 @@
     { "from": "dist/scratch-nav/scratch-nav.js", "to": "/scratch-nav.js" },
     { "from": "dist/scratch-preview/scratch-preview.js", "to": "/scratch-preview.js" },
     { "from": "dist/scratch-progress/scratch-progress.js", "to": "/scratch-progress.js" },
+    { "from": "dist/scratch-reveal/scratch-reveal.js", "to": "/scratch-reveal.js" },
     { "from": "dist/scratch-ring/scratch-ring.js", "to": "/scratch-ring.js" },
     { "from": "dist/scratch-select/scratch-select.js", "to": "/scratch-select.js" },
     { "from": "dist/scratch-tabs/scratch-tabs.js", "to": "/scratch-tabs.js" },

@@ -21,11 +21,8 @@
   font-size: 15px; font-weight: 600; color: var(--text-bright, #e8ecf4);
 }
 .title::before { content: '// '; color: var(--text-muted, #6b7280); font-weight: 400; }
-.close {
-  background: none; border: none; cursor: pointer;
-  color: var(--text-muted, #6b7280); font-size: 18px; line-height: 1;
-}
-.close:hover { color: var(--text-bright, #e8ecf4); }
+/* the × is a ghost <scratch-button>; only the glyph size is ours */
+.close { font-size: 18px; }
 .list { padding: 8px 0; }
 :host([flush]) .list { padding: 0; }
 

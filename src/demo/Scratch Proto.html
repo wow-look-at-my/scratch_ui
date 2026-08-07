@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="../scratch-tokens.css" />
 <link rel="stylesheet" href="scratch-proto.css" />
 <script src="../scratch-ring.js" defer></script>
+<script src="../scratch-reveal.js" defer></script>
 <script src="../scratch-button.js" defer></script>
 <script src="../scratch-preview.js" defer></script>
 <script src="../scratch-led.js" defer></script>
@@ -28,7 +29,7 @@
 <script src="../scratch-caution.js" defer></script>
 </head>
 <body>
-<button class="sg-railtoggle" id="railtoggle" aria-label="Open navigation"><span class="bars"><i></i><i></i><i></i></span>Nav</button>
+<scratch-button class="sg-railtoggle" id="railtoggle" aria-label="Open navigation"><span class="bars"><i></i><i></i><i></i></span>Nav</scratch-button>
 <div class="sg-railscrim" id="railscrim"></div>
 <div class="sg">
 
@@ -46,11 +47,10 @@
       <scratch-nav-item href="#motion" label="Motion"></scratch-nav-item>
       <scratch-nav-item href="#patterns" label="Signature Patterns"></scratch-nav-item>
       <scratch-nav-item href="#components" label="Components"></scratch-nav-item>
-      <scratch-nav-item href="#reconcile" label="Reconciliation"></scratch-nav-item>
     </scratch-nav>
     <div class="sg-rail-foot">
       <div class="build-stamp">
-        <div class="row"><scratch-led live></scratch-led> SW:ACTIVE <span class="sep">·</span> <b>v0.2</b></div>
+        <div class="row"><scratch-led></scratch-led> <b>v0.2</b></div>
         <div>RECONCILED FROM 2 REPOS</div>
         <div>SRC: scratch · simple-llm-ui</div>
       </div>
@@ -223,7 +223,7 @@
           </div>
           <div class="plate-col" style="align-items:center;gap:var(--sp-2)">
             <div style="display:flex;align-items:center;gap:var(--sp-3);height:64px">
-              <scratch-led live></scratch-led>
+              <scratch-led></scratch-led>
               <div style="width:64px;height:22px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r-pill)"></div>
             </div>
             <div class="preview-sub">--r-pill = 999px</div>
@@ -329,6 +329,30 @@
         </div>
       </div>
 
+      <div class="sg-subhead">Proximity edge-reveal</div>
+      <p class="sg-prose">Bordered <em>interactive</em> controls light their edge as the cursor approaches — brightest
+      at the point closest to it, fading out by 512px. Proximity, not hover: the near edge lifts before you arrive, so
+      a cluster of controls reads as a lit surface instead of a grid of flat outlines. Static boxes (cards, messages,
+      plates) never light. The glow carries the same message as the corner-marks — <em>you can act on this</em> — which
+      is why a disabled control and the borderless <code>link</code> / <code>ghost</code> button tiers stay dark.</p>
+      <p class="sg-prose" style="font-size:var(--fs-small);color:var(--text-muted)"><strong>Mouse only.</strong> A
+      finger has no hover position, so a tap would light an edge with no cursor on screen to explain it. Two gates:
+      the CSS sits behind <code>(hover: hover) and (pointer: fine)</code>, and the tracker ignores any pointer that
+      isn't a mouse — so on a hybrid laptop, where that media query passes, a touch lights nothing and douses whatever
+      the mouse left lit. <strong>Reduced motion</strong> gets nothing either, gated the same two ways: a light that
+      chases the cursor is motion. Loading <code>scratch-reveal.js</code> is what turns this on; without it every
+      control renders exactly as it does otherwise.</p>
+      <div class="plate">
+        <span class="plate-label">bring the cursor near these — no need to hover</span>
+        <div class="plate-row" style="gap:var(--sp-5);align-items:center">
+          <scratch-button>test</scratch-button>
+          <scratch-field inline placeholder="field"></scratch-field>
+          <scratch-select inline><option>select</option></scratch-select>
+          <scratch-toggle>toggle</scratch-toggle>
+          <scratch-button disabled>disabled</scratch-button>
+        </div>
+      </div>
+
       <div class="sg-subhead">Status · prototype badge · caution stripe</div>
       <p class="sg-prose"><strong>Motion rule:</strong> a dot pulses <em>only</em> while work is actively happening —
       <code>running</code> or <code>queued</code>. Every other state is a static dot; the pulse is a signal that
@@ -354,7 +378,7 @@
       <div class="plate">
         <span class="plate-label">footer metadata</span>
         <div class="build-stamp">
-          <div class="row"><scratch-led live></scratch-led> SW:ACTIVE <span class="sep">·</span> <b>BUILD:59FC335</b></div>
+          <div class="row"><scratch-led></scratch-led> <b>BUILD:59FC335</b></div>
           <div>DEPLOYED:4 DAYS AGO</div>
           <div>SRC</div>
         </div>
@@ -493,9 +517,15 @@
 
       <div class="sg-subhead">Badges</div>
       <div class="plate">
-        <span class="plate-label">&lt;scratch-badge&gt; · default / variant="key" / variant="off"</span>
+        <span class="plate-label">&lt;scratch-badge&gt; · default / accent / signal / key / off</span>
         <div class="plate-row">
           <scratch-badge>Prototype</scratch-badge>
+          <scratch-badge variant="accent">fixed</scratch-badge>
+          <scratch-badge variant="signal">kept</scratch-badge>
+          <span class="preview-sub">accent / signal — colour-only chips: proto's shape, no dot. For an
+          outcome, where proto's LED would report a <em>state</em> (a static amber dot means "stale").</span>
+        </div>
+        <div class="plate-row">
           <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:700;color:var(--text-bright)">Anthropic <scratch-badge variant="key">KEY</scratch-badge></span>
           <span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-display);font-weight:700;color:var(--text-bright)">Ollama <scratch-badge variant="key">KEY</scratch-badge></span>
           <scratch-badge variant="off">disabled</scratch-badge>
@@ -522,7 +552,7 @@
         <span class="plate-label">&lt;scratch-modal&gt;</span>
         <scratch-modal eyebrow="settings">
           <scratch-tabs>
-            <button slot="trail" class="modal-x" aria-label="Close">×</button>
+            <scratch-button slot="trail" class="modal-x" variant="ghost" aria-label="Close">×</scratch-button>
             <scratch-tab label="Favorites"><div class="modal-pane">No favorites pinned yet.</div></scratch-tab>
             <scratch-tab label="Upstreams" selected>
               <div class="modal-pane" style="display:flex;flex-direction:column;gap:var(--sp-3)">
@@ -576,36 +606,6 @@
           <scratch-composer style="max-width:520px;" placeholder="message ..."></scratch-composer>
         </div>
       </div>
-    </section>
-
-    <!-- ---------- RECONCILIATION ---------- -->
-    <section class="sg-section" id="reconcile">
-      <div class="sg-section-head">
-        <span class="sg-section-num">07</span>
-        <h2>Reconciliation</h2>
-        <span class="sg-section-note">scratch vs simple-llm-ui · resolved</span>
-      </div>
-      <p class="sg-prose">The two repos drifted. Per your call, the canon adopts <strong>scratch's richer variant</strong>,
-      fixes outright bugs, and adds the scale neither had.</p>
-
-      <table class="spec">
-        <thead>
-          <tr><th>Decision</th><th>scratch</th><th>simple-llm-ui</th><th>Canon</th><th style="text-align:right">Verdict</th></tr>
-        </thead>
-        <tbody>
-          <tr><td class="mono">Scanline overlay</td><td>on</td><td class="muted">dropped</td><td class="accent">on</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
-          <tr><td class="mono">Card corner-marks</td><td>brackets</td><td class="muted">plain box</td><td class="accent">brackets</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
-          <tr><td class="mono">Prototype badge</td><td>badge-proto</td><td class="muted">plain .badge</td><td class="accent">both, scoped</td><td style="text-align:right"><span class="verdict kept">kept</span></td></tr>
-          <tr><td class="mono">--signal-glow / --warning</td><td>defined</td><td class="muted">missing</td><td class="accent">restored</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
-          <tr><td class="mono">--ease-out (sole curve)</td><td>defined</td><td class="muted">missing</td><td class="accent">restored; --ease-bounce dropped</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
-          <tr><td class="mono">var(--muted) typo</td><td class="muted">—</td><td>broken ref</td><td class="accent">→ --text-muted</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
-          <tr><td class="mono">grid-dot opacity</td><td>0.08</td><td>0.08 / 0.06*</td><td class="accent">0.08</td><td style="text-align:right"><span class="verdict fixed">fixed</span></td></tr>
-          <tr><td class="mono">Spacing scale</td><td class="muted">ad-hoc</td><td class="muted">ad-hoc</td><td class="accent">4-based, 8 steps</td><td style="text-align:right"><span class="verdict added">added</span></td></tr>
-          <tr><td class="mono">Radius tokens</td><td class="muted">4 / 6px raw</td><td class="muted">4 / 6px raw</td><td class="accent">0 — square; pill for dots</td><td style="text-align:right"><span class="verdict added">added</span></td></tr>
-          <tr><td class="mono">Type scale</td><td class="muted">implicit</td><td class="muted">implicit</td><td class="accent">8 named steps</td><td style="text-align:right"><span class="verdict added">added</span></td></tr>
-        </tbody>
-      </table>
-      <p class="sg-prose" style="margin-top:var(--sp-3);font-size:var(--fs-tiny);color:var(--text-disabled)">* nav.css fallback drifted to 0.06; canon locks 0.08 everywhere.</p>
     </section>
 
   </main>

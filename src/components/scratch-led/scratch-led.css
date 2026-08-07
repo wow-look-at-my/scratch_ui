@@ -15,7 +15,7 @@
   background: var(--danger, #ff4444);
   --dot-glow: var(--danger-glow, rgba(255,68,68,0.10));
 }
-:host([live]) { animation: scratch-led-pulse 2.5s ease-in-out infinite; }
+:host([live]) { animation: scratch-led-pulse 2.5s var(--ease-out, cubic-bezier(0.16,1,0.3,1)) infinite; }
 @keyframes scratch-led-pulse {
   0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--dot-glow); }
   50%      { opacity: 0.4; box-shadow: none; }

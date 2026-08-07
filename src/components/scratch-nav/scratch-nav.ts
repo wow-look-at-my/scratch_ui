@@ -9,6 +9,8 @@
  * first paint, resize, and item-set rebuilds, and honoring
  * prefers-reduced-motion.
  *
+ * Composes <scratch-button> for the header's × — load scratch-button.js too.
+ *
  *   <scratch-nav label="Scratch">                  ← header "// Scratch" + ×
  *     <scratch-nav-item label="Location History Map"
  *                       desc="Real-time GPS position"></scratch-nav-item>
@@ -84,7 +86,7 @@ class ScratchNav extends HTMLElement {
     this._root = this.attachShadow({ mode: 'open' });
     this._root.adoptedStyleSheets = [SCRATCH_NAV_SHEET];
     this._root.innerHTML =
-      `<div class="head"><span class="title"></span><button class="close" aria-label="Close">×</button></div>` +
+      `<div class="head"><span class="title"></span><scratch-button class="close" variant="ghost" aria-label="Close">×</scratch-button></div>` +
       `<div class="list"><div class="indicator"></div><slot></slot></div>`;
     this._head = this._root.querySelector('.head') as HTMLElement;
     this._title = this._root.querySelector('.title') as HTMLElement;

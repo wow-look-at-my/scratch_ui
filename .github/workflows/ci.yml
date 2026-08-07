@@ -83,5 +83,13 @@ jobs:
         uses: wow-look-at-my/buildhost/.github/actions/buildhost-publish-site@master
         with:
           branch: ${{ github.event.number && format('pr-{0}', github.event.number) || github.ref_name }}
+          # On a pull_request event github.sha is the synthetic MERGE commit,
+          # which stops existing when the PR closes. Record the PR head instead.
+          git_commit: ${{ github.event.pull_request.head.sha || github.sha }}
+          # GitHub stores a Deployment's ref verbatim, and a bare SHA belongs to
+          # no branch — the branch and PR deployment views then read "This branch
+          # has not been deployed". head_ref is the PR's source branch and is
+          # empty off pull_request, so this is the branch name in both cases.
+          deployment_ref: ${{ github.head_ref || github.ref_name }}
           source_dir: _site
           public: 'true'

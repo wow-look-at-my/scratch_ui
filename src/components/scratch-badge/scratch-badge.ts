@@ -1,8 +1,14 @@
 /* <scratch-badge> — small status/label tag.
  *
- *   <scratch-badge>Prototype</scratch-badge>          proto: accent tag + static LED
- *   <scratch-badge variant="key">KEY</scratch-badge>  plain neutral tag (e.g. "has API key")
- *   <scratch-badge variant="off">OFF</scratch-badge>  dim chip: dashed, no LED (inactive)
+ *   <scratch-badge>Prototype</scratch-badge>            proto: accent tag + static LED
+ *   <scratch-badge variant="accent">fixed</scratch-badge>  amber chip, no LED
+ *   <scratch-badge variant="signal">kept</scratch-badge>   green chip, no LED
+ *   <scratch-badge variant="key">KEY</scratch-badge>    plain neutral tag (e.g. "has API key")
+ *   <scratch-badge variant="off">OFF</scratch-badge>    dim chip: dashed, no LED (inactive)
+ *
+ * accent/signal are the colour-only chips: same shape as proto, no dot. Reach
+ * for them to label a verdict or outcome — proto's LED reports a STATE, and a
+ * static amber dot already means "stale" in the LED language.
  *
  * The proto variant composes <scratch-led> internally (component-in-component),
  * so its dot is the same sealed indicator used everywhere else. Static by
