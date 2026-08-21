@@ -47,6 +47,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # pnpm, pinned via package.json "packageManager" and provisioned by
+      # corepack (ships with Node) — no third-party setup action needed.
+      - name: Enable pnpm
+        run: corepack enable
+
+      # ts0 itself is NOT an npm dependency (it comes from the wow-look-at-my/ts0
+      # action below); this installs only @types/node, which the build-script
+      # type-check needs to resolve node:fs/node:path and the Node globals.
+      - run: pnpm install
+
       # The build runs in three steps because each feeds the next, and the ts0
       # action is what supplies ts0 on the runner.
       #
