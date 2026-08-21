@@ -10,7 +10,7 @@
   "type": "module",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "build": "ts0 build --config ts0.scripts.json && node dist-scripts/build-css.js && ts0 build",
+    "build": "ts0 build && node dist-scripts/build-css.js",
     "site": "pnpm build && node dist-scripts/assemble-pages.js"
   },
   "files": [
@@ -20,8 +20,5 @@
   "exports": {
     ".": "./dist/scratch-ui.js",
     "./scratch-ui.css": "./src/scratch-ui.css"
-  },
-  "devDependencies": {
-    "@types/node": "^22.10.0"
   }
 }

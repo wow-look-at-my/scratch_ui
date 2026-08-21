@@ -47,12 +47,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The build runs in three steps because each feeds the next, and the ts0
-      # action is what supplies ts0 on the runner.
-      #
-      # 1. scripts/ -> dist-scripts/ (the build scripts themselves)
-      - name: Build scripts
+      # scripts/ is its own nested ts0 project (scripts/ts0.json), so one
+      # `ts0 build` at the root recurses into it and produces dist-scripts/
+      # alongside the root project's dist/scratch-ui.js.
+      - name: Build scripts and bundle
         uses: wow-look-at-my/ts0@master
+        with:
+          args: build
+
+      # Every stylesheet -> src/scratch-ui.css, each scoped to the element it
+      # styles. Runs after both ts0 invocations above: css.d.ts's wildcard
+      # `declare module '*.css'` type-checks src/styles.ts's import whether or
+      # not the file exists yet, so only the ASSEMBLE step below needs it on
+      # disk first.
+      - name: Build stylesheet
+        run: node dist-scripts/build-css.js
 
       # Executes pages-manifest.json into _site/, which also enforces that
       # every component under src/components/ is imported by src/index.ts —
@@ -61,7 +70,28 @@ jobs:
       - name: Assemble _site/ from pages-manifest.json
         run: node dist-scripts/assemble-pages.js
 
+      # The site deploy manifest must satisfy its checked-in JSON Schema
+      # (pages-manifest.schema.json mirrors the assembly script's constraints).
+      - name: Validate pages-manifest.json against its schema
+        uses: wow-look-at-my/json-validator@master
+        with:
+          files: 'pages-manifest.json'
+          schema: 'pages-manifest.schema.json'
+
       # Only the publish is gated: a fork PR gets no OIDC token and cannot
       # authenticate to buildhost, but it still builds and verifies above.
       - name: Publish _site/ to buildhost
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: wow-look-at-my/buildhost/.github/actions/buildhost-publish-site@master
+        with:
+          branch: ${{ github.event.number && format('pr-{0}', github.event.number) || github.ref_name }}
+          # On a pull_request event github.sha is the synthetic MERGE commit,
+          # which stops existing when the PR closes. Record the PR head instead.
+          git_commit: ${{ github.event.pull_request.head.sha || github.sha }}
+          # GitHub stores a Deployment's ref verbatim, and a bare SHA belongs to
+          # no branch — the branch and PR deployment views then read "This branch
+          # has not been deployed". head_ref is the PR's source branch and is
+          # empty off pull_request, so this is the branch name in both cases.
+          deployment_ref: ${{ github.head_ref || github.ref_name }}
+          source_dir: _site
+          public: 'true'

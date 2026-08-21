@@ -1,0 +1,7 @@
+{
+	"entry": ".",
+	"outdir": "../dist-scripts",
+	"target": "node",
+	"sourcemap": false,
+	"declarations": false
+}

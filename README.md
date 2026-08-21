@@ -29,21 +29,24 @@ are gitignored.
 ## Build
 
 ```
-pnpm install     # @types/node only — ts0 comes from PATH, not npm
-pnpm build       # scripts -> stylesheet -> bundle (type-check strict)
+pnpm build       # scripts + bundle -> stylesheet (type-check strict)
 pnpm site        # build, then assemble _site/ from pages-manifest.json
 ```
 
 `ts0` is not an npm dependency: install it however you like locally (it is on
-`PATH`), and CI gets it from the `wow-look-at-my/ts0` action.
+`PATH`), and CI gets it from the `wow-look-at-my/ts0` action. No separate
+install step is needed for `@types/node` either — ts0 ships its own copy.
 
-The three build steps feed each other in order. `scripts/build-css.ts`
+`pnpm build` is one `ts0 build` (which also builds `scripts/`, a nested ts0
+project, alongside the root bundle) followed by `scripts/build-css.ts`, which
 concatenates every stylesheet into `src/scratch-ui.css`, **scoping each one to
 the element it styles** (`:host` becomes `:host(scratch-badge)`, `.box` becomes
 `:host(scratch-badge) .box`) — one sheet is adopted by every shadow root, so an
 unscoped rule would apply to every component. Sources stay written the natural
-way; the scoping happens at concat time. It must run before the bundle, because
-`src/styles.ts` imports the file it produces.
+way; the scoping happens at concat time. It does not need to run before the
+bundle: `css.d.ts`'s wildcard `declare module '*.css'` type-checks
+`src/styles.ts`'s import of the file it produces either way, since the import
+stays external and unresolved rather than being read from disk.
 
 `dist/` and `_site/` are generated and gitignored. To view the spec pages
 locally, run `pnpm site` and serve `_site/` with any static server — the demo

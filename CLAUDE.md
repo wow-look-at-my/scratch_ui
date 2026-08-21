@@ -68,11 +68,18 @@ load the whole library.
   `wow-look-at-my/ts0` action in CI, which downloads current ts0 instead of
   pinning one. A stale lockfile pinning it once cost real debugging time.
 - Type-checking is part of building, never a separate step. `pnpm build` runs
-  three steps in order — `ts0.scripts.json` (node, `scripts/` ->
-  `dist-scripts/`), then `build-css.js`, then `ts0.json` (browser,
-  `src/index.ts` -> `dist/scratch-ui.js`). The stylesheet must exist before the
-  bundle: `src/styles.ts` imports it, and the bundler has to find it to leave
-  the import external.
+  a single `ts0 build`, which recurses into `scripts/`'s own nested project
+  (`scripts/ts0.json`, node target) alongside the root's browser bundle
+  (`ts0.json`, `src/index.ts` -> `dist/scratch-ui.js`), then `build-css.js`.
+  The stylesheet does NOT need to exist yet for the bundle step: `css.d.ts`'s
+  wildcard `declare module '*.css'` type-checks `src/styles.ts`'s import
+  either way, since `external` keeps it an unresolved reference. Only
+  `assemble-pages.js` needs the file on disk.
+- **`scripts/` is a nested ts0 project, not a `--config` flag.** Its own
+  `scripts/ts0.json` (entry `.`, target `node`) is what makes one root-level
+  `ts0 build` cover both projects — see ts0's own "Nested projects" docs.
+  Never reintroduce a second top-level config or a multi-invocation CI step
+  to build it; that is the pattern this replaced.
 - **Build scripts live in `scripts/`, never under `.github/`.** tsc's default
   include never descends into a dot-directory, so a `.ts` under `.github/`
   is bundled without being type-checked at all — and ts0 still reports a

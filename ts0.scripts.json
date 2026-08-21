@@ -1,8 +1,0 @@
-{
-	"entry": "scripts",
-	"outdir": "dist-scripts",
-	"target": "node",
-	"sourcemap": false,
-	"declarations": false,
-	"exclude": ["src"]
-}
