@@ -29,7 +29,7 @@ are gitignored.
 ## Build
 
 ```
-pnpm build       # scripts -> stylesheet -> bundle (type-check strict)
+pnpm build       # scripts + bundle -> stylesheet (type-check strict)
 pnpm site        # build, then assemble _site/ from pages-manifest.json
 ```
 
@@ -37,7 +37,8 @@ pnpm site        # build, then assemble _site/ from pages-manifest.json
 `PATH`), and CI gets it from the `wow-look-at-my/ts0` action. No separate
 install step is needed for `@types/node` either — ts0 ships its own copy.
 
-The three build steps feed each other in order. `scripts/build-css.ts`
+`pnpm build` is one `ts0 build` (which also builds `scripts/`, a nested ts0
+project, alongside the root bundle) followed by `scripts/build-css.ts`, which
 concatenates every stylesheet into `src/scratch-ui.css`, **scoping each one to
 the element it styles** (`:host` becomes `:host(scratch-badge)`, `.box` becomes
 `:host(scratch-badge) .box`) — one sheet is adopted by every shadow root, so an

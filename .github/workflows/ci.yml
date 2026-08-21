@@ -47,16 +47,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # scripts/ -> dist-scripts/, then src/index.ts -> dist/scratch-ui.js: two
-      # ts0 runs (a node-target config, then the browser-target one), but ONE
-      # `uses:` step and one download -- the ts0 action runs each args: line
-      # against the ts0.cjs it downloaded once.
+      # scripts/ is its own nested ts0 project (scripts/ts0.json), so one
+      # `ts0 build` at the root recurses into it and produces dist-scripts/
+      # alongside the root project's dist/scratch-ui.js.
       - name: Build scripts and bundle
         uses: wow-look-at-my/ts0@master
         with:
-          args: |
-            build --config ts0.scripts.json
-            build
+          args: build
 
       # Every stylesheet -> src/scratch-ui.css, each scoped to the element it
       # styles. Runs after both ts0 invocations above: css.d.ts's wildcard
