@@ -26,16 +26,20 @@ function fail(msg: string): never {
 	process.exit(1);
 }
 
-// Every component directory owns exactly one published entry point.
+// The library ships as one bundle, so there is no per-component entry to
+// check for. What matters instead is that every component actually made it
+// INTO the bundle: src/index.ts imports each one for its side effect
+// (customElements.define), and a component missing from that list compiles
+// fine while silently shipping a library without it.
 const components = fs.readdirSync('src/components', { withFileTypes: true })
 	.filter((d) => d.isDirectory())
 	.map((d) => d.name)
 	.sort();
-const published = new Set(manifest.entries.map((e) => e.to));
-const missing = components.filter((c) => !published.has(`/${c}.js`));
-if (missing.length > 0) {
-	fail(`pages-manifest.json publishes no /<name>.js for: ${missing.join(', ')}.\n` +
-		missing.map((c) => `  add { "from": "dist/${c}/${c}.js", "to": "/${c}.js" }`).join('\n'));
+const entrySrc = fs.readFileSync('src/index.ts', 'utf-8');
+const unimported = components.filter((c) => !entrySrc.includes(`/components/${c}/${c}.ts'`));
+if (unimported.length > 0) {
+	fail(`src/index.ts does not import: ${unimported.join(', ')}.\n` +
+		unimported.map((c) => `  add import './components/${c}/${c}.ts';`).join('\n'));
 }
 
 const outRoot = path.resolve(out);
