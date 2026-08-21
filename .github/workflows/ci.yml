@@ -47,28 +47,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The build runs in three steps because each feeds the next. The ts0
-      # action downloads ts0.cjs once here (~14 MiB from buildhost); every
-      # later invocation runs that same download directly via `node`, rather
-      # than triggering the action again and re-fetching it.
-      #
-      # 1. scripts/ -> dist-scripts/ (the build scripts themselves)
-      - name: Build scripts
-        id: ts0
+      # scripts/ -> dist-scripts/, then src/index.ts -> dist/scratch-ui.js: two
+      # ts0 runs (a node-target config, then the browser-target one), but ONE
+      # `uses:` step and one download -- the ts0 action runs each args: line
+      # against the ts0.cjs it downloaded once.
+      - name: Build scripts and bundle
         uses: wow-look-at-my/ts0@master
         with:
-          args: build --config ts0.scripts.json
+          args: |
+            build --config ts0.scripts.json
+            build
 
-      # 2. every stylesheet -> src/scratch-ui.css, each scoped to the element
-      #    it styles. Must precede the bundle: src/styles.ts imports this file,
-      #    and the bundler has to find it to leave the import external.
+      # Every stylesheet -> src/scratch-ui.css, each scoped to the element it
+      # styles. Runs after both ts0 invocations above: css.d.ts's wildcard
+      # `declare module '*.css'` type-checks src/styles.ts's import whether or
+      # not the file exists yet, so only the ASSEMBLE step below needs it on
+      # disk first.
       - name: Build stylesheet
         run: node dist-scripts/build-css.js
-
-      # 3. src/index.ts -> dist/scratch-ui.js, one ES module carrying every
-      #    component. Type-checks strict, `any` rejected.
-      - name: Build bundle
-        run: node "${{ steps.ts0.outputs.path }}" build
 
       # Executes pages-manifest.json into _site/, which also enforces that
       # every component under src/components/ is imported by src/index.ts —

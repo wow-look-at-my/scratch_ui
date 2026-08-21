@@ -42,8 +42,10 @@ concatenates every stylesheet into `src/scratch-ui.css`, **scoping each one to
 the element it styles** (`:host` becomes `:host(scratch-badge)`, `.box` becomes
 `:host(scratch-badge) .box`) — one sheet is adopted by every shadow root, so an
 unscoped rule would apply to every component. Sources stay written the natural
-way; the scoping happens at concat time. It must run before the bundle, because
-`src/styles.ts` imports the file it produces.
+way; the scoping happens at concat time. It does not need to run before the
+bundle: `css.d.ts`'s wildcard `declare module '*.css'` type-checks
+`src/styles.ts`'s import of the file it produces either way, since the import
+stays external and unresolved rather than being read from disk.
 
 `dist/` and `_site/` are generated and gitignored. To view the spec pages
 locally, run `pnpm site` and serve `_site/` with any static server — the demo
