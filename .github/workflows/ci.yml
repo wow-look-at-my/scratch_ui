@@ -47,11 +47,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The build runs in three steps because each feeds the next, and the ts0
-      # action is what supplies ts0 on the runner.
+      # The build runs in three steps because each feeds the next. The ts0
+      # action downloads ts0.cjs once here (~14 MiB from buildhost); every
+      # later invocation runs that same download directly via `node`, rather
+      # than triggering the action again and re-fetching it.
       #
       # 1. scripts/ -> dist-scripts/ (the build scripts themselves)
       - name: Build scripts
+        id: ts0
         uses: wow-look-at-my/ts0@master
         with:
           args: build --config ts0.scripts.json
@@ -65,9 +68,7 @@ jobs:
       # 3. src/index.ts -> dist/scratch-ui.js, one ES module carrying every
       #    component. Type-checks strict, `any` rejected.
       - name: Build bundle
-        uses: wow-look-at-my/ts0@master
-        with:
-          args: build
+        run: node "${{ steps.ts0.outputs.path }}" build
 
       # Executes pages-manifest.json into _site/, which also enforces that
       # every component under src/components/ is imported by src/index.ts —
