@@ -18,6 +18,15 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+# A push queues behind any run still building the same ref, so a slow build
+# can never finish after and overwrite a later commit's publish (#28
+# clobbered by the older, slower #26 build it was reverting). cancel-in-progress
+# drops the superseded run instead of wasting a slot waiting to publish stale
+# output.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
 

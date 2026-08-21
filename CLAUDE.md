@@ -89,6 +89,11 @@ load the whole library.
   the PR number the preview site is named after only exists on the
   `pull_request` event, and keeping `push` pinned to master is what stops a
   PR update building twice.
+- **A `concurrency` group serializes publish by ref** (`cancel-in-progress:
+  true`) — without it, two close pushes to master can finish out of order and
+  the slower, older commit's publish lands last, overwriting the newer one
+  on the live site. This happened for real (#28's revert was clobbered by
+  #26's own slower build) and needed a fresh push to fix.
 - PRs merge into master only when the **`all-builds` commit status** on the
   head SHA is green. That status is posted automatically by an org app
   (**required-builds-manager**), which aggregates every build on the SHA
