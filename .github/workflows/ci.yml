@@ -59,21 +59,38 @@ jobs:
       - name: Enable pnpm
         run: corepack enable
 
-      # No lockfile is committed (so ts0 is never pinned to a commit) — `pnpm
-      # install` resolves the ts0 branch dependency to its current HEAD on every
-      # run. ts0's git-dep build script is allowlisted via package.json
-      # "pnpm.onlyBuiltDependencies".
+      # Only @types/node, for the build scripts' Node globals. ts0 itself is
+      # NOT an npm dependency: it comes from the wow-look-at-my/ts0 action
+      # below, which downloads the newest ts0 rather than resolving (and
+      # pinning) a git dep. No lockfile is committed.
       - run: pnpm install
 
-      # Type-checks (strict, `any` rejected) and compiles both halves:
-      # src/components/ -> dist/, and scripts/ -> dist-scripts/. A type error
-      # in either fails the build.
-      - name: Build
-        run: pnpm build
+      # The build runs in three steps because each feeds the next, and the ts0
+      # action is what supplies ts0 on the runner.
+      #
+      # 1. scripts/ -> dist-scripts/ (the build scripts themselves)
+      - name: Build scripts
+        uses: wow-look-at-my/ts0@master
+        with:
+          args: build --config ts0.scripts.json
+
+      # 2. every stylesheet -> src/scratch-ui.css, each scoped to the element
+      #    it styles. Must precede the bundle: src/styles.ts imports this file,
+      #    and the bundler has to find it to leave the import external.
+      - name: Build stylesheet
+        run: node dist-scripts/build-css.js
+
+      # 3. src/index.ts -> dist/scratch-ui.js, one ES module carrying every
+      #    component. Type-checks strict, `any` rejected.
+      - name: Build bundle
+        uses: wow-look-at-my/ts0@master
+        with:
+          args: build
 
       # Executes pages-manifest.json into _site/, which also enforces that
-      # every component under src/components/ has a published entry — the
-      # check that stops a new component from being silently unpublished.
+      # every component under src/components/ is imported by src/index.ts —
+      # the check that stops a new component from being silently left out of
+      # the bundle.
       - name: Assemble _site/ from pages-manifest.json
         run: node dist-scripts/assemble-pages.js
 

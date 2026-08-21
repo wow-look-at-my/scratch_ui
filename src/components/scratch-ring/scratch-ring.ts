@@ -11,10 +11,8 @@
  * <scratch-button> and <scratch-card> call ScratchRing.burst(this) from their
  * own click handlers when window.ScratchRing exists.
  */
-import SCRATCH_RING_CSS from './scratch-ring.css';
 
-const SCRATCH_RING_SHEET = new CSSStyleSheet();
-SCRATCH_RING_SHEET.replaceSync(SCRATCH_RING_CSS);
+import { SHEET } from '../../styles.ts';
 
 interface ScratchRingRect { left: number; top: number; width: number; height: number }
 interface ScratchRingOpts { color?: string; opacity?: number }
@@ -27,7 +25,7 @@ class ScratchRing extends HTMLElement {
   constructor() {
     super();
     this._root = this.attachShadow({ mode: 'open' });
-    this._root.adoptedStyleSheets = [SCRATCH_RING_SHEET];
+    this._root.adoptedStyleSheets = [SHEET];
   }
   connectedCallback() {
     const r = this._rect;

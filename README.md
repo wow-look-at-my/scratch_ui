@@ -10,24 +10,40 @@ caution accents, registration marks, build-stamp metadata.
 ## Layout
 
 - `src/components/<name>/` — one folder per component, holding its `<name>.ts`
-  and `<name>.css`. `ts0 build` compiles each to `dist/<name>/<name>.js` with
-  its stylesheet inlined, so a component ships as one self-contained file.
+  and `<name>.css`.
+- `src/index.ts` — the bundle entry: imports every component for its
+  registration side effect. A component missing from here is not in the build.
+- `src/styles.ts` — imports the built stylesheet as a CSS module script and
+  exports the one `CSSStyleSheet` every component adopts.
 - `src/css/` — the stylesheets that are not a component's own:
-  `scratch-tokens.css` (the consumable token contract) and `scratch-proto.css`
-  (demo-only).
+  `scratch-tokens.css` (the design tokens) and `scratch-proto.css` (demo-only).
 - `src/demo/` — the demo/spec site: the landing page and the two spec pages.
-- `src/lib/` — helpers shared by more than one component, inlined at build
-  time (no runtime import).
+- `src/lib/` — helpers shared by more than one component.
 - `pages-manifest.json` (repo root) — the input→output map that drives the
   site deploy to buildhost (see Hosting below).
+
+Build output is two files: `dist/scratch-ui.js` (every component, one ES
+module) and `src/scratch-ui.css` (tokens plus every component stylesheet). Both
+are gitignored.
 
 ## Build
 
 ```
-pnpm install     # also builds the components, via `prepare`
-pnpm build       # ts0: type-check (strict) + compile src/ and scripts/
+pnpm install     # @types/node only — ts0 comes from PATH, not npm
+pnpm build       # scripts -> stylesheet -> bundle (type-check strict)
 pnpm site        # build, then assemble _site/ from pages-manifest.json
 ```
+
+`ts0` is not an npm dependency: install it however you like locally (it is on
+`PATH`), and CI gets it from the `wow-look-at-my/ts0` action.
+
+The three build steps feed each other in order. `scripts/build-css.ts`
+concatenates every stylesheet into `src/scratch-ui.css`, **scoping each one to
+the element it styles** (`:host` becomes `:host(scratch-badge)`, `.box` becomes
+`:host(scratch-badge) .box`) — one sheet is adopted by every shadow root, so an
+unscoped rule would apply to every component. Sources stay written the natural
+way; the scoping happens at concat time. It must run before the bundle, because
+`src/styles.ts` imports the file it produces.
 
 `dist/` and `_site/` are generated and gitignored. To view the spec pages
 locally, run `pnpm site` and serve `_site/` with any static server — the demo
@@ -52,39 +68,35 @@ pages resolve components at the site root, the same layout master deploys.
 
 ### Components (`src/components/`)
 
-One custom element per folder. The compiled files are classic scripts
-(loadable via `<script defer>`) that are also import-safe as modules — each
-registers itself via a top-level `customElements.define(...)` side effect, and
-none of them export anything, which is what keeps `<script defer>` working.
-The table below names each component by its published file (`<name>.js`),
-built from `src/components/<name>/<name>.ts`.
+One custom element per folder, all of them cooked into the single
+`scratch-ui.js` module. Each registers itself via a top-level
+`customElements.define(...)` side effect, so importing the bundle is all it
+takes — there is nothing to pick and nothing to order.
 
-| file | element(s) |
+| element(s) | notes |
 |---|---|
-| `scratch-ring.js` | `<scratch-ring>` + `window.ScratchRing` (click-burst ring; buttons/cards use it when present) |
-| `scratch-reveal.js` | `window.ScratchReveal` — no element. Proximity edge-light: bordered interactive controls brighten the edge nearest the cursor, out to 512px. Mouse only, and off under reduced motion; optional |
-| `scratch-button.js` | `<scratch-button>` |
-| `scratch-badge.js` | `<scratch-badge>` — composes `<scratch-led>`: load `scratch-led.js` too |
-| `scratch-card.js` | `<scratch-card>` |
-| `scratch-caution.js` | `<scratch-caution>` — hazard-striped zone; the stripe self-dims by viewport position (full at the upper-third read line, 70% floor at the bottom), contained in its shadow so slotted content never dims |
-| `scratch-composer.js` | `<scratch-composer>` — composes `<scratch-field>` + `<scratch-button>`: load both too |
-| `scratch-field.js` | `<scratch-field>` |
-| `scratch-led.js` | `<scratch-led>` |
-| `scratch-message.js` | `<scratch-message>` |
-| `scratch-modal.js` | `<scratch-modal>` |
-| `scratch-nav.js` | `<scratch-nav>`, `<scratch-nav-item>` — composes `<scratch-button>` for the header ×: load `scratch-button.js` too |
-| `scratch-preview.js` | `<scratch-preview>` |
-| `scratch-progress.js` | `<scratch-progress>` |
-| `scratch-select.js` | `<scratch-select>` |
-| `scratch-tabs.js` | `<scratch-tabs>`, `<scratch-tab>` |
-| `scratch-toggle.js` | `<scratch-toggle>` |
+| `<scratch-ring>` | + `window.ScratchRing` (click-burst ring; buttons/cards use it) |
+| — | `window.ScratchReveal` — no element. Proximity edge-light: bordered interactive controls brighten the edge nearest the cursor, out to 512px. Mouse only, and off under reduced motion |
+| `<scratch-button>` | |
+| `<scratch-badge>` | composes `<scratch-led>` |
+| `<scratch-card>` | |
+| `<scratch-caution>` | hazard-striped zone; the stripe self-dims by viewport position (full at the upper-third read line, 70% floor at the bottom), contained in its shadow so slotted content never dims |
+| `<scratch-composer>` | composes `<scratch-field>` + `<scratch-button>` |
+| `<scratch-field>` | |
+| `<scratch-led>` | |
+| `<scratch-message>` | |
+| `<scratch-modal>` | |
+| `<scratch-nav>`, `<scratch-nav-item>` | composes `<scratch-button>` for the header × |
+| `<scratch-preview>` | |
+| `<scratch-progress>` | |
+| `<scratch-select>` | |
+| `<scratch-tabs>`, `<scratch-tab>` | |
+| `<scratch-toggle>` | |
 
-Some components compose others in their shadow DOM (marked in the table):
-`scratch-composer` renders a `<scratch-field>` and a `<scratch-button>`,
-`scratch-badge` renders a `<scratch-led>`, and `scratch-nav` renders a
-`<scratch-button>` for its close ×. The files don't import each other
-(that would break classic-script loading), so load/import the dependencies
-alongside — otherwise the inner elements stay unresolved and inert.
+Some components render others in their shadow DOM (marked above). That used to
+be the consumer's problem — every dependency had to be loaded alongside by
+hand, or the inner elements stayed unresolved and inert. With one bundle they
+are all present, so composition is invisible from the outside.
 
 API quick notes (the newer controls + upgraded attributes):
 
@@ -158,20 +170,16 @@ manifest, not the workflow, decides what gets published; change the site by
 editing the manifest. CI validates it against its JSON Schema
 (`pages-manifest.schema.json`, checked by the org's json-validator action).
 
-The manifest publishes the components and tokens at the **site root**, so
-consumers embed bare root-relative file URLs — the same convention
-`js-snippets` uses for its hosted modules:
+The manifest publishes the two library files at the **site root**:
 
 ```
-https://sites.pazer.build/scratch_ui/branch/master/scratch-tokens.css
-https://sites.pazer.build/scratch_ui/branch/master/scratch-button.js
+https://sites.pazer.build/scratch_ui/branch/master/scratch-ui.css
+https://sites.pazer.build/scratch_ui/branch/master/scratch-ui.js
 ```
 
-Sources are nested per component (`dist/scratch-button/scratch-button.js`) but
-the published surface is flat, so each component carries its own flattening
-entry in the manifest. Adding a component means adding that entry: the
-assembly script fails when a `src/components/<name>/` has no `/<name>.js`
-entry, so a component cannot be silently left unpublished.
+Adding a component means importing it in `src/index.ts`. The assembly script
+fails when a `src/components/<name>/` is not imported there, so a component
+cannot be silently left out of the bundle.
 
 The spec site is served under `/demo/` (the site root's `index.html` forwards
 there — the spec pages can't live at the root itself, because their relative
@@ -187,14 +195,23 @@ the full site (same assembled layout as master):
 
 ## Consuming
 
-### Plain script tags (what the demo pages do)
+Two files, always both (what the demo pages do):
 
 ```html
-<link rel="stylesheet" href="scratch-tokens.css" />
-<script src="scratch-ring.js" defer></script>
-<script src="scratch-button.js" defer></script>
-<!-- ...one tag per component you use (served from the buildhost site root) -->
+<link rel="stylesheet" href="scratch-ui.css" />
+<script type="module" src="scratch-ui.js"></script>
 ```
+
+The stylesheet is loaded twice, for two different jobs, and the browser fetches
+it once. The `<link>` puts the **tokens** on the page's `:root`, where they
+inherit into every shadow root — that is what themes the components, and it is
+why a consumer can override any token in their own CSS. The module imports the
+same file again as a CSS module script to get the **component rules** inside
+each shadow root, which a linked stylesheet cannot reach past a shadow
+boundary.
+
+Both are required. The stylesheet is not optional styling on top of working
+components: without it they render unstyled.
 
 ### As a pnpm git dependency (bundlers)
 
@@ -203,29 +220,24 @@ pnpm add "git+https://github.com/wow-look-at-my/scratch_ui.git"
 ```
 
 ```ts
-// register the components you use (side-effect imports)
-import "scratch-ui/scratch-ring.js";
-import "scratch-ui/scratch-button.js";
+import "scratch-ui";           // registers every component
 ```
 
 ```css
-@import "scratch-ui/scratch-tokens.css";
+@import "scratch-ui/scratch-ui.css";
 ```
 
 Notes:
 
-- The package `exports` map resolves `scratch-ui/<name>.js` to the built
-  `dist/<name>/<name>.js` and `scratch-ui/scratch-tokens.css` to
-  `src/css/scratch-tokens.css`, so the bare subpath imports above keep working
-  regardless of the repo layout. Installing from git runs the package's
-  `prepare` script, which builds `dist/` — it is not committed.
+- The package `exports` map resolves `scratch-ui` to `dist/scratch-ui.js` and
+  `scratch-ui/scratch-ui.css` to the built stylesheet, so the imports above
+  work regardless of the repo layout. Neither is committed — build before
+  consuming from a git checkout.
 - The components register themselves as a **top-level side effect** of being
-  imported/loaded. The package deliberately does not declare
-  `"sideEffects": false` — keep it that way, or bundlers will tree-shake the
-  registrations away.
-- Import `scratch-ring.js` alongside the components if you want the click
-  ring: `scratch-button`/`scratch-card` burst rings only when
-  `window.ScratchRing` exists, and degrade gracefully without it.
+  imported. The package deliberately does not declare `"sideEffects": false` —
+  keep it that way, or bundlers will tree-shake the registrations away.
+- `scratch-ring` and `scratch-reveal` are in the bundle, so the click ring and
+  the proximity edge-light are on by default.
 - Import `scratch-reveal.js` for the proximity edge-light. It finds the
   controls itself — light DOM and open shadow roots — so there is nothing to
   call; `ScratchReveal.track(el)` exists only for a closed shadow root it

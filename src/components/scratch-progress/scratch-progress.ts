@@ -18,10 +18,8 @@
  * (aria-valuenow is dropped while indeterminate).
  */
 
-import SCRATCH_PROGRESS_CSS from './scratch-progress.css';
 
-const SCRATCH_PROGRESS_SHEET = new CSSStyleSheet();
-SCRATCH_PROGRESS_SHEET.replaceSync(SCRATCH_PROGRESS_CSS);
+import { SHEET } from '../../styles.ts';
 
 const SCRATCH_PROGRESS_TPL = document.createElement('template');
 SCRATCH_PROGRESS_TPL.innerHTML = `<div class="track" part="track"><div class="fill" part="fill"></div></div>`;
@@ -33,7 +31,7 @@ class ScratchProgress extends HTMLElement {
   constructor() {
     super();
     const root = this.attachShadow({ mode: 'open' });
-    root.adoptedStyleSheets = [SCRATCH_PROGRESS_SHEET];
+    root.adoptedStyleSheets = [SHEET];
     root.appendChild(SCRATCH_PROGRESS_TPL.content.cloneNode(true));
     this._fill = root.querySelector('.fill') as HTMLElement;
   }
