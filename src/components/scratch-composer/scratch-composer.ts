@@ -6,10 +6,8 @@
  * Fires `submit` (detail: { value }) on send-click or ⌘/Ctrl+Enter, then
  * clears. Read/scripted value via the `.value` property.
  */
-import SCRATCH_COMPOSER_CSS from './scratch-composer.css';
 
-const SCRATCH_COMPOSER_SHEET = new CSSStyleSheet();
-SCRATCH_COMPOSER_SHEET.replaceSync(SCRATCH_COMPOSER_CSS);
+import { SHEET } from '../../styles.ts';
 
 class ScratchComposer extends HTMLElement {
   static get observedAttributes() { return ['placeholder', 'send', 'rows']; }
@@ -21,7 +19,7 @@ class ScratchComposer extends HTMLElement {
   constructor() {
     super();
     this._root = this.attachShadow({ mode: 'open' });
-    this._root.adoptedStyleSheets = [SCRATCH_COMPOSER_SHEET];
+    this._root.adoptedStyleSheets = [SHEET];
     this._root.innerHTML =
       `<scratch-field multiline></scratch-field>` +
       `<scratch-button variant="accent"></scratch-button>`;

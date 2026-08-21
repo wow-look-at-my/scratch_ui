@@ -24,10 +24,8 @@
 
 /* Single shared stylesheet (parsed once) adopted by every instance —
    no per-preview CSS duplication. */
-import SCRATCH_PREVIEW_CSS from './scratch-preview.css';
 
-const SCRATCH_PREVIEW_SHEET = new CSSStyleSheet();
-SCRATCH_PREVIEW_SHEET.replaceSync(SCRATCH_PREVIEW_CSS);
+import { SHEET } from '../../styles.ts';
 
 const SCRATCH_PREVIEW_TPL = document.createElement('template');
 SCRATCH_PREVIEW_TPL.innerHTML = `
@@ -51,7 +49,7 @@ class ScratchPreview extends HTMLElement {
   constructor() {
     super();
     const root = this.attachShadow({ mode: 'open' });
-    root.adoptedStyleSheets = [SCRATCH_PREVIEW_SHEET];
+    root.adoptedStyleSheets = [SHEET];
     root.appendChild(SCRATCH_PREVIEW_TPL.content.cloneNode(true));
     this._title = root.querySelector('.title') as HTMLElement;
     this._sub = root.querySelector('.sub') as HTMLElement;

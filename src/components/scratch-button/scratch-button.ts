@@ -24,10 +24,8 @@
 
 /* One stylesheet, parsed once, shared by reference across every instance's
    shadow root via adoptedStyleSheets — no per-button CSS duplication. */
-import SCRATCH_BUTTON_CSS from './scratch-button.css';
 
-const SCRATCH_BUTTON_SHEET = new CSSStyleSheet();
-SCRATCH_BUTTON_SHEET.replaceSync(SCRATCH_BUTTON_CSS);
+import { SHEET } from '../../styles.ts';
 
 const SCRATCH_BUTTON_TPL = document.createElement('template');
 SCRATCH_BUTTON_TPL.innerHTML = `<button part="button"><slot></slot></button>`;
@@ -41,7 +39,7 @@ class ScratchButton extends HTMLElement {
     super();
     this._internals = this.attachInternals();
     this._root = this.attachShadow({ mode: 'open' });
-    this._root.adoptedStyleSheets = [SCRATCH_BUTTON_SHEET];
+    this._root.adoptedStyleSheets = [SHEET];
     this._root.appendChild(SCRATCH_BUTTON_TPL.content.cloneNode(true));
     this.addEventListener('click', () => { this._confirm(); this._maybeSubmit(); });
   }

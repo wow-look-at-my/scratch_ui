@@ -1,7 +1,9 @@
-// A component's `.css` file is imported as a string (ts0's `.css: text`
-// loader) and handed to CSSStyleSheet.replaceSync — the stylesheet text is
-// inlined into the built module, so a component stays one classic script.
+// A CSS module script evaluates to a CSSStyleSheet, which a shadow root
+// adopts directly. The import is never bundled (ts0's `external: ["*.css"]`),
+// so the browser resolves and constructs the stylesheet at runtime and no
+// stylesheet text is embedded in the JS -- this ambient declaration is what
+// makes the import type-check.
 declare module '*.css' {
-	const source: string;
-	export default source;
+	const sheet: CSSStyleSheet;
+	export default sheet;
 }
