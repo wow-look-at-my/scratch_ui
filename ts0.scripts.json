@@ -1,7 +1,8 @@
 {
-	"entry": "scripts/assemble-pages.ts",
-	"outfile": "dist-scripts/assemble-pages.js",
+	"entry": "scripts",
+	"outdir": "dist-scripts",
 	"target": "node",
 	"sourcemap": false,
+	"declarations": false,
 	"exclude": ["src"]
 }

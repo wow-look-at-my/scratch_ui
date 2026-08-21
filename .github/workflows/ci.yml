@@ -27,9 +27,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
-
 permissions:
   contents: read
   id-token: write # buildhost OIDC auth
@@ -50,30 +47,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      # The build runs in three steps because each feeds the next, and the ts0
+      # action is what supplies ts0 on the runner.
+      #
+      # 1. scripts/ -> dist-scripts/ (the build scripts themselves)
+      - name: Build scripts
+        uses: wow-look-at-my/ts0@master
         with:
-          node-version: 22
+          args: build --config ts0.scripts.json
 
-      # pnpm, pinned via package.json "packageManager" and provisioned by
-      # corepack (ships with Node) — no third-party setup action needed.
-      - name: Enable pnpm
-        run: corepack enable
+      # 2. every stylesheet -> src/scratch-ui.css, each scoped to the element
+      #    it styles. Must precede the bundle: src/styles.ts imports this file,
+      #    and the bundler has to find it to leave the import external.
+      - name: Build stylesheet
+        run: node dist-scripts/build-css.js
 
-      # No lockfile is committed (so ts0 is never pinned to a commit) — `pnpm
-      # install` resolves the ts0 branch dependency to its current HEAD on every
-      # run. ts0's git-dep build script is allowlisted via package.json
-      # "pnpm.onlyBuiltDependencies".
-      - run: pnpm install
-
-      # Type-checks (strict, `any` rejected) and compiles both halves:
-      # src/components/ -> dist/, and scripts/ -> dist-scripts/. A type error
-      # in either fails the build.
-      - name: Build
-        run: pnpm build
+      # 3. src/index.ts -> dist/scratch-ui.js, one ES module carrying every
+      #    component. Type-checks strict, `any` rejected.
+      - name: Build bundle
+        uses: wow-look-at-my/ts0@master
+        with:
+          args: build
 
       # Executes pages-manifest.json into _site/, which also enforces that
-      # every component under src/components/ has a published entry — the
-      # check that stops a new component from being silently unpublished.
+      # every component under src/components/ is imported by src/index.ts —
+      # the check that stops a new component from being silently left out of
+      # the bundle.
       - name: Assemble _site/ from pages-manifest.json
         run: node dist-scripts/assemble-pages.js
 

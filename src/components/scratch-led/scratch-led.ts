@@ -17,16 +17,13 @@
  * override the token deliberately for the rare larger indicator.
  */
 
-import SCRATCH_LED_CSS from './scratch-led.css';
-
-const SCRATCH_LED_SHEET = new CSSStyleSheet();
-SCRATCH_LED_SHEET.replaceSync(SCRATCH_LED_CSS);
+import { SHEET } from '../../styles.ts';
 
 class ScratchLed extends HTMLElement {
   constructor() {
     super();
     const root = this.attachShadow({ mode: 'open' });
-    root.adoptedStyleSheets = [SCRATCH_LED_SHEET];
+    root.adoptedStyleSheets = [SHEET];
   }
 }
 customElements.define('scratch-led', ScratchLed);

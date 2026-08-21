@@ -8,25 +8,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../scratch-tokens.css" />
+<!-- The whole library: one stylesheet, one module. The stylesheet is linked
+     for the tokens (:root custom properties, which inherit into every shadow
+     root) and imported again by the module for the component rules, which a
+     linked sheet cannot deliver past a shadow boundary. Same URL, fetched
+     once. -->
+<link rel="stylesheet" href="../scratch-ui.css" />
 <link rel="stylesheet" href="scratch-proto.css" />
-<script src="../scratch-ring.js" defer></script>
-<script src="../scratch-reveal.js" defer></script>
-<script src="../scratch-button.js" defer></script>
-<script src="../scratch-preview.js" defer></script>
-<script src="../scratch-led.js" defer></script>
-<script src="../scratch-field.js" defer></script>
-<script src="../scratch-tabs.js" defer></script>
-<script src="../scratch-nav.js" defer></script>
-<script src="../scratch-badge.js" defer></script>
-<script src="../scratch-card.js" defer></script>
-<script src="../scratch-message.js" defer></script>
-<script src="../scratch-composer.js" defer></script>
-<script src="../scratch-modal.js" defer></script>
-<script src="../scratch-progress.js" defer></script>
-<script src="../scratch-select.js" defer></script>
-<script src="../scratch-toggle.js" defer></script>
-<script src="../scratch-caution.js" defer></script>
+<script type="module" src="../scratch-ui.js"></script>
 </head>
 <body>
 <scratch-button class="sg-railtoggle" id="railtoggle" aria-label="Open navigation"><span class="bars"><i></i><i></i><i></i></span>Nav</scratch-button>

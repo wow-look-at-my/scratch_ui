@@ -29,18 +29,16 @@
  * built after its subtree was scanned):
  *   ScratchReveal.track(el) / ScratchReveal.untrack(el) / ScratchReveal.scan(root)
  */
-import SCRATCH_REVEAL_CSS from './scratch-reveal.css';
 
 /* How close the cursor comes before an edge lights, and how bright the ring
    gets directly under it. RADIUS is published to the CSS as --rv-r rather than
    written there too: the JS falloff and the gradient have to agree, and two
    knobs that must match are one knob. PEAK scales the whole effect (--rv-o is
    PEAK * t^2, and the tint is the only other term). */
+import { SHEET } from '../../styles.ts';
+
 const SCRATCH_REVEAL_RADIUS = 512;
 const SCRATCH_REVEAL_PEAK = 0.275;
-
-const SCRATCH_REVEAL_SHEET = new CSSStyleSheet();
-SCRATCH_REVEAL_SHEET.replaceSync(SCRATCH_REVEAL_CSS);
 
 const ScratchReveal = (() => {
   /* Bordered AND interactive — both conditions, or the glow means nothing.
@@ -77,11 +75,11 @@ const ScratchReveal = (() => {
 
   function track(el: HTMLElement): void {
     if (tracked.has(el)) return;
-    const sr = el.shadowRoot;
-    if (!sr) return;
-    if (!sr.adoptedStyleSheets.includes(SCRATCH_REVEAL_SHEET)) {
-      sr.adoptedStyleSheets = [...sr.adoptedStyleSheets, SCRATCH_REVEAL_SHEET];
-    }
+    // No sheet to adopt: every component adopts the one shared stylesheet in
+    // its own constructor, and the reveal rules live in it. This only has to
+    // start WATCHING the element -- the ring is drawn by the --rv-* custom
+    // properties written in the pointer loop below.
+    if (!el.shadowRoot) return;
     tracked.add(el);
     io.observe(el);
   }
