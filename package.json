@@ -12,7 +12,6 @@
   "scripts": {
     "build": "ts0 build && ts0 build --config ts0.scripts.json",
     "site": "pnpm build && node dist-scripts/assemble-pages.js",
-    "preview": "pnpm site && node scripts/serve-site.js",
     "prepare": "ts0 build"
   },
   "files": [
