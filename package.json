@@ -10,26 +10,18 @@
   "type": "module",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "build": "ts0 build && ts0 build --config ts0.scripts.json",
-    "site": "pnpm build && node dist-scripts/assemble-pages.js",
-    "prepare": "ts0 build"
+    "build": "ts0 build --config ts0.scripts.json && node dist-scripts/build-css.js && ts0 build",
+    "site": "pnpm build && node dist-scripts/assemble-pages.js"
   },
   "files": [
     "dist",
-    "src/css"
+    "src/scratch-ui.css"
   ],
   "exports": {
-    "./scratch-tokens.css": "./src/css/scratch-tokens.css",
-    "./*.js": "./dist/*/*.js"
+    ".": "./dist/scratch-ui.js",
+    "./scratch-ui.css": "./src/scratch-ui.css"
   },
   "devDependencies": {
-    "@types/node": "^22.10.0",
-    "ts0": "git+https://github.com/wow-look-at-my/ts0.git#master"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "ts0",
-      "esbuild"
-    ]
+    "@types/node": "^22.10.0"
   }
 }

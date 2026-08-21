@@ -15,9 +15,10 @@
  * Add `strip-only` to render just the bar (no panels) for manual wiring.
  */
 
-import SCRATCH_TABS_CSS from './scratch-tabs.css';
 
 /* --- panel child ------------------------------------------------------ */
+import { SHEET } from '../../styles.ts';
+
 class ScratchTab extends HTMLElement {
   static get observedAttributes() { return ['label']; }
   attributeChangedCallback() {
@@ -28,9 +29,6 @@ customElements.define('scratch-tab', ScratchTab);
 
 /* --- container -------------------------------------------------------- */
 
-const SCRATCH_TABS_SHEET = new CSSStyleSheet();
-SCRATCH_TABS_SHEET.replaceSync(SCRATCH_TABS_CSS);
-
 class ScratchTabs extends HTMLElement {
   private _root: ShadowRoot;
   private _strip: HTMLElement;
@@ -39,7 +37,7 @@ class ScratchTabs extends HTMLElement {
   constructor() {
     super();
     this._root = this.attachShadow({ mode: 'open' });
-    this._root.adoptedStyleSheets = [SCRATCH_TABS_SHEET];
+    this._root.adoptedStyleSheets = [SHEET];
     this._root.innerHTML = `<div class="strip" part="strip" role="tablist"><slot name="lead" class="lead"></slot><span class="tabbtns"></span><slot name="trail" class="trail"></slot></div><div class="panels" part="panels"><slot></slot></div>`;
     this._strip = this._root.querySelector('.tabbtns') as HTMLElement;
     this._active = 0;
