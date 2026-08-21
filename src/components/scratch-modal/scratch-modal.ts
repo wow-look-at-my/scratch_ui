@@ -8,8 +8,10 @@
  * decorative "// eyebrow" line. Content (typically <scratch-tabs>) is slotted.
  * eyebrow: optional decorative label rendered as "// <text>".
  */
+import SCRATCH_MODAL_CSS from './scratch-modal.css';
 
-import { SHEET } from '../../styles.ts';
+const SCRATCH_MODAL_SHEET = new CSSStyleSheet();
+SCRATCH_MODAL_SHEET.replaceSync(SCRATCH_MODAL_CSS);
 
 class ScratchModal extends HTMLElement {
   static get observedAttributes() { return ['eyebrow']; }
@@ -18,7 +20,7 @@ class ScratchModal extends HTMLElement {
   constructor() {
     super();
     this._root = this.attachShadow({ mode: 'open' });
-    this._root.adoptedStyleSheets = [SHEET];
+    this._root.adoptedStyleSheets = [SCRATCH_MODAL_SHEET];
     this._root.innerHTML =
       `<div class="surface"><div class="eyebrow" part="eyebrow"></div><slot></slot></div>`;
     this._eyebrow = this._root.querySelector('.eyebrow') as HTMLElement;

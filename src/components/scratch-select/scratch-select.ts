@@ -18,8 +18,10 @@
  * Option text renders verbatim (no uppercase) — model ids must read as-is.
  */
 
+import SCRATCH_SELECT_CSS from './scratch-select.css';
 
-import { SHEET } from '../../styles.ts';
+const SCRATCH_SELECT_SHEET = new CSSStyleSheet();
+SCRATCH_SELECT_SHEET.replaceSync(SCRATCH_SELECT_CSS);
 
 const SCRATCH_SELECT_TPL = document.createElement('template');
 SCRATCH_SELECT_TPL.innerHTML =
@@ -39,7 +41,7 @@ class ScratchSelect extends HTMLElement {
     this._internals = this.attachInternals();
     this._value = null;   // authoritative once the user picks / property is set
     const root = this.attachShadow({ mode: 'open' });
-    root.adoptedStyleSheets = [SHEET];
+    root.adoptedStyleSheets = [SCRATCH_SELECT_SHEET];
     root.appendChild(SCRATCH_SELECT_TPL.content.cloneNode(true));
     this._select = root.querySelector('select') as HTMLSelectElement;
     this._select.addEventListener('input', (e) => {

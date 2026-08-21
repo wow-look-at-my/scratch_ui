@@ -18,8 +18,10 @@
  * :host — so the page's global `* { padding: 0 }` reset (which reaches the
  * host in light DOM but cannot pierce the shadow boundary) can never strip it.
  */
+import SCRATCH_BADGE_CSS from './scratch-badge.css';
 
-import { SHEET } from '../../styles.ts';
+const SCRATCH_BADGE_SHEET = new CSSStyleSheet();
+SCRATCH_BADGE_SHEET.replaceSync(SCRATCH_BADGE_CSS);
 
 class ScratchBadge extends HTMLElement {
   static get observedAttributes() { return ['variant', 'live']; }
@@ -27,7 +29,7 @@ class ScratchBadge extends HTMLElement {
   constructor() {
     super();
     this._root = this.attachShadow({ mode: 'open' });
-    this._root.adoptedStyleSheets = [SHEET];
+    this._root.adoptedStyleSheets = [SCRATCH_BADGE_SHEET];
     this._root.innerHTML =
       `<span class="box" part="box"><scratch-led state="accent"></scratch-led><slot></slot></span>`;
   }

@@ -8,8 +8,10 @@
  * (`author`, not `role` — `role` is the ARIA global attribute, and
  * "user"/"assistant" are not valid ARIA role tokens.)
  */
+import SCRATCH_MESSAGE_CSS from './scratch-message.css';
 
-import { SHEET } from '../../styles.ts';
+const SCRATCH_MESSAGE_SHEET = new CSSStyleSheet();
+SCRATCH_MESSAGE_SHEET.replaceSync(SCRATCH_MESSAGE_CSS);
 
 class ScratchMessage extends HTMLElement {
   static get observedAttributes() { return ['author', 'stats']; }
@@ -19,7 +21,7 @@ class ScratchMessage extends HTMLElement {
   constructor() {
     super();
     this._root = this.attachShadow({ mode: 'open' });
-    this._root.adoptedStyleSheets = [SHEET];
+    this._root.adoptedStyleSheets = [SCRATCH_MESSAGE_SHEET];
     this._root.innerHTML =
       `<div class="head"><span class="author"></span><span class="stats"></span></div>` +
       `<div class="body"><slot></slot></div>`;

@@ -29,12 +29,14 @@
  * (scrolling itself is the smoothness), so the dimming — salience, not
  * motion — stays active under prefers-reduced-motion.
  */
+import SCRATCH_CAUTION_CSS from './scratch-caution.css';
+
+const SCRATCH_CAUTION_SHEET = new CSSStyleSheet();
+SCRATCH_CAUTION_SHEET.replaceSync(SCRATCH_CAUTION_CSS);
 
 /* Same feature test as the stylesheet's @supports gate: where the engine runs
    the view-timeline animation, the JS updater must never run (its inline
    writes would be dead weight — animations outrank inline styles anyway). */
-import { SHEET } from '../../styles.ts';
-
 const SCRATCH_CAUTION_VIEW_TIMELINE = CSS.supports('animation-timeline', 'view()');
 
 class ScratchCaution extends HTMLElement {
@@ -47,7 +49,7 @@ class ScratchCaution extends HTMLElement {
   constructor() {
     super();
     this._root = this.attachShadow({ mode: 'open' });
-    this._root.adoptedStyleSheets = [SHEET];
+    this._root.adoptedStyleSheets = [SCRATCH_CAUTION_SHEET];
     this._root.innerHTML = `<div class="stripe" part="stripe"></div><slot></slot>`;
     this._stripe = this._root.firstElementChild as HTMLElement;
     this._queued = false;

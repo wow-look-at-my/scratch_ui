@@ -30,49 +30,28 @@ Never build host-pseudo geometry from box-model properties a reset touches
 ring with `mask-position` / `mask-size` for exactly this reason. Styles on
 elements *inside* the shadow root are unaffected.
 
-## The library ships as two files
-
-`scratch-ui.js` (every component, one ES module) and `scratch-ui.css` (tokens
-plus every component stylesheet). There is no per-component file; consumers
-load the whole library.
+## Sources are TypeScript; the published surface is flat
 
 - A component is a folder: `src/components/<name>/<name>.ts` + `<name>.css`.
-  Never write CSS into a template literal in the `.ts`.
-- **Add a component by importing it in `src/index.ts`.** `assemble-pages.ts`
-  fails when a component under `src/components/` is not imported there, so one
-  cannot be silently left out of the bundle.
-- **One stylesheet is adopted by every shadow root**, so a component's rules
-  must be scoped to it or they apply everywhere. `scripts/build-css.ts` does
-  that as it concatenates: `:host` -> `:host(scratch-badge)`, `.box` ->
-  `:host(scratch-badge) .box`, `:host(...)` merged into one compound. Write
-  sources the natural way. This is not cosmetic — before scoping, 17 bare
-  `:host` rules all matched every component and the last won, rendering
-  `<scratch-badge>` 460px wide (from the modal) and 6px tall (from the LED).
-- Two things the scoper must not touch: `@keyframes` bodies (offsets are not
-  selectors) and `scratch-reveal.css`, whose selectors already name the hosts
-  they decorate — scoping it yields `:host(scratch-reveal:not(scratch-toggle))`,
-  which matches nothing. `UNSCOPED` in `build-css.ts` carries that exception.
-- **No CSS text may end up in the JS.** `src/styles.ts` imports the stylesheet
-  as a CSS module script (`with { type: 'css' }`) and `ts0.json` sets
-  `external: ["*.css"]` to keep that import an external reference. Module
-  evaluation runs once, so every root adopts the SAME `CSSStyleSheet` and the
-  browser parses it once. An unsupported CSS-type import that is not external
-  fails the build loudly rather than inlining — that hard failure is the
-  guardrail.
-- Components may `export` and may import each other: the bundle is a module.
-  (The old ban existed only because each component loaded as a classic
-  `<script defer>`, where a top-level `export` is a syntax error.)
-- `dist/`, `dist-scripts/`, `_site/`, `src/scratch-ui.css` and the lockfile are
-  gitignored.
-- **ts0 is not an npm dependency.** It comes from `PATH` locally and from the
-  `wow-look-at-my/ts0` action in CI, which downloads current ts0 instead of
-  pinning one. A stale lockfile pinning it once cost real debugging time.
+  The `.css` is imported as text (ts0's `.css: text` loader, declared by
+  `css.d.ts`) and adopted via `CSSStyleSheet.replaceSync` — never write CSS
+  into a template literal in the `.ts`.
+- `ts0 build` compiles to `dist/<name>/<name>.js`, but consumers fetch
+  `…/branch/master/<name>.js`. `pages-manifest.json` carries one flattening
+  entry per component to bridge that; `assemble-pages.ts` fails when a
+  component has no entry, so adding a component means adding its entry.
+- **No component may `export` anything.** They are loaded as classic
+  `<script defer>`, and a single `export` in the output is a syntax error
+  there. That is also why components never import each other (compose by
+  rendering the tag and telling consumers to load it too), and why `ts0.json`
+  sets `esbuild.splitting: false` — splitting emits cross-file `import`s.
+  Code genuinely shared between components lives in `src/lib/` and is inlined
+  at build time.
+- `dist/`, `dist-scripts/`, `_site/` and the lockfile are gitignored; ts0 is a
+  branch dependency resolved to HEAD on every install (as in js-snippets).
 - Type-checking is part of building, never a separate step. `pnpm build` runs
-  three steps in order — `ts0.scripts.json` (node, `scripts/` ->
-  `dist-scripts/`), then `build-css.js`, then `ts0.json` (browser,
-  `src/index.ts` -> `dist/scratch-ui.js`). The stylesheet must exist before the
-  bundle: `src/styles.ts` imports it, and the bundler has to find it to leave
-  the import external.
+  ts0 twice: `ts0.json` (browser, `src/components/` -> `dist/`) and
+  `ts0.scripts.json` (node, `scripts/` -> `dist-scripts/`).
 - **Build scripts live in `scripts/`, never under `.github/`.** tsc's default
   include never descends into a dot-directory, so a `.ts` under `.github/`
   is bundled without being type-checked at all — and ts0 still reports a

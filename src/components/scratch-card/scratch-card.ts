@@ -8,8 +8,11 @@
  * hover glow, and the index/name/desc layout. Clicking bursts a <scratch-ring>
  * (the shared shockwave). `href` makes the whole card a link.
  */
-import { SHEET } from '../../styles.ts';
 import { escapeHtml } from '../../lib/escape-html.ts';
+import SCRATCH_CARD_CSS from './scratch-card.css';
+
+const SCRATCH_CARD_SHEET = new CSSStyleSheet();
+SCRATCH_CARD_SHEET.replaceSync(SCRATCH_CARD_CSS);
 
 class ScratchCard extends HTMLElement {
   static get observedAttributes() { return ['index', 'name', 'desc', 'href']; }
@@ -17,7 +20,7 @@ class ScratchCard extends HTMLElement {
   constructor() {
     super();
     this._root = this.attachShadow({ mode: 'open' });
-    this._root.adoptedStyleSheets = [SHEET];
+    this._root.adoptedStyleSheets = [SCRATCH_CARD_SHEET];
     this.addEventListener('click', () => {
       window.ScratchRing?.burst(this);
     });
