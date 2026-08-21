@@ -5,5 +5,6 @@
 	"format": "esm",
 	"sourcemap": false,
 	"declarations": false,
-	"external": ["*.css"]
+	"external": ["*.css"],
+	"exclude": ["scripts"]
 }

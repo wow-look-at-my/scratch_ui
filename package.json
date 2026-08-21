@@ -20,8 +20,5 @@
   "exports": {
     ".": "./dist/scratch-ui.js",
     "./scratch-ui.css": "./src/scratch-ui.css"
-  },
-  "devDependencies": {
-    "@types/node": "^22.10.0"
   }
 }

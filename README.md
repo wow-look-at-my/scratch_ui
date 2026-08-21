@@ -29,13 +29,13 @@ are gitignored.
 ## Build
 
 ```
-pnpm install     # @types/node only — ts0 comes from PATH, not npm
 pnpm build       # scripts -> stylesheet -> bundle (type-check strict)
 pnpm site        # build, then assemble _site/ from pages-manifest.json
 ```
 
 `ts0` is not an npm dependency: install it however you like locally (it is on
-`PATH`), and CI gets it from the `wow-look-at-my/ts0` action.
+`PATH`), and CI gets it from the `wow-look-at-my/ts0` action. No separate
+install step is needed for `@types/node` either — ts0 ships its own copy.
 
 The three build steps feed each other in order. `scripts/build-css.ts`
 concatenates every stylesheet into `src/scratch-ui.css`, **scoping each one to
