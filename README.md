@@ -32,7 +32,6 @@ are gitignored.
 pnpm install     # @types/node only — ts0 comes from PATH, not npm
 pnpm build       # scripts -> stylesheet -> bundle (type-check strict)
 pnpm site        # build, then assemble _site/ from pages-manifest.json
-pnpm preview     # site, then serve _site/ at http://localhost:4173
 ```
 
 `ts0` is not an npm dependency: install it however you like locally (it is on

@@ -11,8 +11,7 @@
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "build": "ts0 build --config ts0.scripts.json && node dist-scripts/build-css.js && ts0 build",
-    "site": "pnpm build && node dist-scripts/assemble-pages.js",
-    "preview": "pnpm site && node scripts/serve-site.js"
+    "site": "pnpm build && node dist-scripts/assemble-pages.js"
   },
   "files": [
     "dist",
