@@ -18,10 +18,12 @@
  * `inputmode` passes through in both modes — the virtual-keyboard hint for a
  * free-text field that expects e.g. digits without number-input semantics.
  */
-
-import { SHEET } from '../../styles.ts';
+import SCRATCH_FIELD_CSS from './scratch-field.css';
 
 const SCRATCH_FIELD_TYPES = new Set(['text', 'password', 'number', 'search', 'email', 'url']);
+
+const SCRATCH_FIELD_SHEET = new CSSStyleSheet();
+SCRATCH_FIELD_SHEET.replaceSync(SCRATCH_FIELD_CSS);
 
 class ScratchField extends HTMLElement {
   static formAssociated = true;
@@ -36,7 +38,7 @@ class ScratchField extends HTMLElement {
     super();
     this._internals = this.attachInternals();
     this._root = this.attachShadow({ mode: 'open' });
-    this._root.adoptedStyleSheets = [SHEET];
+    this._root.adoptedStyleSheets = [SCRATCH_FIELD_SHEET];
     this._render();
   }
 

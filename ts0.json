@@ -1,9 +1,9 @@
 {
-	"entry": "src/index.ts",
-	"outfile": "dist/scratch-ui.js",
+	"entry": "src/components",
+	"outdir": "dist",
 	"target": "browser",
-	"format": "esm",
 	"sourcemap": false,
+	"loaders": { ".css": "text" },
 	"declarations": false,
-	"external": ["*.css"]
+	"esbuild": { "splitting": false }
 }

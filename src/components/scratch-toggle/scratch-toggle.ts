@@ -16,8 +16,10 @@
  * it can never clobber the control's state.
  */
 
+import SCRATCH_TOGGLE_CSS from './scratch-toggle.css';
 
-import { SHEET } from '../../styles.ts';
+const SCRATCH_TOGGLE_SHEET = new CSSStyleSheet();
+SCRATCH_TOGGLE_SHEET.replaceSync(SCRATCH_TOGGLE_CSS);
 
 const SCRATCH_TOGGLE_TPL = document.createElement('template');
 SCRATCH_TOGGLE_TPL.innerHTML =
@@ -34,7 +36,7 @@ class ScratchToggle extends HTMLElement {
     super();
     this._internals = this.attachInternals();
     const root = this.attachShadow({ mode: 'open' });
-    root.adoptedStyleSheets = [SHEET];
+    root.adoptedStyleSheets = [SCRATCH_TOGGLE_SHEET];
     root.appendChild(SCRATCH_TOGGLE_TPL.content.cloneNode(true));
     this._input = root.querySelector('input') as HTMLInputElement;
     this._input.addEventListener('change', () => {

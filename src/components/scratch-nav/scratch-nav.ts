@@ -33,17 +33,21 @@
  * (e.g. scroll-spy toggles the `active` attribute).
  */
 
-import { SHEET } from '../../styles.ts';
 import { escapeHtml } from '../../lib/escape-html.ts';
+import SCRATCH_NAV_ITEM_CSS from './scratch-nav-item.css';
+import SCRATCH_NAV_CSS from './scratch-nav.css';
 
 /* ---- item ----------------------------------------------------------- */
+const SCRATCH_NAV_ITEM_SHEET = new CSSStyleSheet();
+SCRATCH_NAV_ITEM_SHEET.replaceSync(SCRATCH_NAV_ITEM_CSS);
+
 class ScratchNavItem extends HTMLElement {
   static get observedAttributes() { return ['label', 'desc', 'href', 'number']; }
   private _root: ShadowRoot;
   constructor() {
     super();
     this._root = this.attachShadow({ mode: 'open' });
-    this._root.adoptedStyleSheets = [SHEET];
+    this._root.adoptedStyleSheets = [SCRATCH_NAV_ITEM_SHEET];
   }
   connectedCallback() { this._render(); }
   attributeChangedCallback() { if (this._root.childElementCount) this._render(); }
@@ -65,6 +69,9 @@ class ScratchNavItem extends HTMLElement {
 customElements.define('scratch-nav-item', ScratchNavItem);
 
 /* ---- container ------------------------------------------------------ */
+const SCRATCH_NAV_SHEET = new CSSStyleSheet();
+SCRATCH_NAV_SHEET.replaceSync(SCRATCH_NAV_CSS);
+
 class ScratchNav extends HTMLElement {
   static get observedAttributes() { return ['label']; }
   private _root: ShadowRoot;
@@ -77,7 +84,7 @@ class ScratchNav extends HTMLElement {
   constructor() {
     super();
     this._root = this.attachShadow({ mode: 'open' });
-    this._root.adoptedStyleSheets = [SHEET];
+    this._root.adoptedStyleSheets = [SCRATCH_NAV_SHEET];
     this._root.innerHTML =
       `<div class="head"><span class="title"></span><scratch-button class="close" variant="ghost" aria-label="Close">×</scratch-button></div>` +
       `<div class="list"><div class="indicator"></div><slot></slot></div>`;
