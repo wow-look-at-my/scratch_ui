@@ -67,6 +67,10 @@ load the whole library.
 - **ts0 is not an npm dependency.** It comes from `PATH` locally and from the
   `wow-look-at-my/ts0` action in CI, which downloads current ts0 instead of
   pinning one. A stale lockfile pinning it once cost real debugging time.
+- **The ts0 action takes no command input.** One step type-checks, tests and
+  builds, in that order. There is no `args:` to choose a cheaper subset — the
+  action fails outright on one, because an arg like `--help` exits 0 having
+  done none of the three.
 - Type-checking is part of building, never a separate step. `pnpm build` runs
   a single `ts0 build`, which recurses into `scripts/`'s own nested project
   (`scripts/ts0.json`, node target) alongside the root's browser bundle
