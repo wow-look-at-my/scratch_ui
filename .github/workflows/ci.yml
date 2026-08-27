@@ -47,13 +47,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # scripts/ is its own nested ts0 project (scripts/ts0.json), so one
-      # `ts0 build` at the root recurses into it and produces dist-scripts/
-      # alongside the root project's dist/scratch-ui.js.
-      - name: Build scripts and bundle
+      # scripts/ is its own nested ts0 project (scripts/ts0.json), so one root
+      # invocation recurses into it and produces dist-scripts/ alongside the
+      # root project's dist/scratch-ui.js. The action takes no command input:
+      # it type-checks, tests and builds, in that order, every time.
+      - name: Type-check, test and build
         uses: wow-look-at-my/ts0@master
-        with:
-          args: build
 
       # Every stylesheet -> src/scratch-ui.css, each scoped to the element it
       # styles. Runs after both ts0 invocations above: css.d.ts's wildcard
