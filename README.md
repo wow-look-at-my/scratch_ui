@@ -213,6 +213,12 @@ same file again as a CSS module script to get the **component rules** inside
 each shadow root, which a linked stylesheet cannot reach past a shadow
 boundary.
 
+The module also links the three webfonts the tokens name, so they work with no
+setup. If your page sets a Content-Security-Policy, allow
+`style-src https://fonts.googleapis.com` and `font-src https://fonts.gstatic.com`;
+if you serve the faces yourself, the module notices and adds nothing. Depth:
+`docs/webfonts.md`.
+
 Both are required. The stylesheet is not optional styling on top of working
 components: without it they render unstyled.
 

@@ -38,6 +38,13 @@ load the whole library.
 
 - A component is a folder: `src/components/<name>/<name>.ts` + `<name>.css`.
   Never write CSS into a template literal in the `.ts`.
+- **The bundle supplies the webfonts the tokens name** (`src/webfonts.ts`,
+  called from `src/index.ts`), because neither `@import` nor `@font-face` can
+  live in `scratch-ui.css` — a constructed stylesheet drops the first, and a
+  face adopted into a shadow root registers nothing. It declines when the
+  document already declares the faces, so a self-hosting consumer stays
+  offline. A consumer with a CSP needs `style-src https://fonts.googleapis.com`
+  and `font-src https://fonts.gstatic.com`. Depth: `docs/webfonts.md`.
 - **Add a component by importing it in `src/index.ts`.** `assemble-pages.ts`
   fails when a component under `src/components/` is not imported there, so one
   cannot be silently left out of the bundle.
