@@ -46,6 +46,7 @@ jobs:
     runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
+      - uses: wow-look-at-my/actions@common-checks#latest
 
       # Every .md file, which is this action's own default for `files`. A
       # paragraph here is one line: the hard-wrap rule is what enforces that.
