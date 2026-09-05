@@ -18,6 +18,8 @@
 // Every component MUST be imported below. scripts/assemble-pages.ts enforces
 // it, so a new component cannot be silently left out of the bundle.
 
+import { loadWebFonts } from './webfonts.ts';
+
 import './components/scratch-badge/scratch-badge.ts';
 import './components/scratch-button/scratch-button.ts';
 import './components/scratch-card/scratch-card.ts';
@@ -35,3 +37,6 @@ import './components/scratch-ring/scratch-ring.ts';
 import './components/scratch-select/scratch-select.ts';
 import './components/scratch-tabs/scratch-tabs.ts';
 import './components/scratch-toggle/scratch-toggle.ts';
+
+// The tokens name three faces and declare none, so the library supplies them.
+loadWebFonts();
