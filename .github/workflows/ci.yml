@@ -47,6 +47,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Every .md file, which is this action's own default for `files`. A
+      # paragraph here is one line: the hard-wrap rule is what enforces that.
+      - name: Lint prose against the STE subset
+        uses: wow-look-at-my/actions@ste-lint#latest
+
       # scripts/ is its own nested ts0 project (scripts/ts0.json), so one root
       # invocation recurses into it and produces dist-scripts/ alongside the
       # root project's dist/scratch-ui.js. The action takes no command input:
