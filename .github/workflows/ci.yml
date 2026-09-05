@@ -46,6 +46,7 @@ jobs:
     runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
+      - uses: wow-look-at-my/actions@common-checks#latest
 
       # scripts/ is its own nested ts0 project (scripts/ts0.json), so one root
       # invocation recurses into it and produces dist-scripts/ alongside the
