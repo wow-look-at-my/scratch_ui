@@ -22,6 +22,8 @@ permissions:
   # Recording the upload on the org's artifacts page is part of publishing, with no opt-out.
   artifact-metadata: write
   deployments: write
+  # The publish step hands the preview URL to the PR, so it posts a comment. Without this the step fails 403 on every pull_request run, and master never notices because a push has no PR to comment on.
+  pull-requests: write
 
 jobs:
   build:

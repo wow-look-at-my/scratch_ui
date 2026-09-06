@@ -14,7 +14,7 @@ A host element lives in the LIGHT tree, so the page's own rules also match its `
 
 ## IF YOU NEED A NEW WIDGET OR YOU FIND SOMETHING MISSING/SUBOPTIMAL, JUUUUUUUUUSSSSSTTTTT FFFFFFUUUUUUUUCCCCKINGGGGG AAAADDD IITTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT FOR FUCKS SAKE
 
-A consumer that hand-rolls a control this library is missing has forked the design language in private. Add the component here instead. The steps are in the section below: a folder under `src/components/`, an import in `src/index.ts`, and the same tokens every other component uses.
+A consumer that hand-rolls a control this library is missing forks the design language in private. Add the component here. The section below gives the steps: a folder in `src/components/`, an import in `src/index.ts`, and the tokens each other component uses.
 
 ## The library ships as two files
 
