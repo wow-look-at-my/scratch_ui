@@ -12,6 +12,10 @@ GitHub Pages was switched off org-wide on 2026-07-20. Every `wow-look-at-my.gith
 
 A host element lives in the LIGHT tree, so the page's own rules also match its `::before` and `::after`. For normal declarations an outer tree beats the shadow tree. A page reset therefore overrides `:host::before { padding }`, and `src/css/scratch-proto.css` carries exactly such a reset (`*, *::before { padding: 0 }`). Never build host-pseudo geometry from a box-model property a reset touches: `padding`, `margin`, `border`, `box-sizing`. For that reason `scratch-reveal` sizes its 1px ring with `mask-position` and `mask-size`. A style on an element *inside* the shadow root is unaffected.
 
+## A missing or weak widget gets added here
+
+**If you need a new widget, or you find something missing or suboptimal, just add it.** A consumer that hand-rolls a control this library is missing forks the design language in private. The section below gives the steps: a folder in `src/components/`, an import in `src/index.ts`, and the tokens each other component uses.
+
 ## The library ships as two files
 
 `scratch-ui.js` (every component, one ES module) and `scratch-ui.css` (tokens plus every component stylesheet). There is no per-component file. Consumers load the whole library.
