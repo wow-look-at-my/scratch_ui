@@ -14,7 +14,7 @@ A host element lives in the LIGHT tree, so the page's own rules also match its `
 
 ## A missing or weak widget gets added here
 
-**If you need a new widget, or you find something missing or suboptimal, just add it.** A consumer that hand-rolls a control this library is missing forks the design language in private. The section below gives the steps: a folder in `src/components/`, an import in `src/index.ts`, and the tokens each other component uses.
+**Need a new widget, or find something missing or weak? Just add it.** A consumer that hand-rolls a control this library is missing forks the design language in private. The section below gives the steps: a folder in `src/components/`, an import in `src/index.ts`, and the tokens each other component uses.
 
 ## The library ships as two files
 
